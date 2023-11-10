@@ -1,10 +1,10 @@
 package cz.cvut.fel.ear.sis.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import cz.cvut.fel.ear.sis.utils.SemesterType;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 public class Semester {
@@ -17,11 +17,13 @@ public class Semester {
     private LocalDate endDate;
     private String code;
 
-    //new  enumeration
-    private enum semesterType{
-        FALL,
-        SPRING
-    }
+
+    //todo je toto potreba?
+    @OneToMany
+    private List<Parallel> parallelList;
+
+    @Enumerated(EnumType.STRING)
+    private SemesterType semesterType;
 
     public void setId(Long id) {
         this.id = id;

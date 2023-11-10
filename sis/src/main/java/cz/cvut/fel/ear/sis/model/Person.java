@@ -3,11 +3,12 @@ package cz.cvut.fel.ear.sis.model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.MappedSuperclass;
 
 import java.time.LocalDate;
 import java.util.Date;
 
-@Entity
+
 public class Person  {
     @Id
     @GeneratedValue
@@ -18,6 +19,8 @@ public class Person  {
     private String phoneNumber;
     private LocalDate birthDate;
 
+
+    //TODO inheritance
     public Person(String firstName, String lastName, String email, String phoneNumber, LocalDate birthDate) {
         this.firstName = firstName;
         this.lastName = lastName;

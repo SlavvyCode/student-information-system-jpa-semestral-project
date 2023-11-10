@@ -1,12 +1,10 @@
 package cz.cvut.fel.ear.sis.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 @Entity
@@ -21,11 +19,18 @@ public class Course {
 
 
 
+    @OneToMany
+    private List<Course> prerequisiteCourseList;
 
-    //prerequisite relationship with itself with annotation
-//    @OneToMany
-//    private ArrayList<Course> prerequisite;
-//
+
+
+    @ManyToOne
+//    @JoinColumn
+    //todo OneToMany musi mit vzdy mapped by.
+    private Teacher teacher;
+
+
+
 
 
 

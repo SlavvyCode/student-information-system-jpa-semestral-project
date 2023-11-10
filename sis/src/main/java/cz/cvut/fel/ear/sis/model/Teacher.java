@@ -1,6 +1,7 @@
 package cz.cvut.fel.ear.sis.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 
 import java.util.List;
 
@@ -8,5 +9,7 @@ import java.util.List;
 public class Teacher extends Person{
 
     //teaching relationship one to many
+
+    @OneToMany(mappedBy = "teacher")
     private List<Course> courseList;
 }
