@@ -1,5 +1,7 @@
 package cz.cvut.fel.ear.sis.model;
 
+import cz.cvut.fel.ear.sis.utils.Grade;
+import cz.cvut.fel.ear.sis.utils.Status;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -21,15 +23,9 @@ public class Enrollment {
     }
 
     //grade Enum inside this calss
-    private enum Grade {
-        A, B, C, D, E, F
-    }
-    private enum Status{
-        IN_PROGRESS,
-        PASSED,
-        FAILED
-    }
     private Grade grade;
+    private Status status;
+
 
     private boolean finished;
 

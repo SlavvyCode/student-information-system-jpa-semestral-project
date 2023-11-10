@@ -1,5 +1,6 @@
 package cz.cvut.fel.ear.sis.model;
 
+import cz.cvut.fel.ear.sis.utils.TimeSlot;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -17,19 +18,14 @@ public class Parellel {
 
     private DayOfWeek dayOfWeek;
 
-    private enum TimeSlot{
-        SLOT1,
-        SLOT2,
-        SLOT3,
-        SLOT4,
-        SLOT5,
-        SLOT6,
-        SLOT7,
-    }
+    //TODO RELATIONSHIPS IF POSSIBLE
+    //TODO ENUMS CLASSES AND ADD THEM AS FIELDS/COLS
+    private TimeSlot timeSlot;
+
+    //todo pridat many to many relationship student a arraylist of students
     public void setId(Long id) {
         this.id = id;
     }
-
 
     public Long getId() {
         return id;
