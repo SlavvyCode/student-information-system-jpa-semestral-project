@@ -11,10 +11,10 @@ import java.util.List;
 public class Admin extends Person{
 
 
-    @ManyToMany(mappedBy = "admin")
+    @ManyToMany
     List<Classroom> classroomList;
 
-    @ManyToMany(mappedBy = "admin")
+    @ManyToMany
     List<Semester> semesterList;
 
 

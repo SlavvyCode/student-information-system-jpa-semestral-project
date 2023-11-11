@@ -1,9 +1,6 @@
 package cz.cvut.fel.ear.sis.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 
 import java.util.List;
 
@@ -13,7 +10,16 @@ public class Classroom {
     @Id
     @GeneratedValue
     private Long id;
+
+
+    //todo jake chceme mit columns../
+    // @Column(nullable = false, unique = true)
+
+
+//    private Admin admin;
     private String code;
+
+
     private int capacity;
 
 

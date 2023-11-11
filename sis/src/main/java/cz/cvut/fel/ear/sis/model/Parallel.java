@@ -36,7 +36,7 @@ public class Parallel {
     @Enumerated(EnumType.STRING)
     private TimeSlot timeSlot;
 
-    @OneToMany(mappedBy = "parallel")
+    @OneToMany
     List<Student> studentsEnrolledInParallel;
 
     public Parallel() {
