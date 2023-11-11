@@ -31,9 +31,8 @@ public class Enrollment {
 
 
     @ManyToOne
-    @Column(name = "parallel_id")
+    @JoinColumn(name = "parallel_id")
     private Parallel parallel;
-    //todo relationships
 
     @ManyToOne
     @JoinColumn(name = "student_id")

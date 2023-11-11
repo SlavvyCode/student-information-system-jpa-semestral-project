@@ -18,11 +18,11 @@ public class Course {
     private Locale language;
 
 
-
+    @OneToMany(mappedBy = "course")
+    private List<Parallel> parallelsList;
 
     @ManyToOne
-//    @JoinColumn
-    //todo OneToMany musi mit vzdy mapped by.
+    @JoinColumn(name = "teacher_id")
     private Teacher teacher;
 
 

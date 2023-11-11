@@ -18,7 +18,6 @@ public class Person  {
     private LocalDate birthDate;
 
 
-    //TODO inheritance
     public Person(String firstName, String lastName, String email, String phoneNumber, LocalDate birthDate) {
         this.firstName = firstName;
         this.lastName = lastName;

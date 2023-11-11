@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@PrimaryKeyJoinColumn(name = "student_id")
 public class Student extends Person{
 
 
