@@ -8,9 +8,10 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "teacher_id")
 public class Teacher extends Person{
 
-    @Id
-    @GeneratedValue
-    private Long teacherId;
+
+
+
+
     //teaching relationship one to many
 
     @OneToMany(mappedBy = "teacher")

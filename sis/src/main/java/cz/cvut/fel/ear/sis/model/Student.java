@@ -9,10 +9,6 @@ import java.util.List;
 @PrimaryKeyJoinColumn(name = "student_id")
 public class Student extends Person{
 
-    //todo pridat do EA UML diagramu
-    @Id
-    @GeneratedValue
-    private Long studentId;
 
     //enrollment relationship one to many
 
