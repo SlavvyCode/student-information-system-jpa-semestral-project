@@ -26,6 +26,17 @@ public class Course {
     private Teacher teacher;
 
 
+    public Course(String name, int ECTS, Locale language, Teacher teacher) {
+        this.name = name;
+        this.ECTS = ECTS;
+        this.language = language;
+        this.parallelsList = new ArrayList<>();
+        this.teacher = teacher;
+    }
+
+    public Course() {
+
+    }
 
     public void setId(Long id) {
         this.id = id;

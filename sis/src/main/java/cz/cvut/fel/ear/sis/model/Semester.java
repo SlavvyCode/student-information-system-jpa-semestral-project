@@ -21,6 +21,18 @@ public class Semester {
     @Enumerated(EnumType.STRING)
     private SemesterType semesterType;
 
+
+    public Semester(LocalDate startDate, LocalDate endDate, String code, SemesterType semesterType) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.code = code;
+        this.semesterType = semesterType;
+    }
+
+    public Semester() {
+
+    }
+
     public void setId(Long id) {
         this.id = id;
     }

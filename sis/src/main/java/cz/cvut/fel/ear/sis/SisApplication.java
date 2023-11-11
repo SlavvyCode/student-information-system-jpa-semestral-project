@@ -2,6 +2,7 @@ package cz.cvut.fel.ear.sis;
 
 import cz.cvut.fel.ear.sis.dao.PersonRepository;
 import cz.cvut.fel.ear.sis.model.Person;
+import cz.cvut.fel.ear.sis.model.Student;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,6 +20,7 @@ public class SisApplication {
     @Bean
     public CommandLineRunner run(PersonRepository repository){
         return (args -> {
+            insertStudents(repository);
             insertPeople(repository);
             System.out.println(repository.findAll());
         });
@@ -27,4 +29,7 @@ public class SisApplication {
         repository.save(new Person("First", "Last", "m@m.cz", "1", LocalDate.now()));
     }
 
+    public void insertStudents(PersonRepository repository) {
+        repository.save(new Student("First", "Last", "m@m.cz", "1", LocalDate.now()));
+    }
 }

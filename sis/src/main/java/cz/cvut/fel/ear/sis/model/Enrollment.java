@@ -11,6 +11,7 @@ public class Enrollment {
     @GeneratedValue
     private Long id;
 
+
     public void setId(Long id) {
         this.id = id;
     }
@@ -24,12 +25,7 @@ public class Enrollment {
     private Grade grade;
     @Enumerated(EnumType.STRING)
     private Status status;
-
-
     private boolean finished;
-
-
-
     @ManyToOne
     @JoinColumn(name = "parallel_id")
     private Parallel parallel;
@@ -40,6 +36,18 @@ public class Enrollment {
 
 
 
+    public Enrollment(Parallel parallel, Student student) {
+        this.status = Status.IN_PROGRESS;
+        this.parallel = parallel;
+        this.student = student;
+        this.finished = false;
+    }
+
+
+
+    public Enrollment() {
+
+    }
 
 
 
