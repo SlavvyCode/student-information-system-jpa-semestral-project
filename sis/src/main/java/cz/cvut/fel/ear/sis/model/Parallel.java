@@ -59,4 +59,14 @@ public class Parallel {
     public Long getId() {
         return id;
     }
+
+
+    public void addStudent(Student student){
+        if(studentsEnrolledInParallel.size() < capacity){
+            studentsEnrolledInParallel.add(student);
+        }
+        else{
+            throw new IllegalArgumentException("Parallel is full!");
+        }
+    }
 }

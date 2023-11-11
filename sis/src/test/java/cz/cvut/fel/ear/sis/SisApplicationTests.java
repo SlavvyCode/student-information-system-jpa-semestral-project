@@ -10,5 +10,5 @@ class SisApplicationTests {
     void contextLoads() {
     }
 
-
+//test na adming setujici 2 running semsetery
 }
