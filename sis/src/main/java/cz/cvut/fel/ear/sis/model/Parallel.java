@@ -18,11 +18,9 @@ public class Parallel {
     @ManyToOne
     private Classroom classroom;
 
-    //todo chceme tady mit embedded a embeddable?
     @ManyToOne
     private Course course;
 
-    //todo chceme tady mit embedded a embeddable?
     @ManyToOne
     private Semester semester;
     public Parallel(int capacity, Classroom classroom, DayOfWeek dayOfWeek, TimeSlot timeSlot) {

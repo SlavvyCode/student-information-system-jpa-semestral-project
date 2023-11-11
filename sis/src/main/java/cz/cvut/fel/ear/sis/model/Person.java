@@ -1,14 +1,12 @@
 package cz.cvut.fel.ear.sis.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.Date;
 
-
+@Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Person  {
     @Id
     @GeneratedValue

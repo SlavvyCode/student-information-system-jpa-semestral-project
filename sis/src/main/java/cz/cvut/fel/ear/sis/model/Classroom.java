@@ -17,8 +17,6 @@ public class Classroom {
     private int capacity;
 
 
-    @OneToMany
-    private List<Parallel> parallelList;
 
     public void setId(Long id) {
         this.id = id;

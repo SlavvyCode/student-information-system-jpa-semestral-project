@@ -18,10 +18,6 @@ public class Semester {
     private String code;
 
 
-    //todo je toto potreba?
-    @OneToMany
-    private List<Parallel> parallelList;
-
     @Enumerated(EnumType.STRING)
     private SemesterType semesterType;
 

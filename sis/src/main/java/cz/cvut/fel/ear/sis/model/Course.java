@@ -19,18 +19,11 @@ public class Course {
 
 
 
-    @OneToMany
-    private List<Course> prerequisiteCourseList;
-
-
 
     @ManyToOne
 //    @JoinColumn
     //todo OneToMany musi mit vzdy mapped by.
     private Teacher teacher;
-
-
-
 
 
 
