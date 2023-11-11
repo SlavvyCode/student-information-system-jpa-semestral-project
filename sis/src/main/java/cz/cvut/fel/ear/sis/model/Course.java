@@ -15,6 +15,7 @@ public class Course {
     private Long id;
     private String name;
     private int ECTS;
+
     private Locale language;
 
 
@@ -35,7 +36,6 @@ public class Course {
     }
 
     public Course() {
-
     }
 
     public void setId(Long id) {

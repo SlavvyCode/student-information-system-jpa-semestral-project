@@ -11,11 +11,12 @@ public class Teacher extends Person{
     @OneToMany(mappedBy = "teacher")
     private List<Course> courseList;
 
-    public Teacher(String firstName, String lastName, String email, String phoneNumber, LocalDate birthDate, List<Course> courseList) {
+    public Teacher(String firstName, String lastName, String email, String phoneNumber, LocalDate birthDate) {
         super(firstName, lastName, email, phoneNumber, birthDate);
         this.courseList = new ArrayList<>();
     }
 
     public Teacher() {
+        super();
     }
 }

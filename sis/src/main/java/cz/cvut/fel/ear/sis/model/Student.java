@@ -12,8 +12,9 @@ public class Student extends Person{
 
     //enrollment relationship one to many
 
-    //todo consider adding cascade = CascadeType.ALL
-    @OneToMany(mappedBy = "student")
+    //todo only new style of relationship thing
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "student_id")
     private List<Enrollment> enrollmentList;
 
     public Student(String firstName, String lastName, String email, String phoneNumber, LocalDate birthDate) {
