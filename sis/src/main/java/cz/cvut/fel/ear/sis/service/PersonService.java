@@ -8,6 +8,7 @@ import cz.cvut.fel.ear.sis.repository.AdminRepository;
 import cz.cvut.fel.ear.sis.repository.PersonRepository;
 import cz.cvut.fel.ear.sis.repository.StudentRepository;
 import cz.cvut.fel.ear.sis.repository.TeacherRepository;
+import cz.cvut.fel.ear.sis.utils.enums.Role;
 import cz.cvut.fel.ear.sis.utils.exception.PersonException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,7 +91,7 @@ public class PersonService {
     }
 
     @Transactional(readOnly = true)
-    public List<Student> getAllStudent(){
+    public List<Student> getAllStudents(){
         return studentRepository.findAll();
     }
 
@@ -102,6 +103,18 @@ public class PersonService {
     @Transactional(readOnly = true)
     public Optional<Person> getPersonById(Long id){
         return personRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
+    public Role getPersonRoleById(Long id){
+        if (adminRepository.existsById(id)){
+            return Role.ADMIN;
+        } else if (studentRepository.existsById(id)) {
+            return Role.STUDENT;
+        } else if (teacherRepository.existsById(id)) {
+            return Role.TEACHER;
+        }
+        throw new EntityNotFoundException();
     }
 
     private String generateUniqueUserName(String firstName, String lastName){
