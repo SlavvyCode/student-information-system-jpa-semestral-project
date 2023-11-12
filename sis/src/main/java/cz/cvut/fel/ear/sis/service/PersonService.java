@@ -127,9 +127,9 @@ public class PersonService {
     }
 
     private void checkThatNameIsValid(String firstName, String lastName) throws PersonException{
-        if (doesNotConformRegex(firstName, "\"[a-zA-Z]+\""))
+        if (doesNotConformRegex(firstName, "[a-zA-Z]+"))
             throw new PersonException("First name is not valid");
-        if (doesNotConformRegex(lastName, "\"[a-zA-Z]+\""))
+        if (doesNotConformRegex(lastName, "[a-zA-Z]+"))
             throw new PersonException("Last name is not valid");
     }
 
@@ -138,7 +138,7 @@ public class PersonService {
             throw new PersonException("Email is not valid.");
         if (personRepository.existsByEmail(email))
             throw new PersonException("Account with that email already exists.");
-        if (doesNotConformRegex(phoneNumber, "^\\+?(\\d[\\d -]{7,12}\\d)$\n"))
+        if (doesNotConformRegex(phoneNumber, "^\\+?\\d[\\d -]{7,12}\\d$"))
             throw new PersonException("Phone number is not valid.");
         if (personRepository.existsByPhoneNumber(phoneNumber))
             throw new PersonException("Account with that phone number already exists.");
