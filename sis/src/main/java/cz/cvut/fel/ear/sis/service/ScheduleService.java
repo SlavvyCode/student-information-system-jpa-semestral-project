@@ -1,4 +1,4 @@
 package cz.cvut.fel.ear.sis.service;
 
-public class BaseService{
+public class ScheduleService {
 }

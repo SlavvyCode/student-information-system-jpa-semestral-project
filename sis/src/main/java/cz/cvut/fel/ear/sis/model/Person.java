@@ -20,7 +20,7 @@ public class Person {
     private String phoneNumber;
     @Column(nullable = false, updatable = false)
     private LocalDate birthDate;
-    @Column(nullable = false, unique = true, updatable = false)
+    @Column(nullable = false, unique = true)
     private String userName;
     @Column(nullable = false)
     private String password;
@@ -53,6 +53,10 @@ public class Person {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public void setPassword(String password) {

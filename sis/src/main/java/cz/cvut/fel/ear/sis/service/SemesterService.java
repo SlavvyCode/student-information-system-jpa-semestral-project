@@ -1,6 +1,4 @@
 package cz.cvut.fel.ear.sis.service;
 
-public class StudentService {
-
-
+public class SemesterService {
 }
