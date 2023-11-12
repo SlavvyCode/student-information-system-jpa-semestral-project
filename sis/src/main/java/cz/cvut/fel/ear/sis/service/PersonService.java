@@ -4,7 +4,10 @@ import cz.cvut.fel.ear.sis.model.Admin;
 import cz.cvut.fel.ear.sis.model.Person;
 import cz.cvut.fel.ear.sis.model.Student;
 import cz.cvut.fel.ear.sis.model.Teacher;
+import cz.cvut.fel.ear.sis.repository.AdminRepository;
 import cz.cvut.fel.ear.sis.repository.PersonRepository;
+import cz.cvut.fel.ear.sis.repository.StudentRepository;
+import cz.cvut.fel.ear.sis.repository.TeacherRepository;
 import cz.cvut.fel.ear.sis.utils.exception.PersonException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,15 +22,24 @@ import java.util.Optional;
 @Service
 public class PersonService {
 
+    private final AdminRepository adminRepository;
     private final PersonRepository personRepository;
+    private final StudentRepository studentRepository;
+    private final TeacherRepository teacherRepository;
 
     @Autowired
-    public PersonService(PersonRepository personRepository) {
+    public PersonService(AdminRepository adminRepository,
+                         PersonRepository personRepository,
+                         StudentRepository studentRepository,
+                         TeacherRepository teacherRepository) {
+        this.adminRepository = adminRepository;
         this.personRepository = personRepository;
+        this.studentRepository = studentRepository;
+        this.teacherRepository = teacherRepository;
     }
 
     @Transactional
-    public void createANewPerson(String firstName, String lastName, String email, String phoneNumber,
+    public Person createANewPerson(String firstName, String lastName, String email, String phoneNumber,
                                  LocalDate birthDate, String password, String roleKeypass) throws PersonException {
         // inspect input for validity
         checkThatDetailsAreValid(firstName, lastName, email, phoneNumber, birthDate, password);
@@ -43,6 +55,7 @@ public class PersonService {
             default -> throw new PersonException("KeyPass is not valid");
         };
         personRepository.save(person);
+        return person;
     }
 
     @Transactional
@@ -69,6 +82,21 @@ public class PersonService {
     @Transactional(readOnly = true)
     public List<Person> getAllPeople(){
         return personRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Admin> getAllAdmins(){
+        return adminRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Student> getAllStudent(){
+        return studentRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public List<Teacher> getAllTeachers(){
+        return teacherRepository.findAll();
     }
 
     @Transactional(readOnly = true)

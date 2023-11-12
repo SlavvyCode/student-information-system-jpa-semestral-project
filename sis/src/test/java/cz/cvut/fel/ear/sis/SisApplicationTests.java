@@ -11,4 +11,11 @@ class SisApplicationTests {
     }
 
 //test na adming setujici 2 running semsetery
+
+
+//proste protestuj person serive a zkontroluj jestli data existujou
+
+
+
+
 }
