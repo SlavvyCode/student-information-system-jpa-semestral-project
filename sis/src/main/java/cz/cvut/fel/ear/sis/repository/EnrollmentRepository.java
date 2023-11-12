@@ -12,10 +12,10 @@ import org.springframework.stereotype.Repository;
 public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
 
-//    @Query("SELECT SUM(e.parallel.course.ECTS) FROM Enrollment e " +
-//            "WHERE e.student = :student " +
-//            "AND e.parallel.semester = :semester")
-//    Integer getTotalECTSCreditsForStudentThisSemester(@Param("student") Student student,
-//                                                      @Param("semester") Semester semester);
+    @Query("SELECT SUM(e.parallel.course.ECTS) FROM Enrollment e " +
+            "WHERE e.student = :student " +
+            "AND e.parallel.semester = :semester")
+    Integer getTotalECTSCreditsForStudentThisSemester(@Param("student") Student student,
+                                                      @Param("semester") Semester semester);
 
 }
