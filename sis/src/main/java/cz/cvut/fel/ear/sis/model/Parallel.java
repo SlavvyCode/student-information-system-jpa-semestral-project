@@ -1,7 +1,7 @@
 package cz.cvut.fel.ear.sis.model;
 
-import cz.cvut.fel.ear.sis.utils.DayOfWeek;
-import cz.cvut.fel.ear.sis.utils.TimeSlot;
+import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
+import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;

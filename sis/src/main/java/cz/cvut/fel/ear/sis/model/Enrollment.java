@@ -1,8 +1,7 @@
 package cz.cvut.fel.ear.sis.model;
 
-import cz.cvut.fel.ear.sis.utils.Grade;
-import cz.cvut.fel.ear.sis.utils.Status;
-import jakarta.annotation.Nullable;
+import cz.cvut.fel.ear.sis.utils.enums.Grade;
+import cz.cvut.fel.ear.sis.utils.enums.Status;
 import jakarta.persistence.*;
 
 @Entity

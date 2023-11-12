@@ -5,7 +5,6 @@ import jakarta.persistence.Entity;
 import java.time.LocalDate;
 
 @Entity
-
 public class Admin extends Person {
 
     public Admin() {

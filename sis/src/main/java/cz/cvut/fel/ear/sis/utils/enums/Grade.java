@@ -1,4 +1,4 @@
-package cz.cvut.fel.ear.sis.utils;
+package cz.cvut.fel.ear.sis.utils.enums;
 
 public enum Grade {
     A,

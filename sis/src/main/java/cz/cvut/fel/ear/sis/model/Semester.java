@@ -1,10 +1,9 @@
 package cz.cvut.fel.ear.sis.model;
 
-import cz.cvut.fel.ear.sis.utils.SemesterType;
+import cz.cvut.fel.ear.sis.utils.enums.SemesterType;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 public class Semester {
@@ -28,12 +27,12 @@ public class Semester {
 
     }
 
-    public Semester(LocalDate startDate, LocalDate endDate, String code, SemesterType semesterType) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.code = code;
-        this.isActive = false;
+    public Semester(int year, SemesterType semesterType) {
+        this.startDate = LocalDate.of(year, semesterType.getStartDate().getMonth(), semesterType.getStartDate().getDayOfMonth());
+        this.endDate = LocalDate.of(year, semesterType.getEndDate().getMonth(), semesterType.getEndDate().getDayOfMonth());
         this.semesterType = semesterType;
+        this.code = semesterType.name() + year;
+        this.isActive = false;
     }
 
     public void setActive(Boolean active) {

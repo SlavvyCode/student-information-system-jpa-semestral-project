@@ -1,6 +1,6 @@
 package cz.cvut.fel.ear.sis.service;
 
-import cz.cvut.fel.ear.sis.dao.PersonRepository;
+import cz.cvut.fel.ear.sis.repository.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
