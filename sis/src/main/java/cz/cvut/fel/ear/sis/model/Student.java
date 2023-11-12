@@ -7,24 +7,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-public class Student extends Person{
+public class Student extends Person {
 
-
-    //enrollment relationship one to many
-
-    //todo only new style of relationship thing
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany
     @JoinColumn(name = "student_id")
-    private List<Enrollment> enrollmentList;
-
-    public Student(String firstName, String lastName, String email, String phoneNumber, LocalDate birthDate) {
-        super(firstName, lastName, email, phoneNumber, birthDate);
-        this.enrollmentList = new ArrayList<>();
-    }
+    private List<Enrollment> myEnrollments = new ArrayList<>();
 
     public Student() {
-
         super();
+    }
+
+    public Student(String firstName, String lastName, String email, String phoneNumber, LocalDate birthDate, String userName, String password) {
+        super(firstName, lastName, email, phoneNumber, birthDate, userName, password);
+    }
+
+    public List<Enrollment> getMyEnrollments() {
+        return myEnrollments;
+    }
+
+    public void setMyEnrollments(List<Enrollment> myEnrollments) {
+        this.myEnrollments = myEnrollments;
     }
 
 }

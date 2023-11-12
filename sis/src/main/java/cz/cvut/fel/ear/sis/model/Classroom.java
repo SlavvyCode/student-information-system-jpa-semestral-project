@@ -10,31 +10,25 @@ public class Classroom {
     @Id
     @GeneratedValue
     private Long id;
-
-
-    //todo jake chceme mit columns../
-    // @Column(nullable = false, unique = true)
-
-
-//    private Admin admin;
+    @Column(nullable = false, unique = true)
     private String code;
-
-
+    @Column(nullable = false, updatable = false)
     private int capacity;
 
+
+    public Classroom() {
+
+    }
 
     public Classroom(String code, int capacity) {
         this.code = code;
         this.capacity = capacity;
     }
 
-    public Classroom() {
-
+    public void setCode(String code) {
+        this.code = code;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
     public Long getId() {
         return id;
     }
@@ -43,15 +37,8 @@ public class Classroom {
         return code;
     }
 
-    public void setCode(String code) {
-        this.code = code;
-    }
-
     public int getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
-    }
 }

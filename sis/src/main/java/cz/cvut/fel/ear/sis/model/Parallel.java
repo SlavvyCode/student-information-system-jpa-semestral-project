@@ -14,59 +14,79 @@ public class Parallel {
     @GeneratedValue
     private Long id;
 
+    @Column(nullable = false, updatable = false)
     private int capacity;
-
-    @ManyToOne
-    private Classroom classroom;
-
-    @ManyToOne
-    @JoinColumn(name = "course_id")
-    private Course course;
-
-    @ManyToOne
-    private Semester semester;
-    public Parallel(int capacity, Classroom classroom, DayOfWeek dayOfWeek, TimeSlot timeSlot) {
-        this.classroom = classroom;
-
-//        if(capacity > classroom.getCapacity())
-//            throw new IllegalArgumentException("Capacity of parallel cannot be greater than capacity of classroom");
-
-
-        this.capacity = classroom.getCapacity();
-
-
-        this.dayOfWeek = dayOfWeek;
-        this.timeSlot = timeSlot;
-        studentsEnrolledInParallel = new ArrayList<>();
-    }
     @Enumerated(EnumType.STRING)
-    private DayOfWeek dayOfWeek;
-
-    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, updatable = false)
     private TimeSlot timeSlot;
-
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, updatable = false)
+    private DayOfWeek dayOfWeek;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Semester semester;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Classroom classroom;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Course course;
     @OneToMany
-    List<Student> studentsEnrolledInParallel;
+    @JoinColumn(name = "parallel_id")
+    private List<Enrollment> enrollments = new ArrayList<>();
+    @ManyToMany(cascade = {
+            CascadeType.PERSIST,
+            CascadeType.MERGE
+    })
+    @JoinTable(name = "parallel_student",
+            joinColumns = @JoinColumn(name = "parallel_id"),
+            inverseJoinColumns = @JoinColumn(name = "student_id")
+    )
+    private List<Student> students = new ArrayList<>();
 
-    public Parallel() {
+    public Parallel(){
 
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Parallel(int capacity, TimeSlot timeSlot, DayOfWeek dayOfWeek, Semester semester, Classroom classroom, Course course){
+        this.capacity = capacity;
+        this.timeSlot = timeSlot;
+        this.dayOfWeek = dayOfWeek;
+        this.semester = semester;
+        this.classroom = classroom;
+        this.course = course;
     }
 
     public Long getId() {
         return id;
     }
 
+    public int getCapacity() {
+        return capacity;
+    }
 
-    public void addStudent(Student student){
-        if(studentsEnrolledInParallel.size() < capacity){
-            studentsEnrolledInParallel.add(student);
-        }
-        else{
-            throw new IllegalArgumentException("Parallel is full!");
-        }
+    public TimeSlot getTimeSlot() {
+        return timeSlot;
+    }
+
+    public DayOfWeek getDayOfWeek() {
+        return dayOfWeek;
+    }
+
+    public Semester getSemester() {
+        return semester;
+    }
+
+    public Classroom getClassroom() {
+        return classroom;
+    }
+
+    public Course getCourse() {
+        return course;
+    }
+
+    public List<Enrollment> getEnrollments() {
+        return enrollments;
+    }
+
+    public List<Student> getStudents() {
+        return students;
     }
 }

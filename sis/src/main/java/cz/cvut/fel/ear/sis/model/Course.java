@@ -13,38 +13,62 @@ public class Course {
     @Id
     @GeneratedValue
     private Long id;
-    private String name;
-    private int ECTS;
-
-    private Locale language;
-
-
-    @OneToMany(mappedBy = "course")
-    private List<Parallel> parallelsList;
-
-    @ManyToOne
-    @JoinColumn(name = "teacher_id")
+    @ManyToOne(fetch = FetchType.LAZY)
     private Teacher teacher;
-
-
-    public Course(String name, int ECTS, Locale language, Teacher teacher) {
-        this.name = name;
-        this.ECTS = ECTS;
-        this.language = language;
-        this.parallelsList = new ArrayList<>();
-        this.teacher = teacher;
-    }
+    @Column(nullable = false, unique = true, updatable = false)
+    private String name;
+    @Column(nullable = false, unique = true, updatable = false)
+    private String code;
+    @Column(nullable = false, updatable = false)
+    private int ECTS;
+    @Column(nullable = false, updatable = false)
+    private Locale language;
+    @OneToMany
+    @JoinColumn(name = "course_id")
+    private List<Parallel> parallelsList = new ArrayList<>();
 
     public Course() {
+
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public Course(Teacher teacher, String name, String code, int ECTS, Locale language) {
+        this.teacher = teacher;
+        this.name = name;
+        this.code = code;
+        this.ECTS = ECTS;
+        this.language = language;
+    }
+
+    public void setParallelsList(List<Parallel> parallelsList) {
+        this.parallelsList = parallelsList;
     }
 
     public Long getId() {
         return id;
     }
 
+    public Teacher getTeacher() {
+        return teacher;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public int getECTS() {
+        return ECTS;
+    }
+
+    public Locale getLanguage() {
+        return language;
+    }
+
+    public List<Parallel> getParallelsList() {
+        return parallelsList;
+    }
 
 }
