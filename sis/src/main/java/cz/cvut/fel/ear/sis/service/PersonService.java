@@ -33,7 +33,7 @@ public class PersonService {
         checkThatDetailsAreValid(firstName, lastName, email, phoneNumber, birthDate, password);
 
         // create username
-       String userName = generateUniqueUserName(firstName, lastName);
+        String userName = generateUniqueUserName(firstName, lastName);
 
         // createTheRightTypeOfUser
         Person person = switch (roleKeypass) {
