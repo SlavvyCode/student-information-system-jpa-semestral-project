@@ -27,7 +27,7 @@ public class PersonService {
     }
 
     @Transactional
-    public void createANewPerson(String firstName, String lastName, String email, String phoneNumber,
+    public Person createANewPerson(String firstName, String lastName, String email, String phoneNumber,
                                  LocalDate birthDate, String password, String roleKeypass) throws PersonException {
         // inspect input for validity
         checkThatDetailsAreValid(firstName, lastName, email, phoneNumber, birthDate, password);
@@ -43,6 +43,7 @@ public class PersonService {
             default -> throw new PersonException("KeyPass is not valid");
         };
         personRepository.save(person);
+        return person;
     }
 
     @Transactional
