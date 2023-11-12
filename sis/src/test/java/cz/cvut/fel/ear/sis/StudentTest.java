@@ -5,41 +5,58 @@ import cz.cvut.fel.ear.sis.repository.PersonRepository;
 import cz.cvut.fel.ear.sis.repository.StudentRepository;
 import cz.cvut.fel.ear.sis.service.PersonService;
 import cz.cvut.fel.ear.sis.utils.exception.PersonException;
+import org.h2.server.Service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
 @SpringBootTest
 @Transactional
+@AutoConfigureTestEntityManager
+
+@TestPropertySource(locations = "classpath:application-test.properties")
+@ActiveProfiles("test")
 public class StudentTest {
 
 
     @Autowired
     PersonService personService;
 
-    @MockBean
+    @Autowired
     PersonRepository personRepository;
-    @MockBean
+    @Autowired
     StudentRepository studentRepository;
 
 
     @Test
+    @Transactional
     public void studentTestLong() throws PersonException {
 
-        Person student1 = personService.createANewPerson("Jan", "Novak", "jn1@fel.cz", "1254456789", LocalDate.of(2000,3,3), "jnovak", "studentKeyPass");
+        Person student1 = personService.createANewPerson("Jan", "Novak", "jn1@fel.cz",
+                "1254456789", LocalDate.of(2000,3,3), "Abc12345",
+                "studentKeyPass");
 
 
-        personService.getAllStudent();
-        Assertions.assertEquals(1, personService.getAllStudent().size());
-        Assertions.assertEquals(student1, personService.getAllStudent().get(0));
+        personService.getAllStudents();
+        Assertions.assertEquals(1, personService.getAllStudents().size());
+        Assertions.assertEquals(student1, personRepository.findById(student1.getId()).get());
 
         //check that student1 is a student
-        Assertions.assertEquals("Student", student1.getClass().getName());
+        Assertions.assertEquals("Student", student1.getClass().getSimpleName());
 
 
         //check same thing but through the repository
@@ -52,8 +69,8 @@ public class StudentTest {
         Assertions.assertEquals("jn1@fel.cz", student1.getEmail());
         Assertions.assertEquals("1254456789", student1.getPhoneNumber());
         Assertions.assertEquals(LocalDate.of(2000,3,3), student1.getBirthDate());
-        Assertions.assertEquals("JanNovak", student1.getUserName());
-        Assertions.assertEquals("jnovak", student1.getPassword());
+        Assertions.assertEquals("1JanNovak", student1.getUserName());
+        Assertions.assertEquals("Abc12345", student1.getPassword());
 
 
         //try to insert the same person again and expect a throw
@@ -63,4 +80,7 @@ public class StudentTest {
 
 
     }
+
+
+
 }

@@ -60,12 +60,12 @@ public class PersonService {
     }
 
     @Transactional
-    public void updateContactDetails(Long id, String email, String phoneNumber) throws PersonException {
+    public void updateContactDetails(Long id, String newEmail, String newPhoneNumber) throws PersonException {
         Person person = personRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Person not found with id: " + id));
-        checkThatContactDetailsAreValid(email, phoneNumber);
-        person.setEmail(email);
-        person.setPhoneNumber(phoneNumber);
+        checkThatContactDetailsAreValid(newEmail, newPhoneNumber);
+        person.setEmail(newEmail);
+        person.setPhoneNumber(newPhoneNumber);
         personRepository.save(person);
     }
 
@@ -133,9 +133,9 @@ public class PersonService {
                                          String phoneNumber, LocalDate birthDate, String password) throws PersonException {
         checkThatNameIsValid(firstName, lastName);
         checkThatContactDetailsAreValid(email, phoneNumber);
-        if (Period.between(LocalDate.now(), birthDate).getYears() < 18)
+        if (Period.between(birthDate, LocalDate.now()).getYears() < 18)
             throw new PersonException("Only users 18 years old and older can sign up.");
-        if (doesNotConformRegex(password, ""))
+        if (doesNotConformRegex(password, "^[A-Za-z0-9]{8,20}$"))
             throw new PersonException("Password is not valid.");
     }
 

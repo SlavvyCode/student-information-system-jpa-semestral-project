@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
@@ -21,9 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+
 @SpringBootTest
 @Transactional
 @AutoConfigureTestEntityManager
+@TestPropertySource(locations = "classpath:application-test.properties")
+@ActiveProfiles("test")
 public class QueryTest {
 
 
@@ -35,6 +39,8 @@ public class QueryTest {
     private EnrollmentRepository enrollmentRepository;
 
 
+
+    // not relevant for grading
     @Test
     public void testGettingTotalECTSCreditsForStudentThisSemester() {
 
