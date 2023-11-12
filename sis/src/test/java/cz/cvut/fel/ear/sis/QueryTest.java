@@ -36,20 +36,15 @@ public class QueryTest {
 
 
     @Test
-    public void setUp() {
+    public void testGettingTotalECTSCreditsForStudentThisSemester() {
 
-        //String firstName, String lastName, String email, String phoneNumber, LocalDate birthDate, String userName, String password
         Student student = new Student("Jan", "Novak", "jn@fel.cz", "123456789", LocalDate.now(), "jnovak", "123456");
-
-        // public Course(Teacher teacher, String name, String code, int ECTS, Locale language)
         Course course = new Course(null, "Matematika", "MAT", 5, Locale.ENGLISH);
         Classroom classroom = new Classroom("U1", 50);
-
         Semester semester = new Semester(2022, SemesterType.FALL);
-
-        Parallel parallel= new Parallel(2, TimeSlot.SLOT1, DayOfWeek.FRI, semester, classroom, course);
-
+        Parallel parallel = new Parallel(2, TimeSlot.SLOT1, DayOfWeek.FRI, semester, classroom, course);
         Enrollment enrollment = new Enrollment(parallel, student);
+
         em.persist(student);
         em.persist(course);
         em.persist(classroom);
@@ -58,14 +53,9 @@ public class QueryTest {
         em.persist(enrollment);
 
         List<Enrollment> enrollments = student.getMyEnrollments();
-
         enrollments.add(enrollment);
-
         student.setMyEnrollments(enrollments);
-
         enrollmentRepository.save(enrollment);
-
-
         em.persist(student);
 
 
