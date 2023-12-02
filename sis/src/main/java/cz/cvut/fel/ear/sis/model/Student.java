@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@DiscriminatorValue("STUDENT")
 public class Student extends Person {
 
     @OneToMany

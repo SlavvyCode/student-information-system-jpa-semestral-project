@@ -1,10 +1,12 @@
 package cz.cvut.fel.ear.sis.model;
 
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 import java.time.LocalDate;
 
 @Entity
+@DiscriminatorValue("ADMIN")
 public class Admin extends Person {
 
     public Admin() {

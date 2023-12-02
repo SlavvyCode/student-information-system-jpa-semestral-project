@@ -6,6 +6,7 @@ import java.time.LocalDate;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "PERSON_ROLE", discriminatorType = DiscriminatorType.STRING)
 public class Person {
     @Id
     @GeneratedValue
