@@ -142,9 +142,9 @@ public class PersonService {
     }
 
     private void checkThatNameIsValid(String firstName, String lastName) throws PersonException{
-        if (doesNotConformRegex(firstName, "[a-zA-Z]+"))
+        if (doesNotConformRegex(firstName, "[a-zA-ZáčďéěíňóřšťůúýžÁČĎÉĚÍŇÓŘŠŤŮÚÝŽ]++"))
             throw new PersonException("First name is not valid");
-        if (doesNotConformRegex(lastName, "[a-zA-Z]+"))
+        if (doesNotConformRegex(lastName, "[a-zA-ZáčďéěíňóřšťůúýžÁČĎÉĚÍŇÓŘŠŤŮÚÝŽ]++"))
             throw new PersonException("Last name is not valid");
     }
 

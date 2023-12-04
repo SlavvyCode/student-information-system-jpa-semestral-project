@@ -90,9 +90,17 @@ public class TeacherService {
                                             Semester semester, Classroom classroom, Course course) throws CourseException, PersonException {
 
         //check if capacity is within the classroom's bounds
+        if(capacity<0 || capacity>classroom.getCapacity()){
+            throw new CourseException("Capacity is not valid");
+        }
 
 
+        timeSlot.getStartTime();
+        timeSlot.getEndTime();
         //check if timeslot and day of week is valid
+        if(timeSlot==null || dayOfWeek==null){
+            throw new CourseException("Time slot or day of week is not valid");
+        }
 
 
         //check if semester is valid

@@ -158,4 +158,16 @@ public class PersonServiceTest {
         });
 
     }
+
+    //czech symbols test
+    @Test
+    @Transactional
+    public void czechSymbolsTest() throws PersonException {
+        Person person1 = personService.createANewPerson("Fíěřžýáďrtiškaďovčák", "Omačěščřžýáíéččka", "fomacka123@gm.com",
+                "1254456789", ageOver18, "FFF2macka123", "studentKeyPass");
+
+        Assertions.assertEquals(1+"FíěřžýáďrtiškaďovčákOmačěščřžýáíéččka", personRepository.findById(person1.getId()).get().getUserName());
+
+    }
+
 }
