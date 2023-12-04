@@ -34,7 +34,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @Transactional
 @AutoConfigureTestEntityManager
-
 @TestPropertySource(locations = "classpath:application-test.properties")
 @ActiveProfiles("test")
 public class PersonServiceTest {

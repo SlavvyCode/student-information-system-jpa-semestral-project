@@ -20,6 +20,8 @@ import java.time.Period;
 import java.util.List;
 import java.util.Optional;
 
+import static cz.cvut.fel.ear.sis.utils.ServiceUtil.doesNotConformRegex;
+
 @Service
 public class PersonService {
 
@@ -157,9 +159,9 @@ public class PersonService {
             throw new PersonException("Account with that phone number already exists.");
     }
 
-    private boolean doesNotConformRegex(String input, String regexPattern) {
-        return input == null || !input.matches(regexPattern);
-    }
+//    private boolean doesNotConformRegex(String input, String regexPattern) {
+//        return input == null || !input.matches(regexPattern);
+//    }
 
 }
 
