@@ -59,6 +59,27 @@ public class Course {
         return code;
     }
 
+
+    public void setTeacher(Teacher teacher) {
+        this.teacher = teacher;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public void setECTS(int ECTS) {
+        this.ECTS = ECTS;
+    }
+
+    public void setLanguage(Locale language) {
+        this.language = language;
+    }
+
     public int getECTS() {
         return ECTS;
     }
