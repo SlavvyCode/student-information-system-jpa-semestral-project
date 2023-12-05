@@ -174,7 +174,6 @@ public class TeacherServiceTest {
 
         Semester semester = new Semester(year, semesterType);
 
-//        Semester semester = new Semester(year, semesterType);
         semesterRepository.save(semester);
 
         int classroomCapacity = 30;

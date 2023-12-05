@@ -47,6 +47,11 @@ public class Course {
         this.parallelsList.add(parallel);
     }
 
+    //remove parallel from parallels list
+    public void removeParallel(Parallel parallel){
+        this.parallelsList.remove(parallel);
+    }
+
     public Long getId() {
         return id;
     }

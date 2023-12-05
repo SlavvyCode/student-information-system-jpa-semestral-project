@@ -30,4 +30,10 @@ public class Teacher extends Person {
         this.myCourses = myCourses;
     }
 
+    public void addCourse(Course course) {
+        this.myCourses.add(course);
+    }
+    public void removeCourse(Course course) {
+        this.myCourses.remove(course);
+    }
 }

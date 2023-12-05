@@ -151,20 +151,29 @@ public class TeacherService {
 
         areCourseDetailsValid(teacher, courseName, code, ECTS, language);
 
-
-
+        Course oldCourse = teacher.getMyCourses().get(0);
         course.setTeacher(teacher);
         course.setName(courseName);
         course.setCode(code);
         course.setECTS(ECTS);
         course.setLanguage(language);
 
+
+        teacher.removeCourse(oldCourse);
+        teacher.addCourse(course);
+
         courseRepository.save(course);
+        teacherRepository.save(teacher);
+
     }
     @Transactional
     public void updateParallel(Parallel parallel, Teacher teacher, int capacity, TimeSlot timeSlot, DayOfWeek dayOfWeek,
                                Semester semester, Classroom classroom, Course course) throws CourseException, PersonException, ParallelException, SemesterException, ClassroomException {
         areParalellDetailsValid(teacher, capacity, timeSlot, dayOfWeek, semester, classroom, course);
+
+        Course oldCourse = parallel.getCourse();
+        //old course remove
+        oldCourse.removeParallel(parallel);
 
         parallel.setCapacity(capacity);
         parallel.setTimeSlot(timeSlot);
@@ -173,7 +182,29 @@ public class TeacherService {
         parallel.setClassroom(classroom);
         parallel.setCourse(course);
 
+
+        course.addParallel(parallel);
+
         parallelRepository.save(parallel);
+        courseRepository.save(oldCourse);
+        courseRepository.save(course);
+    }
+
+    @Transactional
+    public void deleteCourse(long courseId) throws CourseException {
+        Course course = courseRepository.findById(courseId).orElseThrow(()-> new CourseException("Course not found"));
+        Teacher teacher = course.getTeacher();
+        teacher.removeCourse(course);
+        courseRepository.delete(course);
+        teacherRepository.save(teacher);
+    }
+    @Transactional
+    public void deleteParallel(long parallelId) throws ParallelException {
+        Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
+        Course course = parallel.getCourse();
+        course.removeParallel(parallel);
+        parallelRepository.delete(parallel);
+        courseRepository.save(course);
     }
 
 
