@@ -190,22 +190,29 @@ public class TeacherService {
         courseRepository.save(course);
     }
 
-    @Transactional
-    public void deleteCourse(long courseId) throws CourseException {
-        Course course = courseRepository.findById(courseId).orElseThrow(()-> new CourseException("Course not found"));
-        Teacher teacher = course.getTeacher();
-        teacher.removeCourse(course);
-        courseRepository.delete(course);
-        teacherRepository.save(teacher);
-    }
-    @Transactional
-    public void deleteParallel(long parallelId) throws ParallelException {
-        Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
-        Course course = parallel.getCourse();
-        course.removeParallel(parallel);
-        parallelRepository.delete(parallel);
-        courseRepository.save(course);
-    }
+
+    // todo deleting
+    //  asi by bylo lechci udelat nejak kaskadove? vlastne jsme resili nejak jestli to ma smysl
+
+
+
+//    @Transactional
+//    public void deleteCourse(long courseId) throws CourseException {
+//        Course course = courseRepository.findById(courseId).orElseThrow(()-> new CourseException("Course not found"));
+//        Teacher teacher = course.getTeacher();
+//        teacher.removeCourse(course);
+//        courseRepository.delete(course);
+//        teacherRepository.save(teacher);
+//    }
+//    @Transactional
+//    public void deleteParallel(long parallelId) throws ParallelException {
+//        Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
+//        Course course = parallel.getCourse();
+//        course.removeParallel(parallel);
+//        parallelRepository.delete(parallel);
+//        courseRepository.save(course);
+//        //
+//    }
 
 
     @Transactional(readOnly = true)
