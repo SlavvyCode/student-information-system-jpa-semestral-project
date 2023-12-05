@@ -52,6 +52,10 @@ public class Parallel {
         this.semester = semester;
         this.classroom = classroom;
         this.course = course;
+
+
+        course.addParallel(this);
+
     }
 
     public Long getId() {

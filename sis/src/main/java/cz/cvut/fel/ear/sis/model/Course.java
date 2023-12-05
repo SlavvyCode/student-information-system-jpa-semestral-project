@@ -43,6 +43,10 @@ public class Course {
         this.parallelsList = parallelsList;
     }
 
+    public void addParallel(Parallel parallel){
+        this.parallelsList.add(parallel);
+    }
+
     public Long getId() {
         return id;
     }
