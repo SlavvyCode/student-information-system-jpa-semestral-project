@@ -2,8 +2,7 @@ package cz.cvut.fel.ear.sis.service;
 
 import cz.cvut.fel.ear.sis.model.*;
 import cz.cvut.fel.ear.sis.repository.*;
-import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
-import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
+import cz.cvut.fel.ear.sis.utils.enums.*;
 import cz.cvut.fel.ear.sis.utils.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,9 +27,10 @@ public class TeacherService {
     private final ParallelRepository parallelRepository;
     private final SemesterRepository semesterRepository;
     private final ClassroomRepository classroomRepository;
+    private final EnrollmentRepository enrollmentRepository;
 
     @Autowired
-    public TeacherService(PersonRepository personRepository, StudentRepository studentRepository, TeacherRepository teacherRepository, CourseRepository courseRepository, ParallelRepository parallelRepository, SemesterRepository semesterRepository, ClassroomRepository classroomRepository) {
+    public TeacherService(PersonRepository personRepository, StudentRepository studentRepository, TeacherRepository teacherRepository, CourseRepository courseRepository, ParallelRepository parallelRepository, SemesterRepository semesterRepository, ClassroomRepository classroomRepository, EnrollmentRepository enrollmentRepository) {
         this.personRepository = personRepository;
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
@@ -38,6 +38,7 @@ public class TeacherService {
         this.parallelRepository = parallelRepository;
         this.semesterRepository = semesterRepository;
         this.classroomRepository = classroomRepository;
+        this.enrollmentRepository = enrollmentRepository;
     }
     //vytvoreni kurzu a paralelek
 
@@ -94,10 +95,12 @@ public class TeacherService {
         Course course = courseRepository.findById(courseId).orElseThrow(()-> new CourseException("Course not found"));
 
 
+
         areParalellDetailsValid(teacher, capacity, timeSlot, dayOfWeek, semester, classroom, course);
 
         Parallel parallel = new Parallel(capacity, timeSlot, dayOfWeek, semester, classroom, course);
 
+        course.addParallel(parallel);
         parallelRepository.save(parallel);
         courseRepository.save(course);
 
@@ -114,12 +117,26 @@ public class TeacherService {
             throw new ParallelException("Capacity is not valid");
         }
 
-
-        //todo maty zkontroluj? zda se mi to logicke
         //can only make a parallel 2 semesters in advance
-        if(semester.getStartDate().isAfter(LocalDate.now().plusYears(2)) ||
-           semester.getStartDate().isBefore(LocalDate.now()))
-            throw new SemesterException("Semester date is not valid");
+        if (semester.getSemesterType() == SemesterType.SPRING){
+
+            LocalDate thisYearsDefaultSpringSemesterStartDate = LocalDate.of(LocalDate.now().getYear(),
+                    SemesterType.SPRING.getStartDate().getMonth(),SemesterType.SPRING.getStartDate().getDayOfMonth());
+
+            if(semester.getStartDate().isAfter(thisYearsDefaultSpringSemesterStartDate.plusYears(2)) ||
+                    semester.getStartDate().isBefore(thisYearsDefaultSpringSemesterStartDate))
+                throw new SemesterException("Semester date is not valid");
+        }
+        else
+        {
+
+            LocalDate thisYearsDefaultFallSemesterStartDate = LocalDate.of(LocalDate.now().getYear(),
+                    SemesterType.FALL.getStartDate().getMonth(),SemesterType.FALL.getStartDate().getDayOfMonth());
+
+            if(semester.getStartDate().isAfter(thisYearsDefaultFallSemesterStartDate.plusYears(2)) ||
+                    semester.getStartDate().isBefore(thisYearsDefaultFallSemesterStartDate))
+                throw new SemesterException("Semester date is not valid");
+        }
 
         //check if classroom already has a parallel with the timeslot and day of week occupied
         List<Parallel> sameTimeSlotParallels = parallelRepository.findByClassroomAndSemesterAndDayOfWeekAndTimeSlot(classroom, semester,dayOfWeek, timeSlot);
@@ -164,8 +181,37 @@ public class TeacherService {
 
         courseRepository.save(course);
         teacherRepository.save(teacher);
+    }
+
+    @Transactional
+    public void gradeStudent(long studentId, long enrollmentId, Grade grade) throws StudentException, CourseException, SemesterException, EnrollmentException {
+
+
+        Student student = studentRepository.findById(studentId).orElseThrow(()-> new StudentException("Student not found"));
+
+        Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(()-> new EnrollmentException("Enrollment not found"));
+
+        if(!enrollment.getStudent().equals(student))
+            throw new StudentException("Student is not enrolled in this parallel");
+
+        if(enrollment.getStatus().equals(Status.PASSED) || enrollment.getStatus().equals(Status.FAILED))
+            throw new EnrollmentException("Student has already been graded");
+
+        if(enrollment.getParallel().getSemester().getStartDate().isAfter(LocalDate.now()))
+            throw new EnrollmentException("Student can't be graded before the semester begins");
+
+        if(enrollment.getParallel().getSemester().getEndDate().isBefore(LocalDate.now()))
+            throw new EnrollmentException("Student can't be graded after the semester ends");
+
+
+
+        enrollment.setGrade(grade);
+        enrollmentRepository.save(enrollment);
+
+
 
     }
+
     @Transactional
     public void updateParallel(Parallel parallel, Teacher teacher, int capacity, TimeSlot timeSlot, DayOfWeek dayOfWeek,
                                Semester semester, Classroom classroom, Course course) throws CourseException, PersonException, ParallelException, SemesterException, ClassroomException {
@@ -196,23 +242,6 @@ public class TeacherService {
 
 
 
-//    @Transactional
-//    public void deleteCourse(long courseId) throws CourseException {
-//        Course course = courseRepository.findById(courseId).orElseThrow(()-> new CourseException("Course not found"));
-//        Teacher teacher = course.getTeacher();
-//        teacher.removeCourse(course);
-//        courseRepository.delete(course);
-//        teacherRepository.save(teacher);
-//    }
-//    @Transactional
-//    public void deleteParallel(long parallelId) throws ParallelException {
-//        Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
-//        Course course = parallel.getCourse();
-//        course.removeParallel(parallel);
-//        parallelRepository.delete(parallel);
-//        courseRepository.save(course);
-//        //
-//    }
 
 
     @Transactional(readOnly = true)

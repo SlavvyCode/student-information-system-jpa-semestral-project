@@ -2,27 +2,19 @@ package cz.cvut.fel.ear.sis;
 
 import cz.cvut.fel.ear.sis.model.*;
 import cz.cvut.fel.ear.sis.repository.*;
-import cz.cvut.fel.ear.sis.service.AdminService;
 import cz.cvut.fel.ear.sis.service.PersonService;
+import cz.cvut.fel.ear.sis.service.StudentService;
 import cz.cvut.fel.ear.sis.service.TeacherService;
-import cz.cvut.fel.ear.sis.utils.enums.Role;
-import cz.cvut.fel.ear.sis.utils.enums.SemesterType;
-import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
+import cz.cvut.fel.ear.sis.utils.enums.*;
 import cz.cvut.fel.ear.sis.utils.exception.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
-import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
 
 import java.time.LocalDate;
 import java.util.Locale;
@@ -56,6 +48,8 @@ public class TeacherServiceTest {
 
     @Autowired
     TeacherService teacherService;
+    @Autowired
+    StudentService studentService;
     private LocalDate ageOver18 = LocalDate.of(2000, 2, 2);
 
 
@@ -231,6 +225,72 @@ public class TeacherServiceTest {
         Assertions.assertThrows(CourseException.class, () -> {
             teacherService.createParallel(teacher.getId(), parallelCapacity, timeSlot, dayOfWeek, semester.getId(), classroom.getId(), badCourseId);
         });
+
+    }
+
+
+    //test gradeStudent
+    @Test
+    @Transactional
+    public void gradeStudentTest() throws PersonException, CourseException, ParallelException, StudentException, EnrollmentException, SemesterException, ClassroomException {
+
+        Person student = personService.createANewPerson("Jan", "Novak", "jn4544@fel.cz", "123456789", ageOver18, "Jnovak125984", "studentKeyPass");
+        Person teacher = personService.createANewPerson("Petr", "Fifka", "velebil@fel.cz", "123688788", ageOver18, "Jnovak125984", "teacherKeyPass");
+
+        String courseName = "Math";
+        String courseCode = "MATH123";
+        int ECTS = 5;
+        Locale language = Locale.ENGLISH;
+        Course course = teacherService.
+                createCourse(teacher.getId(), courseName, courseCode, ECTS, language);
+
+        SemesterType semesterType;
+
+
+        if(LocalDate.now().isAfter( LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getStartDate().getMonth(), SemesterType.SPRING.getStartDate().getDayOfMonth() ))
+            && LocalDate.now().isBefore(LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getEndDate().getMonth(), SemesterType.SPRING.getEndDate().getDayOfMonth())))
+            semesterType = SemesterType.SPRING;
+        else
+            semesterType = SemesterType.FALL;
+
+
+
+        int year = LocalDate.now().getYear();
+
+        Semester semester = new Semester(year, semesterType);
+
+//        Semester semester = new Semester(year, semesterType);
+        semesterRepository.save(semester);
+
+        int classroomCapacity = 30;
+        Classroom classroom = new Classroom("T9:123", classroomCapacity);
+
+        classroomRepository.save(classroom);
+
+        DayOfWeek dayOfWeek = DayOfWeek.MON;
+        TimeSlot timeSlot = TimeSlot.SLOT1;
+        int parallelCapacity = 30;
+
+
+        //create parallel
+        Parallel parallel = teacherService.createParallel
+                (teacher.getId(), parallelCapacity, timeSlot, dayOfWeek, semester.getId(), classroom.getId(), course.getId());
+
+
+        //enroll student in parallel
+        Enrollment enrollment = studentService.createEnrollmentToParallel(student.getId(), parallel.getId());
+
+
+
+
+        //grade student
+        Grade grade = Grade.A;
+        teacherService.gradeStudent(student.getId(), enrollment.getId(), grade);
+
+
+        //check if student has grade
+        assertEquals(grade, enrollment.getGrade());
+
 
     }
 }

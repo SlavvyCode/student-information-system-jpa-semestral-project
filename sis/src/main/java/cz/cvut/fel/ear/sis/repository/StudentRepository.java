@@ -17,4 +17,5 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     @Query("SELECT s FROM Student s JOIN s.myEnrollments e JOIN e.parallel p JOIN p.course c WHERE c = :course AND s.id = :id")
     public List<Student> findAllByParallel(long id, Course course);
 
+
 }

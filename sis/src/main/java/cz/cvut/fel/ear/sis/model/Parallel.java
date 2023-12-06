@@ -31,10 +31,7 @@ public class Parallel {
     @OneToMany
     @JoinColumn(name = "parallel_id")
     private List<Enrollment> enrollments = new ArrayList<>();
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
+    @ManyToMany
     @JoinTable(name = "parallel_student",
             joinColumns = @JoinColumn(name = "parallel_id"),
             inverseJoinColumns = @JoinColumn(name = "student_id")
@@ -52,9 +49,6 @@ public class Parallel {
         this.semester = semester;
         this.classroom = classroom;
         this.course = course;
-
-
-        course.addParallel(this);
 
     }
 
@@ -128,5 +122,14 @@ public class Parallel {
 
     public void setStudents(List<Student> students) {
         this.students = students;
+    }
+
+
+
+    public void addStudent(Student student){
+        students.add(student);
+    }
+    public void removeStudent(Student student){
+        students.remove(student);
     }
 }

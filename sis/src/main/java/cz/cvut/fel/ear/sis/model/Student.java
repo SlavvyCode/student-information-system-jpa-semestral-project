@@ -30,4 +30,10 @@ public class Student extends Person {
         this.myEnrollments = myEnrollments;
     }
 
+    public void addEnrollment(Enrollment enrollment) {
+        myEnrollments.add(enrollment);
+    }
+    public void removeEnrollment(Enrollment enrollment) {
+        myEnrollments.remove(enrollment);
+    }
 }
