@@ -55,8 +55,8 @@ public class TeacherService {
     }
 
 
-    private boolean areCourseDetailsValid(Teacher teacher, String courseName, String code,
-                                          int ECTS, Locale language) throws CourseException, PersonException {
+    private void areCourseDetailsValid(Teacher teacher, String courseName, String code,
+                                       int ECTS, Locale language) throws CourseException, PersonException {
 
         //check if teacher is not null,
         //the teacher should be valid - see  checks in personService
@@ -80,8 +80,6 @@ public class TeacherService {
         if (language == null || (!language.equals(Locale.ENGLISH) && !language.equals(Locale.forLanguageTag("CZ")))   ) {
             throw new CourseException("Language is not valid");
         }
-
-        return true;
 
     }
 
