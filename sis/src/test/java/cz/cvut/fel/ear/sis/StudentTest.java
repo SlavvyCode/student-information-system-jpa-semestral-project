@@ -88,9 +88,9 @@ public class StudentTest {
     public void checkIfStudentRepoReachesOtherUserRoles() throws PersonException {
 
 
-        Person person1 = personService.createANewPerson("Jirka", "Velebil", "jv@fel.cz", "1254456789", ageOver18, "Jnovak125984", "adminKeyPass");
-        Person person2 = personService.createANewPerson("Jan", "Novak", "jn4544@fel.cz", "123456789", ageOver18, "Jnovak125984", "studentKeyPass");
-        Person person3 = personService.createANewPerson("Petr", "Fifka", "velebil@fel.cz", "123688788", ageOver18, "Jnovak125984", "teacherKeyPass");
+        Person admin = personService.createANewPerson("Jirka", "Velebil", "jv@fel.cz", "1254456789", ageOver18, "Jnovak125984", "adminKeyPass");
+        Person student = personService.createANewPerson("Jan", "Novak", "jn4544@fel.cz", "123456789", ageOver18, "Jnovak125984", "studentKeyPass");
+        Person teacher = personService.createANewPerson("Petr", "Fifka", "velebil@fel.cz", "123688788", ageOver18, "Jnovak125984", "teacherKeyPass");
 
         studentRepository.findAll();
         Assertions.assertEquals(1, studentRepository.findAll().size());

@@ -43,18 +43,13 @@ public class StudentService {
     public Enrollment createEnrollmentToParallel(long studentId, long parallelId) throws StudentException, ParallelException, EnrollmentException {
 
         Student student = studentRepository.findById(studentId).orElseThrow(()-> new StudentException("Teacher not found"));
-
         Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
 
-
         checkThatEnrollmentDetailsAreValid(parallel,student);
-        //check if all details check out
-        //check if student is not already enrolled in this parallel group
-        //add student to parallel group and course
-
 
         Enrollment enrollment = new Enrollment(parallel, student);
 
+        enrollmentRepository.save(enrollment);
 
         student.addEnrollment(enrollment);
         parallel.addStudent(student);
@@ -73,11 +68,9 @@ public class StudentService {
         //if parallel exists, remove student from it and it from enrollment
         Student student = studentRepository.findById(studentId).orElseThrow(()-> new StudentException("Student not found"));
 
-
         Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
         if(!parallel.getStudents().contains(student))
             throw new StudentException("Student is not enrolled in this parallel");
-
 
         Enrollment enrollmentToDrop = enrollmentRepository.findByStudent_IdAndParallel_Id(studentId, parallelId);
         if (enrollmentToDrop == null)
@@ -87,52 +80,16 @@ public class StudentService {
         student.removeEnrollment(enrollmentToDrop);
         parallel.removeStudent(student);
 
+        enrollmentRepository.delete(enrollmentToDrop);
         parallelRepository.save(parallel);
         studentRepository.save(student);
+
     }
 
-    //this satifsies Schedule and ECTS requirements
+    //this satifsies get Schedule and ECTS requirements
     public List<Enrollment> getMyEnrollments(long studentId) throws StudentException {
         return studentRepository.findById(studentId).orElseThrow(()-> new StudentException("Student not found")).getMyEnrollments();
     }
-
-
-
-    public String getScheduleOfStudentInASemester(long studentId, long semesterId) {
-
-        List<Enrollment> semestralCourses = enrollmentRepository.findAllByStudent_IdAndParallel_Semester_IdOrderByParallel_DayOfWeekAscParallel_TimeSlotAsc(studentId, semesterId);
-        //sequentially print out on which days and at what time the student has classes
-
-        StringBuilder schedule = new StringBuilder();
-        Parallel parallel;
-
-        for (Enrollment enrollment : semestralCourses) {
-            parallel = enrollment.getParallel();
-            schedule.append(parallel.getCourse().getName()).append(" ").append(parallel.getDayOfWeek()).append(" ").append(parallel.getTimeSlot()).append("\n");
-        }
-
-        return schedule.toString();
-    }
-
-
-    public String getSemesterGrades(long studentId, long semesterId) {
-        List<Enrollment> semestralCourses = enrollmentRepository.findAllByStudent_IdAndParallel_Semester_IdOrderByParallel_DayOfWeekAscParallel_TimeSlotAsc(studentId, semesterId);
-        //sequentially print out on which days and at what time the student has classes
-
-        StringBuilder grades = new StringBuilder();
-        Parallel parallel;
-
-        for (Enrollment enrollment : semestralCourses) {
-            parallel = enrollment.getParallel();
-            grades.append(parallel.getCourse().getName()).append(" ").append(enrollment.getGrade()).append("\n");
-        }
-
-        return grades.toString();
-    }
-
-
-
-
 
 
     public boolean checkThatEnrollmentDetailsAreValid(Parallel parallel,Student student) throws ParallelException, StudentException, EnrollmentException {
@@ -203,15 +160,10 @@ public class StudentService {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(()-> new EnrollmentException("Enrollment not found"));
         Student student = enrollment.getStudent();
 
-
-
         if(enrollment.getParallel().getSemester().getStartDate().isBefore(LocalDate.now()))
             throw new EnrollmentException("Students can cancel enrollment only BEFORE the semester begins");
 
-
         student.removeEnrollment(enrollment);
-
-
-
     }
+
 }

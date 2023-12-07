@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -26,4 +27,7 @@ public interface ParallelRepository extends JpaRepository<Parallel, Long> {
             "AND p.semester.id = :semesterId")
     Parallel findByStudentIdAndCourseIdAndSemesterId(long studentId, long courseId, long semesterId);
 
+
+
+    List<Parallel> findAllBySemester_StartDateAndCourse_Teacher_Id(LocalDate startDate, long teacherId);
 }

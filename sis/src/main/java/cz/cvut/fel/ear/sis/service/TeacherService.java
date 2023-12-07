@@ -250,6 +250,48 @@ public class TeacherService {
     public List<Parallel> getAllParallels(){
         return parallelRepository.findAll();
     }
+
+
+    @Transactional(readOnly = true)
+    public List<Parallel> getNextSemesterTeacherParallels(long teacherId) throws SemesterException {
+        //Teachers may list parallels only for the upcoming semester
+
+        LocalDate springSemesterStartDate = LocalDate.of(LocalDate.now().getYear(),
+                SemesterType.SPRING.getStartDate().getMonth(),SemesterType.SPRING.getStartDate().getDayOfMonth());
+        LocalDate fallSemesterStartDate = LocalDate.of(LocalDate.now().getYear(),
+                SemesterType.FALL.getStartDate().getMonth(),SemesterType.FALL.getStartDate().getDayOfMonth());
+
+
+        LocalDate springSemesterEndDate = LocalDate.of(LocalDate.now().getYear(),
+                SemesterType.SPRING.getEndDate().getMonth(),SemesterType.SPRING.getEndDate().getDayOfMonth());
+        LocalDate fallSemesterEndDate = LocalDate.of(LocalDate.now().getYear(),
+                SemesterType.FALL.getEndDate().getMonth(),SemesterType.FALL.getEndDate().getDayOfMonth());
+
+
+
+
+        Semester nextSemester;
+        //if todays date is between spring start and end then next semester is fall semester
+        //else spring semester
+        if(LocalDate.now().isAfter(springSemesterStartDate) && LocalDate.now().isBefore(springSemesterEndDate))
+        {
+            nextSemester = semesterRepository.findByStartDate(fallSemesterStartDate);
+        }
+        else
+        {
+            //Account for the fact that the next semester is in the next year
+            LocalDate nextSpringSemesterDate = springSemesterStartDate.plusYears(1);
+            nextSemester = semesterRepository.findByStartDate(nextSpringSemesterDate);
+
+        }
+
+        if(nextSemester==null)
+            throw new SemesterException("Semester not found");
+
+        return parallelRepository.findAllBySemester_StartDateAndCourse_Teacher_Id(nextSemester.getStartDate(), teacherId);
+
+    }
+
     @Transactional(readOnly = true)
     public List<Teacher> getAllTeachers(){
         return teacherRepository.findAll();

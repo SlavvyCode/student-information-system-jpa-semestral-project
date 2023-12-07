@@ -56,19 +56,19 @@ public class PersonServiceTest {
     @Test
     @Transactional
     public void addingAllRolesTest() throws PersonException {
-        Person person1 = personService.createANewPerson("Jirka", "Velebil", "jv@fel.cz", "1254456789", ageOver18, "Jnovak125984", "adminKeyPass");
-        Person person2 = personService.createANewPerson("Jan", "Novak", "jn4544@fel.cz", "123456789", ageOver18, "Jnovak125984", "studentKeyPass");
-        Person person3 = personService.createANewPerson("Petr", "Fifka", "velebil@fel.cz", "123688788", ageOver18, "Jnovak125984", "teacherKeyPass");
+        Person admin = personService.createANewPerson("Jirka", "Velebil", "jv@fel.cz", "1254456789", ageOver18, "Jnovak125984", "adminKeyPass");
+        Person persostudent = personService.createANewPerson("Jan", "Novak", "jn4544@fel.cz", "123456789", ageOver18, "Jnovak125984", "studentKeyPass");
+        Person teacher  = personService.createANewPerson("Petr", "Fifka", "velebil@fel.cz", "123688788", ageOver18, "Jnovak125984", "teacherKeyPass");
         Assertions.assertEquals(3, personService.getAllPeople().size());
         Assertions.assertEquals(1, personService.getAllAdmins().size());
         Assertions.assertEquals(1, personService.getAllStudents().size());
         Assertions.assertEquals(1, personService.getAllTeachers().size());
-        Assertions.assertEquals(Admin.class, person1.getClass());
-        Assertions.assertEquals(Student.class, person2.getClass());
-        Assertions.assertEquals(Teacher.class, person3.getClass());
-        Assertions.assertEquals(Role.ADMIN, personService.getPersonRoleById(person1.getId()));
-        Assertions.assertEquals(Role.STUDENT, personService.getPersonRoleById(person2.getId()));
-        Assertions.assertEquals(Role.TEACHER, personService.getPersonRoleById(person3.getId()));
+        Assertions.assertEquals(Admin.class, admin.getClass());
+        Assertions.assertEquals(Student.class, persostudent.getClass());
+        Assertions.assertEquals(Teacher.class, teacher .getClass());
+        Assertions.assertEquals(Role.ADMIN, personService.getPersonRoleById(admin.getId()));
+        Assertions.assertEquals(Role.STUDENT, personService.getPersonRoleById(persostudent.getId()));
+        Assertions.assertEquals(Role.TEACHER, personService.getPersonRoleById(teacher .getId()));
 
     }
 
