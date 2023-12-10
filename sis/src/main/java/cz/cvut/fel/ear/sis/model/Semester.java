@@ -4,6 +4,7 @@ import cz.cvut.fel.ear.sis.utils.enums.SemesterType;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity
 public class Semester {
@@ -62,5 +63,7 @@ public class Semester {
     public SemesterType getSemesterType() {
         return semesterType;
     }
+
+
 
 }
