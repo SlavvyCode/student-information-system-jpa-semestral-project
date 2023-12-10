@@ -1,4 +1,4 @@
-package cz.cvut.fel.ear.sis;
+package cz.cvut.fel.ear.sis.services;
 
 import cz.cvut.fel.ear.sis.model.*;
 import cz.cvut.fel.ear.sis.repository.*;

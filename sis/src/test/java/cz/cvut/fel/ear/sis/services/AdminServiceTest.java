@@ -1,4 +1,4 @@
-package cz.cvut.fel.ear.sis;
+package cz.cvut.fel.ear.sis.services;
 
 import cz.cvut.fel.ear.sis.model.Classroom;
 import cz.cvut.fel.ear.sis.model.Person;

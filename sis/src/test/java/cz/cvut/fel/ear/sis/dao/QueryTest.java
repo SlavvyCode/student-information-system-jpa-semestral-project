@@ -1,4 +1,4 @@
-package cz.cvut.fel.ear.sis;
+package cz.cvut.fel.ear.sis.dao;
 
 import cz.cvut.fel.ear.sis.model.*;
 import cz.cvut.fel.ear.sis.repository.EnrollmentRepository;
