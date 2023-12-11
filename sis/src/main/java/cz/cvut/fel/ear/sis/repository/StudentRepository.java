@@ -18,4 +18,5 @@ public interface StudentRepository extends JpaRepository<Student, Long> {
     public List<Student> findAllByParallel(long id, Course course);
 
 
+    List<Student> findAllByParallelId(Long id);
 }

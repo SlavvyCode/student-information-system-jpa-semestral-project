@@ -1,13 +1,14 @@
 package cz.cvut.fel.ear.sis.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "PERSON_ROLE", discriminatorType = DiscriminatorType.STRING)
-public abstract class Person {
+public abstract class Person implements UserDetails {
     @Id
     @GeneratedValue
     private Long id;

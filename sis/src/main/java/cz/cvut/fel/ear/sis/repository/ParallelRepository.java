@@ -30,4 +30,6 @@ public interface ParallelRepository extends JpaRepository<Parallel, Long> {
 
 
     List<Parallel> findAllBySemester_StartDateAndCourse_Teacher_Id(LocalDate startDate, long teacherId);
+
+    List<Parallel> findAllByCourse_Id(Long id);
 }

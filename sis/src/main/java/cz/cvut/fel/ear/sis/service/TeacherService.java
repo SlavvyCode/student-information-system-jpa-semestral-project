@@ -322,4 +322,14 @@ public class TeacherService {
     public Optional<Parallel> getParallelById(Long id){
         return parallelRepository.findById(id);
     }
+
+    @Transactional(readOnly = true)
+    public List<Parallel> getParallelByCourseId(Long id){
+        return parallelRepository.findAllByCourse_Id(id);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Student> getAllStudentsByParallelId(Long id){
+        return studentRepository.findAllByParallelId(id);
+    }
 }
