@@ -2,11 +2,9 @@ package cz.cvut.fel.ear.sis.rest;
 
 import cz.cvut.fel.ear.sis.model.Course;
 import cz.cvut.fel.ear.sis.model.Parallel;
-import cz.cvut.fel.ear.sis.model.Person;
 import cz.cvut.fel.ear.sis.model.Student;
-import cz.cvut.fel.ear.sis.repository.TeacherRepository;
 import cz.cvut.fel.ear.sis.rest.handler.utils.RestUtils;
-import cz.cvut.fel.ear.sis.security.UserDetails;
+import cz.cvut.fel.ear.sis.security.model.UserDetails;
 import cz.cvut.fel.ear.sis.service.TeacherService;
 import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
 import cz.cvut.fel.ear.sis.utils.enums.Grade;
@@ -26,7 +24,6 @@ import org.springframework.http.HttpStatus;
 import java.util.IllformedLocaleException;
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

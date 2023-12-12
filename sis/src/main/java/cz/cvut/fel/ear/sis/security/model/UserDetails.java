@@ -1,4 +1,4 @@
-package cz.cvut.fel.ear.sis.security;
+package cz.cvut.fel.ear.sis.security.model;
 
 import cz.cvut.fel.ear.sis.model.Person;
 import org.springframework.security.core.GrantedAuthority;
