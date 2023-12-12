@@ -1,5 +1,6 @@
 package cz.cvut.fel.ear.sis.model;
 
+import cz.cvut.fel.ear.sis.utils.enums.Role;
 import jakarta.persistence.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -8,7 +9,7 @@ import java.time.LocalDate;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "PERSON_ROLE", discriminatorType = DiscriminatorType.STRING)
-public abstract class Person implements UserDetails {
+public abstract class Person{
     @Id
     @GeneratedValue
     private Long id;
@@ -26,6 +27,21 @@ public abstract class Person implements UserDetails {
     private String userName;
     @Column(nullable = false)
     private String password;
+
+
+
+    //todo make sure it's ok
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ROLE", nullable = false, insertable = false)
+    private Role role;
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 
     public Person() {
 
