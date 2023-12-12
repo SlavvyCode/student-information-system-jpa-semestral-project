@@ -1,19 +1,35 @@
 package cz.cvut.fel.ear.sis.rest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import cz.cvut.fel.ear.sis.dao.environment.Environment;
 import cz.cvut.fel.ear.sis.dao.environment.TestDataGenerator;
 import cz.cvut.fel.ear.sis.model.Course;
+import cz.cvut.fel.ear.sis.model.Person;
+import cz.cvut.fel.ear.sis.service.PersonService;
 import cz.cvut.fel.ear.sis.service.TeacherService;
 import cz.cvut.fel.ear.sis.utils.enums.Grade;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.SecurityConfig;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import cz.cvut.fel.ear.sis.model.Parallel;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -28,20 +44,56 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest
+@ContextConfiguration(
+        classes = {TeacherControllerTest.TestConfig.class,
+                SecurityConfig.class})
+
 public class TeacherControllerTest extends BaseControllerTestRunner{
     @Mock
     private TeacherService teacherServiceMock;
 
-    @InjectMocks
-    private TeacherController sut;
+
+
+    private MockMvc mockMvc;
+
+    @Autowired
+    private static TeacherService teacherService;
+
+    private Person teacher;
 
     @BeforeEach
     public void setUp() {
-        super.setUp(sut);
+        this.objectMapper = Environment.getObjectMapper();
+        this.teacher = TestDataGenerator.generateTeacher();
     }
 
+    @AfterEach
+    public void tearDown() {
+        Environment.clearSecurityContext();
+        Mockito.reset(teacherService);
+    }
+
+
+
+    @Configuration
+    @TestConfiguration
+    public static class TestConfig {
+
+        @MockBean
+        private PersonService personService;
+
+        @Bean
+        public TeacherController teacherController() {
+            return new TeacherController(teacherService);
+        }
+    }
+
+
+
+
     @Test
+    @WithMockUser(roles = {"TEACHER"})
     public void listMyCoursesReturnsAllCoursesForTeacher() throws Exception {
         // Mock data
         final List<Course> courses = IntStream.range(0, 5)
@@ -51,8 +103,8 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
         // Mock service response
         when(teacherServiceMock.getCourseByTeacherId(any())).thenReturn(courses);
 
-        // Perform the request
-        final MvcResult mvcResult = mockMvc.perform(get("/rest/teacher/course"))
+        // Perform the request with authentication
+        final MvcResult mvcResult = mockMvc.perform(get("/teacher/course"))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -60,8 +112,8 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
         final List<Course> result = readValue(mvcResult, new TypeReference<List<Course>>() {});
         assertNotNull(result);
         assertEquals(courses.size(), result.size());
-        // Add more assertions as needed for the Course objects
     }
+
 
     @Test
     public void listParallelsForCourseReturnsParallelsForGivenCourseId() throws Exception {

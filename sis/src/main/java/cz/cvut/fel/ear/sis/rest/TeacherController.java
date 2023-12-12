@@ -75,7 +75,7 @@ public class TeacherController {
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @GetMapping(value = "/course", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Course>> listMyCourses(Authentication auth) {
-        Long teacherId = ((UserDetails) auth.getPrincipal()).getId(); // Replace YourUserDetailsClass with the actual class implementing UserDetails
+        Long teacherId = ((UserDetails) auth.getPrincipal()).getId();
         List<Course> courses = teacherService.getCourseByTeacherId(teacherId);
         return new ResponseEntity<>(courses, HttpStatus.OK);
 
