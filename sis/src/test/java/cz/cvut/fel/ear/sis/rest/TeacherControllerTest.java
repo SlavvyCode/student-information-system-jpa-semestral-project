@@ -183,6 +183,49 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
     @Test
     @WithMockUser(roles = {"TEACHER"})
     public void listMyCoursesReturnsAllCoursesForTeacher() throws Exception {
+
+            Person mockTeacher = new Teacher();
+            mockTeacher.setId(1L); // Set a sample ID
+            mockTeacher.setFirstName("Jirka");
+            mockTeacher.setLastName("Velebil");
+
+            // Define the behavior of the personService mock to return the mockTeacher when createANewPerson is called
+            when(personService.createANewPerson(
+                    anyString(), anyString(), anyString(), anyString(), any(), anyString(), anyString()
+            )).thenReturn(mockTeacher);
+
+            // Create a mock course object
+            Course mockCourse = new Course();
+            mockCourse.setId(1L); // Set a sample ID
+            mockCourse.setName("Math");
+            mockCourse.setCode("MATH123");
+
+
+            when(teacherServiceMock.createCourse(
+                    eq(mockTeacher.getId()), anyString(), anyString(), anyInt(), any(Locale.class)
+            )).thenReturn(mockCourse);
+
+
+        // Define the behavior of the teacherServiceMock to return a list containing mockParallel when getParallelByCourseId is called
+        when(teacherServiceMock.getCourseByTeacherId(eq(mockTeacher.getId()))).thenReturn(Collections.singletonList(mockCourse));
+
+
+        // Act
+        // Perform the request
+        final MvcResult mvcResult = mockMvc.perform(get("/teacher/course"))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        verify(teacherServiceMock).getCourseByTeacherId(eq(mockTeacher.getId()));
+
+
+        // Assert
+        // Verify the response
+        final List<Course> result = readValue(mvcResult, new TypeReference<List<Course>>() {});
+        assertNotNull(result);
+        assertEquals(1, result.size(), "The number of Courses returned does not match the expected size.");
+
+
     }
 
 
@@ -193,6 +236,34 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
     @Test
     @WithMockUser(roles = {"TEACHER"})
     public void listStudentsForParallelReturnsStudentsForGivenParallelId() throws Exception {
+        Parallel mockParallel = new Parallel();
+        mockParallel.setId(1L);
+
+        List<Person> mockStudents = new ArrayList<>();
+        Person mockStudent1 = new Student();
+        mockStudent1.setId(1L);
+        mockStudent1.setFirstName("Jan");
+        mockStudent1.setLastName("Novak");
+        mockStudents.add(mockStudent1);
+
+        // Define the behavior of the teacherServiceMock to return the mockStudents when getStudentsByParallelId is called
+        when(teacherServiceMock.getAllStudentsByParallelId(eq(mockParallel.getId())))
+                .thenAnswer(invocation -> Collections.singletonList(mockStudent1));
+
+        // Perform the request
+        final MvcResult mvcResult = mockMvc.perform(get("/teacher/students/{parallelId}", mockParallel.getId()))
+                .andExpect(status().isOk())
+                .andReturn();
+
+
+        // Verify that the getStudentsByParallelId method was called with the expected parallelId
+        verify(teacherServiceMock).getAllStudentsByParallelId(eq(mockParallel.getId()));
+
+        // Verify the response
+        final List<Student> result = readValue(mvcResult, new TypeReference<List<Student>>() {});
+        assertNotNull(result, "The list of students should not be null.");
+        assertEquals(mockStudents.size(), result.size(), "The number of Students returned does not match the expected size.");
+
     }
 
     @Test
