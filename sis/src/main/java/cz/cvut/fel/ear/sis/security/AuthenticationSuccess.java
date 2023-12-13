@@ -2,6 +2,8 @@ package cz.cvut.fel.ear.sis.security;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.cvut.fel.ear.sis.security.model.LoginStatus;
+import cz.cvut.fel.ear.sis.security.model.UserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
