@@ -97,6 +97,7 @@ public class TeacherController {
 
 
 
+    //todo check if media type is correct
 
 
 
@@ -111,7 +112,7 @@ public class TeacherController {
 //    POST /teacher/parallel/{courseId} Create a new parallel for a given course
 
     @PreAuthorize("hasRole('ROLE_TEACHER')")
-    @PostMapping(value = "/grade/{parallelId}/{studentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/grade/{parallelId}/{studentId}", consumes = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void gradeStudent(@PathVariable Long parallelId, @PathVariable Long studentId, @RequestBody String gradeString)
             throws SemesterException, StudentException, EnrollmentException, CourseException {
@@ -121,6 +122,8 @@ public class TeacherController {
         Grade grade;
         try {
             grade = Grade.valueOf(gradeString);
+
+
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid grade format", e);
         }

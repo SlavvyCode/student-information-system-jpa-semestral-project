@@ -44,8 +44,7 @@ import static cz.cvut.fel.ear.sis.utils.Constants.AGE_OVER_18;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -132,10 +131,6 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
         mockTeacher.setEmail("jv@fel.cz");
         // ... set other necessary fields
 
-        // Define the behavior of the personService mock to return the mockTeacher when createANewPerson is called
-        when(personService.createANewPerson(
-                anyString(), anyString(), anyString(), anyString(), any(), anyString(), anyString()
-        )).thenReturn(mockTeacher);
 
         // Create a mock course object
         Course mockCourse = new Course();
@@ -188,11 +183,6 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
             mockTeacher.setId(1L); // Set a sample ID
             mockTeacher.setFirstName("Jirka");
             mockTeacher.setLastName("Velebil");
-
-            // Define the behavior of the personService mock to return the mockTeacher when createANewPerson is called
-            when(personService.createANewPerson(
-                    anyString(), anyString(), anyString(), anyString(), any(), anyString(), anyString()
-            )).thenReturn(mockTeacher);
 
             // Create a mock course object
             Course mockCourse = new Course();
@@ -268,8 +258,75 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
 
     @Test
     @WithMockUser(roles = {"TEACHER"})
-    public void gradeStudentReturnsNoContentForSuccessfulGrade() throws Exception {
-//        ..
+    public void gradeStudentReturnsNoContentForSuccessfulGradeButAddsGradeToStudent() throws Exception {
+
+
+        Person mockTeacher = new Teacher();
+        mockTeacher.setId(1L);
+        mockTeacher.setFirstName("Jirka");
+        mockTeacher.setLastName("Velebil");
+
+
+
+        // Create a mock course object
+        Course mockCourse = new Course();
+        mockCourse.setId(1L);
+        mockCourse.setName("Math");
+        mockCourse.setTeacher((Teacher) mockTeacher);
+
+        // Create a mock parallel object
+        Parallel mockParallel = new Parallel();
+        mockParallel.setId(1L);
+        mockParallel.setCourse(mockCourse);
+
+        // Create a mock student object
+        Person mockStudent = new Student();
+        mockStudent.setId(1L);
+
+        Enrollment mockEnrollment = new Enrollment();
+        mockEnrollment.setId(1L);
+        mockEnrollment.setParallel(mockParallel);
+        mockEnrollment.setStudent((Student) mockStudent);
+
+
+        ((Student) mockStudent).addEnrollment(mockEnrollment);
+
+        mockParallel.addEnrollment(mockEnrollment);
+        mockParallel.addStudent((Student) mockStudent);
+
+        //etc etc continue defining relationships if necessary
+
+
+
+        // Define the behavior of the teacherServiceMock to return the mockEnrollment when gradeStudent is called
+        doAnswer(invocation -> {
+            mockEnrollment.setGrade(Grade.E);
+            return mockEnrollment;
+        }).when(teacherServiceMock).gradeStudent(eq(mockParallel.getId()), eq(mockStudent.getId()), eq(Grade.E));
+
+
+
+
+        // Perform the request with the grade as a JSON string
+        mockMvc.perform(post("/teacher/grade/{parallelId}/{studentId}", mockParallel.getId(), mockStudent.getId())
+                        .contentType(MediaType.TEXT_PLAIN)
+                        .content("E")) // Grade passed as a JSON string with quotes
+                .andExpect(status().isNoContent())
+                .andReturn();
+
+
+        // Verify that the gradeStudent method was called with the expected parallelId, studentId and grade
+        verify(teacherServiceMock).gradeStudent(eq(mockParallel.getId()), eq(mockStudent.getId()), eq(Grade.E));
+
+        // Verify that the grade was added to the student
+        assertEquals(Grade.E, mockEnrollment.getGrade(), "The grade was not added to the student.");
+
+
+
+
+
+
+
     }
 
     @Test
