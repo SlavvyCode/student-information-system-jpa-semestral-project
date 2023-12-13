@@ -1,5 +1,6 @@
 package cz.cvut.fel.ear.sis.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import cz.cvut.fel.ear.sis.repository.PersonRepository;
 import cz.cvut.fel.ear.sis.security.AuthenticationFailure;
 import cz.cvut.fel.ear.sis.security.AuthenticationSuccess;
 import cz.cvut.fel.ear.sis.service.security.UserDetailsService;
@@ -15,6 +16,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
@@ -32,24 +35,34 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
 
 
-    //todo toto mi poradil robot ale v eshopu to neni ale zmeni to chybu v testovani takze nevim jestli je to dobre nebo spatne...
-//
-//    @Autowired
-//    private cz.cvut.fel.ear.sis.repository.PersonRepository personRepository;
-//
-//
+
+    private final PersonRepository personRepository;
+
+
 //    @Autowired
 //    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-////        auth.userDetailsService(userDetailsServiceBean()).passwosrdEncoder(passwordEncoder());
-//    }
-//
-//    @Bean
-//    public UserDetailsService userDetailsServiceBean() {
-//        return new cz.cvut.fel.ear.sis.service.security.UserDetailsService(personRepository);
+//        auth.userDetailsService(userDetailsServiceBean()).passwordEncoder(passwordEncoder());
 //    }
 
-    public SecurityConfig(ObjectMapper objectMapper) {
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsServiceBean()).passwordEncoder(passwordEncoder());
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+
+    @Bean
+    public UserDetailsService userDetailsServiceBean() {
+        return new cz.cvut.fel.ear.sis.service.security.UserDetailsService(personRepository);
+    }
+
+
+    public SecurityConfig(ObjectMapper objectMapper, PersonRepository personRepository) {
         this.objectMapper = objectMapper;
+        this.personRepository = personRepository;
     }
 
     @Bean
