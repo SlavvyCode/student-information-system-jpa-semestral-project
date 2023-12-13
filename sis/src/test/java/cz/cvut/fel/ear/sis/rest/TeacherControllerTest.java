@@ -8,6 +8,7 @@ import cz.cvut.fel.ear.sis.model.Person;
 import cz.cvut.fel.ear.sis.service.PersonService;
 import cz.cvut.fel.ear.sis.service.TeacherService;
 import cz.cvut.fel.ear.sis.utils.enums.Grade;
+import cz.cvut.fel.ear.sis.utils.enums.Role;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -92,10 +93,15 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
 
 
 
-    @Test
     @WithMockUser(roles = {"TEACHER"})
+    @Test
     public void listMyCoursesReturnsAllCoursesForTeacher() throws Exception {
         // Mock data
+
+        teacher.setRole(Role.TEACHER);
+        Environment.setCurrentUser(teacher);
+
+
         final List<Course> courses = IntStream.range(0, 5)
                 .mapToObj(i -> TestDataGenerator.generateCourse())
                 .collect(Collectors.toList());

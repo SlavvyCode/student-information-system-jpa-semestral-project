@@ -2,7 +2,6 @@ package cz.cvut.fel.ear.sis.model;
 
 import cz.cvut.fel.ear.sis.utils.enums.Role;
 import jakarta.persistence.*;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 
