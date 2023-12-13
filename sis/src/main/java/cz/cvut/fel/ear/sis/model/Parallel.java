@@ -132,4 +132,11 @@ public class Parallel {
     public void removeStudent(Student student){
         students.remove(student);
     }
+
+    public void addEnrollment(Enrollment enrollment){
+        enrollments.add(enrollment);
+    }
+    public void removeEnrollment(Enrollment enrollment){
+        enrollments.remove(enrollment);
+    }
 }

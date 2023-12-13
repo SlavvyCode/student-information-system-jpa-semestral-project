@@ -112,4 +112,7 @@ public abstract class Person{
         return password;
     }
 
+    public void setId(long l) {
+        id = l;
+    }
 }

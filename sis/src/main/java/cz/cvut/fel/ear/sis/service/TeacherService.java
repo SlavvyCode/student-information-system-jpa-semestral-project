@@ -43,8 +43,8 @@ public class TeacherService {
     //vytvoreni kurzu a paralelek
 
     @Transactional
-    public Course createCourse(long teacherId, String courseName, String code, int ECTS,
-                               Locale language) throws CourseException, PersonException {
+    public Course createCourse(long teacherId, String courseName, String code, int ECTS,Locale language)
+            throws CourseException, PersonException {
 
         Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(()-> new PersonException("Teacher not found"));
         areCourseDetailsValid(teacher, courseName, code, ECTS, language);

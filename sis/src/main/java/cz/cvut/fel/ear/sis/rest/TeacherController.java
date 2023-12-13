@@ -72,6 +72,7 @@ public class TeacherController {
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @GetMapping(value = "/course", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Course>> listMyCourses(Authentication auth) {
+        //this line breaks it all
         Long teacherId = ((UserDetails) auth.getPrincipal()).getId();
         List<Course> courses = teacherService.getCourseByTeacherId(teacherId);
         return new ResponseEntity<>(courses, HttpStatus.OK);
@@ -96,6 +97,7 @@ public class TeacherController {
 
 
 
+    //todo check if media type is correct
 
 
 
@@ -110,7 +112,7 @@ public class TeacherController {
 //    POST /teacher/parallel/{courseId} Create a new parallel for a given course
 
     @PreAuthorize("hasRole('ROLE_TEACHER')")
-    @PostMapping(value = "/grade/{parallelId}/{studentId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/grade/{parallelId}/{studentId}", consumes = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void gradeStudent(@PathVariable Long parallelId, @PathVariable Long studentId, @RequestBody String gradeString)
             throws SemesterException, StudentException, EnrollmentException, CourseException {
@@ -120,6 +122,8 @@ public class TeacherController {
         Grade grade;
         try {
             grade = Grade.valueOf(gradeString);
+
+
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid grade format", e);
         }

@@ -101,4 +101,7 @@ public class Course {
         return parallelsList;
     }
 
+    public void setId(long l) {
+        id=l;
+    }
 }

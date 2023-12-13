@@ -31,6 +31,7 @@ public class Enrollment {
         this.parallel = parallel;
     }
 
+
     public void setGrade(Grade grade) {
         if(grade==Grade.F){
             setStatus(Status.FAILED);
@@ -62,6 +63,26 @@ public class Enrollment {
 
     public Parallel getParallel() {
         return parallel;
+    }
+
+
+
+
+
+
+
+
+//for mocks only
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setStudent(Student student) {
+        this.student = student;
+    }
+
+    public void setParallel(Parallel parallel) {
+        this.parallel = parallel;
     }
 
 }
