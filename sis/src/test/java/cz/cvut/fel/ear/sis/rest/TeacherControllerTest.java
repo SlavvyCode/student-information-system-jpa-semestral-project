@@ -33,6 +33,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
@@ -42,7 +43,7 @@ import java.util.stream.IntStream;
 import static cz.cvut.fel.ear.sis.utils.Constants.AGE_OVER_18;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -59,7 +60,9 @@ import cz.cvut.fel.ear.sis.config.SecurityConfig;
                 SecurityConfig.class})
 
 public class TeacherControllerTest extends BaseControllerTestRunner{
-    @Mock
+
+    //gets the object mapper from the TestConfig
+    @Autowired
     private TeacherService teacherServiceMock;
 
 
@@ -80,12 +83,12 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
     @MockBean
     private ClassroomRepository classroomRepository;
 
-    private Person teacher;
+//    private Person teacher;
 
     @BeforeEach
     public void setUp() {
         this.objectMapper = Environment.getObjectMapper();
-        this.teacher = TestDataGenerator.generateTeacher();
+//        this.teacher = TestDataGenerator.generateTeacher();
     }
 
     @AfterEach
@@ -116,89 +119,70 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
 
 
 
-    //TEST2
+    //TEST1
     @Test
     @WithMockUser(roles = {"TEACHER"})
     public void listParallelsForCourseReturnsParallelsForGivenCourseId() throws Exception {
-        // Mock data
-
-        //create parallels and course
-        //create teacher
-        Person teacher = personService.createANewPerson("Jirka", "Velebil", "jv@fel.cz", "1254456789", AGE_OVER_18, "Jnovak125984", "teacherKeyPass");
-
-        String courseName = "Math";
-        String courseCode = "MATH123";
-        int ECTS = 5;
-        Locale language = Locale.ENGLISH;
-        Course course = teacherServiceMock.createCourse(teacher.getId(), courseName, courseCode, ECTS, language);
 
 
-        SemesterType semesterType = SemesterType.SPRING;
-        int year = 2024;
+        Person mockTeacher = new Teacher();
+        mockTeacher.setId(1L); // Set a sample ID
+        mockTeacher.setFirstName("Jirka");
+        mockTeacher.setLastName("Velebil");
+        mockTeacher.setEmail("jv@fel.cz");
+        // ... set other necessary fields
 
-        Semester semester = new Semester(year, semesterType);
+        // Define the behavior of the personService mock to return the mockTeacher when createANewPerson is called
+        when(personService.createANewPerson(
+                anyString(), anyString(), anyString(), anyString(), any(), anyString(), anyString()
+        )).thenReturn(mockTeacher);
 
-//        Semester semester = new Semester(year, semesterType);
-        semesterRepository.save(semester);
-
-        int classroomCapacity = 30;
-        Classroom classroom = new Classroom("T9:123", classroomCapacity);
-
-        classroomRepository.save(classroom);
-
-        DayOfWeek dayOfWeek = DayOfWeek.MON;
-        TimeSlot timeSlot = TimeSlot.SLOT1;
-        int parallelCapacity = 30;
-
-        //create parallel
-        Parallel parallel = teacherServiceMock.createParallel
-                (teacher.getId(), parallelCapacity, timeSlot,dayOfWeek, semester.getId(), classroom.getId(), course.getId());
+        // Create a mock course object
+        Course mockCourse = new Course();
+        mockCourse.setId(1L); // Set a sample ID
+        mockCourse.setName("Math");
+        mockCourse.setCode("MATH123");
 
 
-        List<Parallel> parallels = Collections.singletonList(parallel);
 
-        // Mock service response
-        when(teacherServiceMock.getParallelByCourseId(course.getId())).thenReturn(parallels);
+//        public Course createCourse(long teacherId, String courseName, String code, int ECTS,Locale language)
 
+        // Define the behavior of the teacherServiceMock to return the mockCourse when createCourse is called
+        when(teacherServiceMock.createCourse(
+                eq(mockTeacher.getId()), anyString(), anyString(), anyInt(), any(Locale.class)
+        )).thenReturn(mockCourse);
+
+
+        // Create a mock parallel object
+        Parallel mockParallel = new Parallel();
+        mockParallel.setId(1L); // Set a sample ID
+
+
+        // Define the behavior of the teacherServiceMock to return a list containing mockParallel when getParallelByCourseId is called
+        when(teacherServiceMock.getParallelByCourseId(eq(mockCourse.getId()))).thenReturn(Collections.singletonList(mockParallel));
+
+        // Act
         // Perform the request
-        final MvcResult mvcResult = mockMvc.perform(get("/teacher/parallel/{courseId}", course.getId()))
+        final MvcResult mvcResult = mockMvc.perform(get("/teacher/parallel/{courseId}", mockCourse.getId()))
                 .andExpect(status().isOk())
                 .andReturn();
 
+
+
+        verify(teacherServiceMock).getParallelByCourseId(eq(mockCourse.getId()));
+
+        // Assert
         // Verify the response
         final List<Parallel> result = readValue(mvcResult, new TypeReference<List<Parallel>>() {});
-
         assertNotNull(result);
-
         assertEquals(1, result.size(), "The number of Parallels returned does not match the expected size.");
     }
 
 
-    @WithMockUser(roles = {"TEACHER"})
+    //TEST2
     @Test
+    @WithMockUser(roles = {"TEACHER"})
     public void listMyCoursesReturnsAllCoursesForTeacher() throws Exception {
-//        // Mock data
-//
-//        teacher.setRole(Role.TEACHER);
-//        Environment.setCurrentUser(teacher);
-//
-//
-//        final List<Course> courses = IntStream.range(0, 5)
-//                .mapToObj(i -> TestDataGenerator.generateCourse())
-//                .collect(Collectors.toList());
-//
-//        // Mock service response
-//        when(teacherServiceMock.getCourseByTeacherId(any())).thenReturn(courses);
-//
-//        // Perform the request with authentication
-//        final MvcResult mvcResult = mockMvc.perform(get("/teacher/course"))
-//                .andExpect(status().isOk())
-//                .andReturn();
-//
-//        // Verify the response
-//        final List<Course> result = readValue(mvcResult, new TypeReference<List<Course>>() {});
-//        assertNotNull(result);
-//        assertEquals(courses.size(), result.size());
     }
 
 
