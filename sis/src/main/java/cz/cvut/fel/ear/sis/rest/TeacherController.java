@@ -133,6 +133,22 @@ public class TeacherController {
     }
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @PostMapping(value = "/course", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Course> createCourse(@RequestParam Long courseId, @RequestParam String courseName,
@@ -164,14 +180,17 @@ public class TeacherController {
 
 
     @PreAuthorize("hasRole('ROLE_TEACHER')")
-    @PostMapping(value = "/parallel/{courseId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/parallel/{courseId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Parallel> createParallel(@PathVariable Long courseId,
                                                    @RequestParam int capacity, @RequestParam String timeSlot,
                                                    @RequestParam String dayOfWeek, @RequestParam long semesterId,
                                                    @RequestParam long classroomId)
             throws SemesterException, ParallelException, ClassroomException, CourseException, PersonException {
+        LOG.info("Received request with courseId: {}, capacity: {}, timeSlot: {}, dayOfWeek: {}, semesterId: {}, classroomId: {}",
+                courseId, capacity, timeSlot, dayOfWeek, semesterId, classroomId);
 
-        Course course = teacherService.getCourseById(courseId).orElseThrow();
+
+        Course course = teacherService.getCourseById(courseId).orElseThrow(() -> new CourseException("Course not found"));
 
         Parallel parallel = teacherService.createParallel(courseId, capacity, TimeSlot.valueOf(timeSlot),
                 DayOfWeek.valueOf(dayOfWeek), semesterId, classroomId, courseId);

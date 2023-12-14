@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import cz.cvut.fel.ear.sis.dao.environment.Environment;
 import cz.cvut.fel.ear.sis.dao.environment.TestDataGenerator;
 import cz.cvut.fel.ear.sis.model.*;
-import cz.cvut.fel.ear.sis.repository.ClassroomRepository;
-import cz.cvut.fel.ear.sis.repository.PersonRepository;
-import cz.cvut.fel.ear.sis.repository.SemesterRepository;
-import cz.cvut.fel.ear.sis.repository.TeacherRepository;
+import cz.cvut.fel.ear.sis.repository.*;
 import cz.cvut.fel.ear.sis.service.PersonService;
 import cz.cvut.fel.ear.sis.service.TeacherService;
 import cz.cvut.fel.ear.sis.utils.enums.*;
@@ -33,10 +30,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -75,6 +69,9 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
     @MockBean
     private TeacherRepository teacherRepository;
 
+    @MockBean
+
+    private CourseRepository courseRepository;
 
     @MockBean
     private SemesterRepository semesterRepository;
@@ -329,10 +326,50 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
 
     }
 
+
     @Test
     @WithMockUser(roles = {"TEACHER"})
-    public void createCourseReturnsCreatedForValidCourse() throws Exception {
-//
+    public void createParallelReturnsCreatedForValidParallel() throws Exception {
+        // Mock data
+        Person mockTeacher = new Teacher();
+        mockTeacher.setId(1L);
+
+        Course mockCourse = new Course();
+        mockCourse.setId(1L);
+        mockCourse.setTeacher((Teacher) mockTeacher);
+
+        courseRepository.save(mockCourse);
+
+        when(teacherServiceMock.getCourseById(anyLong())).thenReturn(Optional.of(mockCourse));
+
+        Parallel mockParallel = TestDataGenerator.generateParallel();
+        mockParallel.setId(1L);
+        mockParallel.setCourse(mockCourse);
+
+        // Mock service response
+        when(teacherServiceMock.createParallel(eq(mockCourse.getId()), anyInt(), any(TimeSlot.class), any(DayOfWeek.class),
+                anyLong(), anyLong(), eq(mockCourse.getId()))).thenReturn(mockParallel);
+
+
+//        createParallel(@PathVariable Long courseId,
+//                                                   @RequestParam int capacity, @RequestParam String timeSlot,
+//                                                   @RequestParam String dayOfWeek, @RequestParam long semesterId,
+//                                                   @RequestParam long classroomId)
+
+        mockMvc.perform(post("/teacher/parallel/{courseId}", mockCourse.getId())
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED)
+                        .param("capacity", "30")
+                        .param("timeSlot", "SLOT1")
+                        .param("dayOfWeek", "MON")
+                        .param("semesterId", "123")
+                        .param("classroomId", "456"))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+
+        // Verify that the createParallel method was called with the expected parameters
+        verify(teacherServiceMock).createParallel(eq(mockCourse.getId()), eq(30), eq(TimeSlot.SLOT1),
+                eq(DayOfWeek.MON), eq(123L), eq(456L), eq(mockCourse.getId()));
     }
 
 }
