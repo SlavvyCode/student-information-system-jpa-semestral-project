@@ -8,7 +8,7 @@ import jakarta.persistence.IdClass;
 import java.io.Serializable;
 import java.util.Objects;
 
-
+@Embeddable
 public class EnrollmentCompositeId implements Serializable {
 
     private Long studentId;

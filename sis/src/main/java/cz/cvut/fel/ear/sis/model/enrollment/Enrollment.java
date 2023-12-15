@@ -7,7 +7,7 @@ import cz.cvut.fel.ear.sis.utils.enums.Status;
 import jakarta.persistence.*;
 
 @Entity
-@IdClass(EnrollmentCompositeId.class)
+//@IdClass(EnrollmentCompositeId.class)
 public class Enrollment {
 //
 //    @Id
@@ -16,10 +16,15 @@ public class Enrollment {
 
     //COMPOSITE SLOZENE ID
 
-    @Id
+
+    @EmbeddedId
+    private EnrollmentCompositeId id;
+
+
+//    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     private Student student;
-    @Id
+//    @Id
     @ManyToOne(fetch = FetchType.LAZY)
     private Parallel parallel;
 
