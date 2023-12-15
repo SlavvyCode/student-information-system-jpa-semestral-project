@@ -1,6 +1,6 @@
 package cz.cvut.fel.ear.sis.repository;
 
-import cz.cvut.fel.ear.sis.model.Enrollment;
+import cz.cvut.fel.ear.sis.model.enrollment.Enrollment;
 import cz.cvut.fel.ear.sis.model.Semester;
 import cz.cvut.fel.ear.sis.model.Student;
 import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;

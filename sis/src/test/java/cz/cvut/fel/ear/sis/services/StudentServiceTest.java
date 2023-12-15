@@ -1,6 +1,7 @@
 package cz.cvut.fel.ear.sis.services;
 
 import cz.cvut.fel.ear.sis.model.*;
+import cz.cvut.fel.ear.sis.model.enrollment.Enrollment;
 import cz.cvut.fel.ear.sis.repository.*;
 import cz.cvut.fel.ear.sis.service.PersonService;
 import cz.cvut.fel.ear.sis.service.StudentService;
@@ -21,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.Locale;
 
-import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @Transactional
 @AutoConfigureTestEntityManager
