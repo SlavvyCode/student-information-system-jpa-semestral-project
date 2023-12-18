@@ -1,6 +1,5 @@
 package cz.cvut.fel.ear.sis.model;
 
-import cz.cvut.fel.ear.sis.model.enrollment.Enrollment;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

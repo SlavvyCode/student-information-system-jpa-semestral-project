@@ -1,7 +1,7 @@
 package cz.cvut.fel.ear.sis.service;
 
 import cz.cvut.fel.ear.sis.model.*;
-import cz.cvut.fel.ear.sis.model.enrollment.Enrollment;
+import cz.cvut.fel.ear.sis.model.Enrollment;
 import cz.cvut.fel.ear.sis.repository.*;
 import cz.cvut.fel.ear.sis.utils.enums.*;
 import cz.cvut.fel.ear.sis.utils.exception.*;

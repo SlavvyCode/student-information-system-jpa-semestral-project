@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import cz.cvut.fel.ear.sis.dao.environment.Environment;
 import cz.cvut.fel.ear.sis.dao.environment.TestDataGenerator;
 import cz.cvut.fel.ear.sis.model.*;
-import cz.cvut.fel.ear.sis.model.enrollment.Enrollment;
+import cz.cvut.fel.ear.sis.model.Enrollment;
 import cz.cvut.fel.ear.sis.repository.*;
 import cz.cvut.fel.ear.sis.service.PersonService;
 import cz.cvut.fel.ear.sis.service.TeacherService;

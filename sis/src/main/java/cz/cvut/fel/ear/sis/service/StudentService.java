@@ -1,6 +1,6 @@
 package cz.cvut.fel.ear.sis.service;
 
-import cz.cvut.fel.ear.sis.model.enrollment.Enrollment;
+import cz.cvut.fel.ear.sis.model.Enrollment;
 import cz.cvut.fel.ear.sis.model.Parallel;
 import cz.cvut.fel.ear.sis.model.Student;
 import cz.cvut.fel.ear.sis.repository.*;

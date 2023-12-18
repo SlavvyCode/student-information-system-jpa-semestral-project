@@ -1,6 +1,6 @@
 package cz.cvut.fel.ear.sis.repository;
 
-import cz.cvut.fel.ear.sis.model.enrollment.Enrollment;
+import cz.cvut.fel.ear.sis.model.Enrollment;
 import cz.cvut.fel.ear.sis.model.Semester;
 import cz.cvut.fel.ear.sis.model.Student;
 import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
@@ -41,11 +41,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
     //find all enrollments for a student in a semester, order them by parallel day of week and time slot, first by day of week, then by time slot
     //this is used to display the student's schedule
 
-    //ordered query?
     public List<Enrollment> findAllByStudent_IdAndParallel_Semester_IdOrderByParallel_DayOfWeekAscParallel_TimeSlotAsc(long studentId, long semesterId);
-
-
-
-
 
 }
