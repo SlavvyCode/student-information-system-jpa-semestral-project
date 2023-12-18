@@ -20,7 +20,7 @@ public class UserDetails implements org.springframework.security.core.userdetail
         Objects.requireNonNull(user);
         this.person = user;
         this.authorities = new HashSet<>();
-        addUserRole();
+//        addUserRole();
     }
 
     public UserDetails(Person person, Collection<GrantedAuthority> authorities) {
@@ -28,13 +28,13 @@ public class UserDetails implements org.springframework.security.core.userdetail
         Objects.requireNonNull(authorities);
         this.person = person;
         this.authorities = new HashSet<>();
-        addUserRole();
+//        addUserRole();
         this.authorities.addAll(authorities);
     }
 
-    private void addUserRole() {
-        authorities.add(new SimpleGrantedAuthority(person.getRole().toString()));
-    }
+//    private void addUserRole() {
+//        authorities.add(new SimpleGrantedAuthority(person.getRole().toString()));
+//    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

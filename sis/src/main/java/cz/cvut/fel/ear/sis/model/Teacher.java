@@ -12,6 +12,7 @@ public class Teacher extends Person {
 
     @OneToMany
     @JoinColumn(name = "teacher_id")
+    @OrderBy("name ASC")
     private List<Course> myCourses = new ArrayList<>();
 
     public Teacher() {
