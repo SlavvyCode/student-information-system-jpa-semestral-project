@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import cz.cvut.fel.ear.sis.dao.environment.Environment;
 import cz.cvut.fel.ear.sis.dao.environment.TestDataGenerator;
 import cz.cvut.fel.ear.sis.model.*;
+import cz.cvut.fel.ear.sis.model.enrollment.Enrollment;
 import cz.cvut.fel.ear.sis.repository.*;
 import cz.cvut.fel.ear.sis.service.PersonService;
 import cz.cvut.fel.ear.sis.service.TeacherService;
@@ -11,11 +12,7 @@ import cz.cvut.fel.ear.sis.utils.enums.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -27,14 +24,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
-import static cz.cvut.fel.ear.sis.utils.Constants.AGE_OVER_18;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.*;
@@ -42,8 +34,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-
-import cz.cvut.fel.ear.sis.utils.Constants;
 
 
 import cz.cvut.fel.ear.sis.config.SecurityConfig;

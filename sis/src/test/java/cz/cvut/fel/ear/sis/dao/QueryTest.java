@@ -1,12 +1,12 @@
 package cz.cvut.fel.ear.sis.dao;
 
 import cz.cvut.fel.ear.sis.model.*;
+import cz.cvut.fel.ear.sis.model.enrollment.Enrollment;
 import cz.cvut.fel.ear.sis.repository.EnrollmentRepository;
 import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
 import cz.cvut.fel.ear.sis.utils.enums.SemesterType;
 import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
@@ -15,10 +15,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
-import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 

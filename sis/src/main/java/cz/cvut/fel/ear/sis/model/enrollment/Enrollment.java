@@ -1,25 +1,45 @@
-package cz.cvut.fel.ear.sis.model;
+package cz.cvut.fel.ear.sis.model.enrollment;
 
+import cz.cvut.fel.ear.sis.model.Parallel;
+import cz.cvut.fel.ear.sis.model.Student;
 import cz.cvut.fel.ear.sis.utils.enums.Grade;
 import cz.cvut.fel.ear.sis.utils.enums.Status;
 import jakarta.persistence.*;
 
 @Entity
+//@IdClass(EnrollmentCompositeId.class)
 public class Enrollment {
+//
+//    @Id
+//    @GeneratedValue
+//    private Long id;
 
-    @Id
-    @GeneratedValue
-    private Long id;
+    //COMPOSITE SLOZENE ID
+
+
+    @EmbeddedId
+    private EnrollmentCompositeId id;
+
+
+//    @Id
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Student student;
+//    @Id
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Parallel parallel;
+
+
+
+
+
+
+
+
     @Enumerated(EnumType.STRING)
     private Grade grade;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Student student;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Parallel parallel;
-
     public Enrollment() {
 
     }
@@ -45,9 +65,9 @@ public class Enrollment {
         this.status = status;
     }
 
-    public Long getId() {
-        return id;
-    }
+//    public Long getId() {
+//        return id;
+//    }
 
     public Grade getGrade() {
         return grade;
@@ -73,9 +93,9 @@ public class Enrollment {
 
 
 //for mocks only
-    public void setId(Long id) {
-        this.id = id;
-    }
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
 
     public void setStudent(Student student) {
         this.student = student;
