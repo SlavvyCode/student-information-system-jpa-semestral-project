@@ -1,5 +1,6 @@
 package cz.cvut.fel.ear.sis.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.util.List;
 @DiscriminatorValue("TEACHER")
 public class Teacher extends Person {
 
+    @JsonManagedReference("teacher_courses")
     @OneToMany
     @JoinColumn(name = "teacher_id")
     @OrderBy("name ASC")

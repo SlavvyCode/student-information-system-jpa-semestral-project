@@ -1,9 +1,8 @@
 package cz.cvut.fel.ear.sis.service;
 
-import cz.cvut.fel.ear.sis.model.Enrollment;
-import cz.cvut.fel.ear.sis.model.Parallel;
-import cz.cvut.fel.ear.sis.model.Student;
+import cz.cvut.fel.ear.sis.model.*;
 import cz.cvut.fel.ear.sis.repository.*;
+import cz.cvut.fel.ear.sis.utils.ServiceUtil;
 import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
 import cz.cvut.fel.ear.sis.utils.enums.SemesterType;
 import cz.cvut.fel.ear.sis.utils.enums.Status;
@@ -11,12 +10,22 @@ import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
 import cz.cvut.fel.ear.sis.utils.exception.EnrollmentException;
 import cz.cvut.fel.ear.sis.utils.exception.ParallelException;
 import cz.cvut.fel.ear.sis.utils.exception.StudentException;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Locale;
+
+import static org.springframework.data.jpa.repository.query.QueryUtils.getQueryString;
 
 @Service
 public class StudentService {
@@ -26,21 +35,29 @@ public class StudentService {
     private final ParallelRepository parallelRepository;
     private final EnrollmentRepository enrollmentRepository;
 
+    @PersistenceContext
+    EntityManager em;
+
+
+
+    private final SemesterRepository semesterRepository;
+
     @Autowired
     public StudentService(PersonRepository personRepository,
                           StudentRepository studentRepository,
-                          TeacherRepository teacherRepository, ParallelRepository parallelRepository, EnrollmentRepository enrollmentRepository) {
+                          TeacherRepository teacherRepository, ParallelRepository parallelRepository, EnrollmentRepository enrollmentRepository, SemesterRepository semesterRepository) {
         this.personRepository = personRepository;
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
         this.parallelRepository = parallelRepository;
         this.enrollmentRepository = enrollmentRepository;
+        this.semesterRepository = semesterRepository;
     }
 
     //join a parallel group
     //student specific operations, like course enrollments and academic tracking
 
-    public Enrollment createEnrollmentToParallel(long studentId, long parallelId) throws StudentException, ParallelException, EnrollmentException {
+    public Enrollment enrollToParallel(long studentId, long parallelId) throws StudentException, ParallelException, EnrollmentException {
 
         Student student = studentRepository.findById(studentId).orElseThrow(()-> new StudentException("Teacher not found"));
         Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
@@ -164,6 +181,56 @@ public class StudentService {
             throw new EnrollmentException("Students can cancel enrollment only BEFORE the semester begins");
 
         student.removeEnrollment(enrollment);
+    }
+
+
+
+    public List<Parallel> getAllParallelsForNextSemester() throws ParallelException {
+        return parallelRepository.findAllBySemester_StartDate(ServiceUtil.getNextSemesterStartDate());
+    }
+
+
+    public List<Parallel> getAllEnrolledParallelsForNextSemester(long studentId, String semesterCode) throws ParallelException {
+        return parallelRepository.findAllByStudents_IdAndSemester_Code(studentId,semesterCode);
+
+
+    }
+
+    public List<Parallel> getParallelsForCourseNextSemester(Long courseId) {
+        return parallelRepository.findAllByCourse_IdAndSemester_StartDate(courseId, ServiceUtil.getNextSemesterStartDate());
+    }
+
+
+    public List<Enrollment> getEnrollmentReport(Long studentId) throws StudentException {
+        Student student = studentRepository.findById(studentId).orElseThrow(()-> new StudentException("Student not found"));
+        return student.getMyEnrollments();
+    }
+
+
+
+    //CRITERIA API
+    public List<Parallel> getParallelsFromCourseNextSemesterWhereLanguageIsChosen(Long courseId, String language) {
+
+        CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+        CriteriaQuery<Parallel> criteriaQuery = criteriaBuilder.createQuery(Parallel.class);
+        Root<Parallel> from = criteriaQuery.from(Parallel.class);
+
+
+
+        criteriaQuery.select(from);
+
+        LocalDate nextSemesterStartDate = ServiceUtil.getNextSemesterStartDate();
+
+        criteriaQuery.where(
+                criteriaBuilder.equal(from.get("course").get("id"), courseId),
+                criteriaBuilder.equal(from.get("semester").get("startDate"), nextSemesterStartDate),
+                criteriaBuilder.equal(from.get("course").get("language"), Locale.forLanguageTag(language)  )
+        );
+
+
+        TypedQuery<Parallel> query = em.createQuery(criteriaQuery);
+        return query.getResultList();
+
     }
 
 }

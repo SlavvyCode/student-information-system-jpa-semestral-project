@@ -1,5 +1,6 @@
 package cz.cvut.fel.ear.sis.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ public class Student extends Person {
 
     @OneToMany
     @JoinColumn(name = "student_id")
+    @JsonManagedReference("student_enrollments")
     private List<Enrollment> myEnrollments = new ArrayList<>();
 
     public Student() {

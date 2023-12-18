@@ -1,5 +1,6 @@
 package cz.cvut.fel.ear.sis.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import cz.cvut.fel.ear.sis.utils.enums.Grade;
 import cz.cvut.fel.ear.sis.utils.enums.Status;
 import jakarta.persistence.*;
@@ -15,8 +16,13 @@ public class Enrollment {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Status status;
+
+
+    @JsonBackReference("student_enrollments")
     @ManyToOne(fetch = FetchType.LAZY)
     private Student student;
+
+    @JsonBackReference("parallel_enrollments")
     @ManyToOne(fetch = FetchType.LAZY)
     private Parallel parallel;
 

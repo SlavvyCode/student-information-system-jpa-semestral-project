@@ -82,6 +82,11 @@ public class TeacherService {
             throw new CourseException("Language is not valid");
         }
 
+        //check if that teacher doesn't already teach another course
+        List<Course> teacherCourses =  courseRepository.findAllByTeacher_Id(teacher.getId());
+        if(!teacherCourses.isEmpty())
+            throw new PersonException("Teacher already teaches another course!");
+
     }
 
     @Transactional
@@ -157,6 +162,7 @@ public class TeacherService {
 
 
 
+    //todo test this
     @Transactional
     public void updateCourse(long courseId, long teacherId, String courseName, String code, int ECTS,
                              Locale language) throws CourseException, PersonException {

@@ -279,7 +279,7 @@ public class TeacherServiceTest {
 
 
         //enroll student in parallel
-        Enrollment enrollment = studentService.createEnrollmentToParallel(student.getId(), parallel.getId());
+        Enrollment enrollment = studentService.enrollToParallel(student.getId(), parallel.getId());
 
 
 

@@ -1,5 +1,7 @@
 package cz.cvut.fel.ear.sis.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -14,6 +16,7 @@ public class Course {
     @GeneratedValue
     private Long id;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference("teacher_courses")
     private Teacher teacher;
     @Column(nullable = false, unique = true, updatable = false)
     private String name;
@@ -24,6 +27,7 @@ public class Course {
     @Column(nullable = false, updatable = false)
     private Locale language;
     @OneToMany
+    @JsonManagedReference("course_parallels")
     @JoinColumn(name = "course_id")
     private List<Parallel> parallelsList = new ArrayList<>();
 

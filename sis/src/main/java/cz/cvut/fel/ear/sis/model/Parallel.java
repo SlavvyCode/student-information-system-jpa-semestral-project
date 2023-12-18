@@ -1,5 +1,7 @@
 package cz.cvut.fel.ear.sis.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
 import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
 import jakarta.persistence.*;
@@ -26,8 +28,14 @@ public class Parallel {
     private Semester semester;
     @ManyToOne(fetch = FetchType.LAZY)
     private Classroom classroom;
+
+
+    @JsonBackReference("course_parallels")
     @ManyToOne(fetch = FetchType.LAZY)
     private Course course;
+
+
+    @JsonManagedReference("parallel_enrollments")
     @OneToMany
     @JoinColumn(name = "parallel_id")
     private List<Enrollment> enrollments = new ArrayList<>();

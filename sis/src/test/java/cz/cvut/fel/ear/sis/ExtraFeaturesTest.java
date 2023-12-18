@@ -1,17 +1,15 @@
 package cz.cvut.fel.ear.sis;
 
 import cz.cvut.fel.ear.sis.model.*;
-import cz.cvut.fel.ear.sis.repository.CourseRepository;
-import cz.cvut.fel.ear.sis.repository.PersonRepository;
-import cz.cvut.fel.ear.sis.repository.StudentRepository;
-import cz.cvut.fel.ear.sis.repository.TeacherRepository;
+import cz.cvut.fel.ear.sis.repository.*;
+import cz.cvut.fel.ear.sis.service.AdminService;
 import cz.cvut.fel.ear.sis.service.PersonService;
+import cz.cvut.fel.ear.sis.service.StudentService;
 import cz.cvut.fel.ear.sis.service.TeacherService;
 import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
 import cz.cvut.fel.ear.sis.utils.enums.SemesterType;
 import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
-import cz.cvut.fel.ear.sis.utils.exception.CourseException;
-import cz.cvut.fel.ear.sis.utils.exception.PersonException;
+import cz.cvut.fel.ear.sis.utils.exception.*;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
@@ -52,6 +50,14 @@ public class ExtraFeaturesTest {
     @Autowired
     CourseRepository courseRepository;
 
+    @Autowired
+    StudentService studentService;
+
+    @Autowired
+    SemesterRepository semesterRepository;
+
+    @Autowired
+    AdminService adminService;
 
     private LocalDate ageOver18 = LocalDate.of(2000, 2, 2);
 
@@ -129,6 +135,80 @@ public class ExtraFeaturesTest {
 
     }
 
+
+
+    @Test
+    @Transactional
+    public void CriteriaAPITest() throws PersonException, CourseException, SemesterException, ParallelException, ClassroomException {
+        //make multiple courses with a parallel
+
+        Locale language = Locale.ENGLISH;
+
+
+        Person teacher = personService.createANewPerson("Petr", "Fifka", "velebil@fel.cz", "123688788", ageOver18, "Jnovak125984", "teacherKeyPass");
+
+        Person teacher2 = personService.createANewPerson("Petr", "Fifka", "veleb13il@fel.cz", "123688132788", ageOver18, "Jva2k125984", "teacherKeyPass");
+
+        String courseName1 = "AAAA";
+        String courseName2 = "BBBB";
+
+        String courseCode1 = "MATH1";
+        String courseCode2 = "MATH2";
+        int ECTS = 5;
+
+        Course course = teacherService.createCourse(teacher.getId(), courseName1, courseCode1, ECTS, language);
+        Course course2 = teacherService.createCourse(teacher2.getId(), courseName2, courseCode2, ECTS, language);
+
+        courseRepository.save(course);
+        courseRepository.save(course2);
+
+        Classroom classroom = adminService.createClassroom("T9:100", 100);
+
+        //put one course into one semester other in other semester
+
+        SemesterType nextSemesterType;
+        int nextSemesterYear;
+        //if it's between spring start and end date, set semester to FALL
+        if (LocalDate.now().isAfter(LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getStartDate().getMonth(), SemesterType.SPRING.getStartDate().getDayOfMonth()))
+                && LocalDate.now().isBefore(LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getEndDate().getMonth(), SemesterType.SPRING.getEndDate().getDayOfMonth()))) {
+            nextSemesterType = SemesterType.FALL;
+            nextSemesterYear = LocalDate.now().getYear();
+        }
+        else
+        {
+            nextSemesterType = SemesterType.SPRING;
+            nextSemesterYear = LocalDate.now().getYear() + 1;
+        }
+
+        //account for year change - if we're in the fall semester, set next semester to spring of next year
+
+
+
+        Semester nextSemester = adminService.createSemester(nextSemesterYear, nextSemesterType);
+
+
+
+
+        Parallel parallelNextSemester = teacherService.createParallel(teacher.getId(), classroom.getCapacity()-1, TimeSlot.SLOT1,  DayOfWeek.MON,
+                nextSemester.getId(), classroom.getId(),course.getId());
+
+
+
+        List<Parallel> foundParallels = studentService.getParallelsFromCourseNextSemesterWhereLanguageIsChosen(course.getId(), String.valueOf(language));
+
+
+        assertEquals(foundParallels.size(), 1);
+        assertEquals(foundParallels.get(0).getId(), parallelNextSemester.getId());
+
+
+
+    }
+
+    @Test
+    @Transactional
+    public void CascadeTest(){
+
+    }
 
 
 }
