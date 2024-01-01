@@ -24,9 +24,6 @@ public class BaseControllerTestRunner {
 
     public void setUp(Object controller) {
         this.objectMapper = Environment.getObjectMapper();
-        // Standalone setup initializes just the specified controller, without any security or services
-        // We also provide the exception handler and message converters, so that error and data handling works
-        // the same as usual
         this.mockMvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(new RestExceptionHandler())
                 .setMessageConverters(createDefaultMessageConverter(),
                         createStringEncodingMessageConverter())

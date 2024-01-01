@@ -2,9 +2,10 @@ package cz.cvut.fel.ear.sis.rest;
 
 import cz.cvut.fel.ear.sis.model.Classroom;
 import cz.cvut.fel.ear.sis.model.Semester;
+import cz.cvut.fel.ear.sis.rest.dto.CreateClassroomRequestBody;
+import cz.cvut.fel.ear.sis.rest.dto.CreateSemesterRequestBody;
 import cz.cvut.fel.ear.sis.rest.handler.utils.RestUtils;
 import cz.cvut.fel.ear.sis.service.AdminService;
-import cz.cvut.fel.ear.sis.utils.enums.SemesterType;
 import cz.cvut.fel.ear.sis.utils.exception.ClassroomException;
 import cz.cvut.fel.ear.sis.utils.exception.SemesterException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,8 +35,8 @@ public class AdminController {
     }
 
     @PostMapping(value = "/classroom", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createClassroom(@RequestBody Classroom classroom) throws ClassroomException {
-        adminService.createClassroom(classroom.getCode(), classroom.getCapacity());
+    public ResponseEntity<Void> createClassroom(@RequestBody CreateClassroomRequestBody body) throws ClassroomException {
+        Classroom classroom = adminService.createClassroom(body.code, body.capacity);
         final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/{code}", classroom.getCode());
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
@@ -53,8 +56,8 @@ public class AdminController {
     }
 
     @PostMapping(value = "/semester", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> createSemester(@RequestBody Semester semester) throws SemesterException {
-        adminService.createSemester(semester.getStartDate().getYear(), semester.getSemesterType());
+    public ResponseEntity<Void> createSemester(@RequestBody CreateSemesterRequestBody body) throws SemesterException {
+        Semester semester = adminService.createSemester(body.year, body.semesterType);
         final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/{code}", semester.getCode());
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
@@ -68,14 +71,16 @@ public class AdminController {
         return semester.get();
     }
 
-    @PatchMapping(value = "/semester/{code}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/semester/{code}")
     public ResponseEntity<Void> createSemester(@PathVariable String code) throws SemesterException {
         Optional<Semester> semester = adminService.getSemesterByCode(code);
         if(semester.isEmpty()){
             throw new SemesterException("Semester not found.");
         }
         adminService.setActiveSemester(semester.get());
-        final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/{code}", semester.get().getCode());
+        URI location = ServletUriComponentsBuilder.fromCurrentRequestUri().build().toUri();
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(location);
         return new ResponseEntity<>(headers, HttpStatus.ACCEPTED);
     }
 
