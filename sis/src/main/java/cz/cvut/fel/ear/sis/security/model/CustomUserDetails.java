@@ -10,31 +10,32 @@ import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
-public class UserDetails implements org.springframework.security.core.userdetails.UserDetails {
+public class CustomUserDetails implements org.springframework.security.core.userdetails.UserDetails {
 
-    private final Person person;
+    private Person person;
+    private static final long serialVersionUID = 1L;
 
-    private final Set<GrantedAuthority> authorities;
+    private Set<GrantedAuthority> authorities = null;
 
-    public UserDetails(Person user) {
+    public CustomUserDetails(Person user) {
         Objects.requireNonNull(user);
         this.person = user;
         this.authorities = new HashSet<>();
-//        addUserRole();
+        addUserRole();
     }
 
-    public UserDetails(Person person, Collection<GrantedAuthority> authorities) {
+    public CustomUserDetails(Person person, Collection<GrantedAuthority> authorities) {
         Objects.requireNonNull(person);
         Objects.requireNonNull(authorities);
         this.person = person;
         this.authorities = new HashSet<>();
-//        addUserRole();
+        addUserRole();
         this.authorities.addAll(authorities);
     }
 
-//    private void addUserRole() {
-//        authorities.add(new SimpleGrantedAuthority(person.getRole().toString()));
-//    }
+    private void addUserRole() {
+        authorities.add(new SimpleGrantedAuthority(person.getRole()));
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -78,5 +79,14 @@ public class UserDetails implements org.springframework.security.core.userdetail
 
     public Person person() {
         return person;
+    }
+
+    public void setPerson(Person person){
+        this.person = person;
+    }
+
+    public void setAuthorities(Set<GrantedAuthority> grantedAuthorities)
+    {
+        this.authorities = grantedAuthorities;
     }
 }

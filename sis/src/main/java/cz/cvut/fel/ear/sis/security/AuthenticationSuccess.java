@@ -3,7 +3,7 @@ package cz.cvut.fel.ear.sis.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.cvut.fel.ear.sis.security.model.LoginStatus;
-import cz.cvut.fel.ear.sis.security.model.UserDetails;
+import cz.cvut.fel.ear.sis.security.model.CustomUserDetails;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
@@ -44,7 +44,7 @@ public class AuthenticationSuccess implements AuthenticationSuccessHandler, Logo
         if (authentication == null) {
             return "";
         }
-        return ((UserDetails) authentication.getPrincipal()).getUsername();
+        return ((CustomUserDetails) authentication.getPrincipal()).getUsername();
     }
 
     @Override

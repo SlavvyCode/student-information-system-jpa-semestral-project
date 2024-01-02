@@ -4,7 +4,7 @@ import cz.cvut.fel.ear.sis.model.Course;
 import cz.cvut.fel.ear.sis.model.Parallel;
 import cz.cvut.fel.ear.sis.model.Student;
 import cz.cvut.fel.ear.sis.rest.handler.utils.RestUtils;
-import cz.cvut.fel.ear.sis.security.model.UserDetails;
+import cz.cvut.fel.ear.sis.security.model.CustomUserDetails;
 import cz.cvut.fel.ear.sis.service.TeacherService;
 import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
 import cz.cvut.fel.ear.sis.utils.enums.Grade;

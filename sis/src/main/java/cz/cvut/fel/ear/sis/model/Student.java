@@ -21,7 +21,7 @@ public class Student extends Person {
     }
 
     public Student(String firstName, String lastName, String email, String phoneNumber, LocalDate birthDate, String userName, String password) {
-        super(firstName, lastName, email, phoneNumber, birthDate, userName, password);
+        super(firstName, lastName, email, phoneNumber, birthDate, userName, password, "ROLE_STUDENT");
     }
 
     public List<Enrollment> getMyEnrollments() {

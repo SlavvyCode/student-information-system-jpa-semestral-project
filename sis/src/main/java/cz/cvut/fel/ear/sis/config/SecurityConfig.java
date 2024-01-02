@@ -3,8 +3,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.cvut.fel.ear.sis.repository.PersonRepository;
 import cz.cvut.fel.ear.sis.security.AuthenticationFailure;
 import cz.cvut.fel.ear.sis.security.AuthenticationSuccess;
-import cz.cvut.fel.ear.sis.service.security.UserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import cz.cvut.fel.ear.sis.service.security.CustomUserDetailsService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -55,8 +54,8 @@ public class SecurityConfig {
 
 
     @Bean
-    public UserDetailsService userDetailsServiceBean() {
-        return new cz.cvut.fel.ear.sis.service.security.UserDetailsService(personRepository);
+    public CustomUserDetailsService userDetailsServiceBean() {
+        return new CustomUserDetailsService(personRepository);
     }
 
 

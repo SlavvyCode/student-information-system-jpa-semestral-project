@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
@@ -45,6 +46,7 @@ public class AdminControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void getClassrooms_ReturnsAllClassrooms() throws Exception {
         List<Classroom> classrooms = Arrays.asList(new Classroom("C101", 30), new Classroom("C102", 40));
         when(adminServiceMock.getAllClassrooms()).thenReturn(classrooms);
@@ -60,6 +62,7 @@ public class AdminControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void createClassroom_CreatesClassroomSuccessfully() throws Exception {
         CreateClassroomRequestBody requestBody = new CreateClassroomRequestBody();
         requestBody.code = "C103";
@@ -78,6 +81,7 @@ public class AdminControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void getSemesters_ReturnsAllSemesters() throws Exception {
         List<Semester> semesters = Arrays.asList(new Semester(2023, SemesterType.FALL), new Semester(2023, SemesterType.SPRING));
         when(adminServiceMock.getAllSemesters()).thenReturn(semesters);
@@ -96,6 +100,7 @@ public class AdminControllerTest {
 
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void createSemester_CreatesSemesterSuccessfully() throws Exception {
         CreateSemesterRequestBody requestBody = new CreateSemesterRequestBody();
         requestBody.year = 2024;
@@ -114,6 +119,7 @@ public class AdminControllerTest {
     }
 
     @Test
+    @WithMockUser(roles = {"ADMIN"})
     public void setActiveSemester_SetsActiveSemesterSuccessfully() throws Exception {
         int year = 2023;
         SemesterType semesterType = SemesterType.FALL;

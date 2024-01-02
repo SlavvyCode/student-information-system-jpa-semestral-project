@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -29,11 +30,13 @@ public class AdminController {
         this.adminService = adminService;
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/room", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Classroom> getClassrooms(){
         return adminService.getAllClassrooms();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/classroom", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createClassroom(@RequestBody CreateClassroomRequestBody body) throws ClassroomException {
         Classroom classroom = adminService.createClassroom(body.code, body.capacity);
@@ -41,6 +44,7 @@ public class AdminController {
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/classroom/{code}")
     public Classroom getClassroomByCode(@PathVariable String code) throws ClassroomException {
         final Optional<Classroom> classroom = adminService.getClassroomByCode(code);
@@ -50,11 +54,13 @@ public class AdminController {
         return classroom.get();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/semester", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Semester> getSemesters(){
         return adminService.getAllSemesters();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/semester", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createSemester(@RequestBody CreateSemesterRequestBody body) throws SemesterException {
         Semester semester = adminService.createSemester(body.year, body.semesterType);
@@ -62,6 +68,7 @@ public class AdminController {
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/semester/{code}")
     public Semester getSemesterByCode(@PathVariable String code) throws SemesterException {
         final Optional<Semester> semester = adminService.getSemesterByCode(code);
@@ -71,6 +78,7 @@ public class AdminController {
         return semester.get();
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PatchMapping(value = "/semester/{code}")
     public ResponseEntity<Void> createSemester(@PathVariable String code) throws SemesterException {
         Optional<Semester> semester = adminService.getSemesterByCode(code);

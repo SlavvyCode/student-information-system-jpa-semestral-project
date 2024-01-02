@@ -4,7 +4,7 @@ package cz.cvut.fel.ear.sis.dao.environment;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import cz.cvut.fel.ear.sis.model.Person;
-import cz.cvut.fel.ear.sis.security.model.UserDetails;
+import cz.cvut.fel.ear.sis.security.model.CustomUserDetails;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -48,10 +48,10 @@ public class Environment {
      */
     //todo
     public static void setCurrentUser(Person user) {
-        final UserDetails userDetails = new UserDetails(user, new HashSet<>());
+        final CustomUserDetails customUserDetails = new CustomUserDetails(user, new HashSet<>());
         SecurityContext context = new SecurityContextImpl();
         context.setAuthentication(
-                new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities()));
+                new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities()));
         SecurityContextHolder.setContext(context);
     }
 

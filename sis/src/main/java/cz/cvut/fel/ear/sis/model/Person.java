@@ -26,6 +26,13 @@ public abstract class Person{
     private String userName;
     @Column(nullable = false)
     private String password;
+    @Column(nullable = false)
+    private String role;
+
+    public String getRole(){
+        return role;
+    }
+
 
 
 //
@@ -46,7 +53,7 @@ public abstract class Person{
 
     }
 
-    public Person(String firstName, String lastName, String email, String phoneNumber, LocalDate birthDate, String userName, String password) {
+    public Person(String firstName, String lastName, String email, String phoneNumber, LocalDate birthDate, String userName, String password, String role) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -54,6 +61,7 @@ public abstract class Person{
         this.birthDate = birthDate;
         this.userName = userName;
         this.password = password;
+        this.role = role;
     }
 
     public void setFirstName(String firstName) {
