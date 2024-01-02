@@ -334,4 +334,11 @@ public class TeacherService {
     public List<Student> getAllStudentsByParallelId(Long id){
         return studentRepository.findAllByParallelId(id);
     }
+
+
+    @Transactional(readOnly = true)
+    public List<Course> getCoursesByTeacherUsername(String username){
+        return getCoursesByTeacherUsername(username);
+    }
+
 }

@@ -188,15 +188,15 @@ public class StudentControllerTest extends BaseControllerTestRunner {
 
     // Test3
 
-    //TODO THIS IS A USER SPECIFIC TEST, NEED USERROLES TO BE FUNCTIONAL
     @Test
-    @WithMockUser(roles = {"STUDENT"})
+    @WithMockUser(roles = {"STUDENT"},username = "student1234")
     public void viewScheduleForSemesterReturnsScheduleForGivenSemester() throws Exception {
 
         Person mockStudent = new Student();
         mockStudent.setId(1L);
         mockStudent.setFirstName("Jan");
         mockStudent.setLastName("Novak");
+        mockStudent.setUserName("student1234");
 
         String semesterCode = "2023S";
 
@@ -207,12 +207,14 @@ public class StudentControllerTest extends BaseControllerTestRunner {
         // Define the behavior of the studentServiceMock to return a list containing mockParallel when getAllEnrolledParallelsForNextSemester is called
         when(studentServiceMock.getAllEnrolledParallelsForNextSemester(eq(mockStudent.getId()), eq(semesterCode))).thenReturn(Collections.singletonList(mockParallel));
 
+        when(studentServiceMock.getAllEnrolledParallelsForNextSemesterByStudentUsername(eq(mockStudent.getUserName()), eq(semesterCode))).thenReturn(Collections.singletonList(mockParallel));
+
         // Perform the request
         final MvcResult mvcResult = mockMvc.perform(get("/student/schedule/{semesterCode}", semesterCode))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        verify(studentServiceMock).getAllEnrolledParallelsForNextSemester(eq(mockStudent.getId()), eq(semesterCode));
+        verify(studentServiceMock).getAllEnrolledParallelsForNextSemesterByStudentUsername(eq(mockStudent.getUserName()),  eq(semesterCode));
 
         // Verify the response
         final List<Parallel> result = readValue(mvcResult, new TypeReference<List<Parallel>>() {});

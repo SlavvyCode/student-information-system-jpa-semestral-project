@@ -163,11 +163,13 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
 
     //TEST2
     @Test
-    @WithMockUser(roles = {"TEACHER"})
+    @WithMockUser(roles = {"TEACHER"},username = "user1234")
     public void listMyCoursesReturnsAllCoursesForTeacher() throws Exception {
 
             Person mockTeacher = new Teacher();
             mockTeacher.setId(1L); // Set a sample ID
+
+            mockTeacher.setUserName("user1234");
             mockTeacher.setFirstName("Jirka");
             mockTeacher.setLastName("Velebil");
 
@@ -178,13 +180,16 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
             mockCourse.setCode("MATH123");
 
 
-            when(teacherServiceMock.createCourse(
-                    eq(mockTeacher.getId()), anyString(), anyString(), anyInt(), any(Locale.class)
-            )).thenReturn(mockCourse);
+        when(teacherServiceMock.createCourse(
+                eq(mockTeacher.getId()), anyString(), anyString(), anyInt(), any(Locale.class)
+        )).thenReturn(mockCourse);
+
 
 
         // Define the behavior of the teacherServiceMock to return a list containing mockParallel when getParallelByCourseId is called
         when(teacherServiceMock.getCourseByTeacherId(eq(mockTeacher.getId()))).thenReturn(Collections.singletonList(mockCourse));
+
+        when(teacherServiceMock.getCoursesByTeacherUsername(eq(mockTeacher.getUserName()))).thenReturn(Collections.singletonList(mockCourse));
 
 
         // Act
@@ -193,7 +198,7 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
                 .andExpect(status().isOk())
                 .andReturn();
 
-        verify(teacherServiceMock).getCourseByTeacherId(eq(mockTeacher.getId()));
+        verify(teacherServiceMock).getCoursesByTeacherUsername(eq(mockTeacher.getUserName()));
 
 
         // Assert

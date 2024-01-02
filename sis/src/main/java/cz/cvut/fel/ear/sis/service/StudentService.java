@@ -233,4 +233,15 @@ public class StudentService {
 
     }
 
+
+
+
+    public List<Parallel> getAllEnrolledParallelsForNextSemesterByStudentUsername(String username,String semesterCode){
+        return parallelRepository.findAllByStudents_UsernameAndSemester_Code(username,semesterCode);
+    }
+
+    public List<Enrollment> getEnrollmentReportByUsername(String username) {
+        Student student = studentRepository.findByUsername(username).orElseThrow(()-> new StudentException("Student not found"));
+        return student.getMyEnrollments();
+    }
 }

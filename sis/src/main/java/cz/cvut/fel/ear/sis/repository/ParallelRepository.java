@@ -47,6 +47,16 @@ public interface ParallelRepository extends JpaRepository<Parallel, Long> {
             "AND p.semester.code = :semesterCode")
     List<Parallel> findAllByStudents_IdAndSemester_Code(long studentId, String semesterCode);
 
+
+    @Query("SELECT p FROM Parallel p " +
+            "JOIN p.students s " +
+            "WHERE s.userName = :studentUsername " +
+            "AND p.semester.code = :semesterCode")
+    List<Parallel> findAllByStudents_UsernameAndSemester_Code(String studentUsername, String semesterCode);
+
+
+
+
     @Query("select p from Parallel p where p.course.id = ?1 and p.semester.startDate = ?2 and p.course.language = ?3")
     List<Parallel> testingFunciton(
             Long courseId,

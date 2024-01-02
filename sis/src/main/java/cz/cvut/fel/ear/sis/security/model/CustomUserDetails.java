@@ -40,6 +40,10 @@ public class CustomUserDetails implements org.springframework.security.core.user
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.unmodifiableCollection(authorities);
+
+//                return user.getRoles().stream()
+//                .map(role -> new SimpleGrantedAuthority(role.getName()))
+//                .collect(Collectors.toList());
     }
 
     @Override
