@@ -240,8 +240,25 @@ public class StudentService {
         return parallelRepository.findAllByStudents_UsernameAndSemester_Code(username,semesterCode);
     }
 
-    public List<Enrollment> getEnrollmentReportByUsername(String username) {
+    public List<Enrollment> getEnrollmentReportByUsername(String username) throws StudentException {
         Student student = studentRepository.findByUserName(username).orElseThrow(()-> new StudentException("Student not found"));
         return student.getMyEnrollments();
+    }
+
+
+    public void dropFromParallelByUsername(String username, Long parallelId) throws StudentException, ParallelException {
+        Student student = studentRepository.findByUserName(username).orElseThrow(()-> new StudentException("Student not found"));
+        Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
+
+        dropFromParallel(student.getId(), parallelId);
+
+    }
+
+
+
+    public void enrollToParallelByUsername(String username, Long parallelId) throws StudentException, ParallelException, EnrollmentException {
+        Student student = studentRepository.findByUserName(username).orElseThrow(()-> new StudentException("Student not found"));
+        Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
+        enrollToParallel(student.getId(), parallelId);
     }
 }

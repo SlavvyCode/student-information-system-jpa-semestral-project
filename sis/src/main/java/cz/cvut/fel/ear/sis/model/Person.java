@@ -35,20 +35,6 @@ public abstract class Person{
 
 
 
-//
-//    //todo make sure it's ok
-//    @Enumerated(EnumType.STRING)
-//    @Column(name = "ROLE", nullable = false, insertable = false)
-//    private Role role;
-
-//    public Role getRole() {
-//        return role;
-//    }
-//
-//    public void setRole(Role role) {
-//        this.role = role;
-//    }
-
     public Person() {
 
     }

@@ -2,7 +2,6 @@ package cz.cvut.fel.ear.sis.rest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import cz.cvut.fel.ear.sis.dao.environment.Environment;
-import cz.cvut.fel.ear.sis.dao.environment.TestDataGenerator;
 import cz.cvut.fel.ear.sis.model.*;
 import cz.cvut.fel.ear.sis.model.Enrollment;
 import cz.cvut.fel.ear.sis.repository.*;
@@ -337,7 +336,7 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
 
         when(teacherServiceMock.getCourseById(anyLong())).thenReturn(Optional.of(mockCourse));
 
-        Parallel mockParallel = TestDataGenerator.generateParallel();
+        Parallel mockParallel = new Parallel();
         mockParallel.setId(1L);
         mockParallel.setCourse(mockCourse);
 

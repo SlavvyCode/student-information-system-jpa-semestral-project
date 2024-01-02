@@ -2,8 +2,7 @@ package cz.cvut.fel.ear.sis.rest;
 
 import java.util.*;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -19,6 +18,7 @@ import cz.cvut.fel.ear.sis.repository.*;
 import cz.cvut.fel.ear.sis.service.PersonService;
 import cz.cvut.fel.ear.sis.service.StudentService;
 import cz.cvut.fel.ear.sis.service.TeacherService;
+import cz.cvut.fel.ear.sis.utils.exception.rest.NotStudentException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.junit.jupiter.api.AfterEach;
@@ -224,30 +224,30 @@ public class StudentControllerTest extends BaseControllerTestRunner {
 
 
 
-    //TODO THIS IS A USER SPECIFIC TEST, NEED USERROLES TO BE FUNCTIONAL
 
     // Test4
     @Test
-    @WithMockUser(roles = {"STUDENT"})
+    @WithMockUser(roles = {"STUDENT"}, username = "student1234")
     public void listEnrollmentReportReturnsReportForStudent() throws Exception {
 
         Person mockStudent = new Student();
         mockStudent.setId(1L);
         mockStudent.setFirstName("Jan");
         mockStudent.setLastName("Novak");
+        mockStudent.setUserName("student1234");
 
         Enrollment mockEnrollment = new Enrollment();
         mockEnrollment.setId(1L);
 
         // Define the behavior of the studentServiceMock to return a list containing mockEnrollment when getEnrollmentReport is called
-        when(studentServiceMock.getEnrollmentReport(eq(mockStudent.getId()))).thenReturn(Collections.singletonList(mockEnrollment));
+        when(studentServiceMock.getEnrollmentReportByUsername(eq(mockStudent.getUserName()))).thenReturn(Collections.singletonList(mockEnrollment));
 
         // Perform the request
         final MvcResult mvcResult = mockMvc.perform(get("/student/report"))
                 .andExpect(status().isOk())
                 .andReturn();
 
-        verify(studentServiceMock).getEnrollmentReport(eq(mockStudent.getId()));
+        verify(studentServiceMock).getEnrollmentReportByUsername(eq(mockStudent.getUserName()));
 
         // Verify the response
         final List<Enrollment> result = readValue(mvcResult, new TypeReference<List<Enrollment>>() {});
@@ -256,17 +256,16 @@ public class StudentControllerTest extends BaseControllerTestRunner {
     }
 
     // Test5
-
-
-    //TODO THIS IS A USER SPECIFIC TEST, NEED USERROLES TO BE FUNCTIONAL
     @Test
-    @WithMockUser(roles = {"STUDENT"})
+    @WithMockUser(roles = {"STUDENT"}, username = "student12345")
     public void enrollInParallelNextSemesterEnrollsStudent() throws Exception {
 
         Person mockStudent = new Student();
         mockStudent.setId(1L);
         mockStudent.setFirstName("Jan");
         mockStudent.setLastName("Novak");
+        mockStudent.setUserName("student12345");
+
 
         Parallel mockParallel = new Parallel();
         mockParallel.setId(1L);
@@ -278,17 +277,17 @@ public class StudentControllerTest extends BaseControllerTestRunner {
                 .andExpect(status().isNoContent())
                 .andReturn();
 
-        verify(studentServiceMock).enrollToParallel(eq(mockStudent.getId()), eq(mockParallel.getId()));
+        verify(studentServiceMock).enrollToParallelByUsername(eq(mockStudent.getUserName()), eq(mockParallel.getId()));
     }
 
     // Test6
-    //TODO THIS IS A USER SPECIFIC TEST, NEED USERROLES TO BE FUNCTIONAL
     @Test
-    @WithMockUser(roles = {"STUDENT"})
+    @WithMockUser(roles = {"STUDENT"}, username = "student1234")
     public void revertEnrollmentCancelsEnrollmentForStudent() throws Exception {
 
         Person mockStudent = new Student();
         mockStudent.setId(1L);
+        mockStudent.setUserName("student1234");
         mockStudent.setFirstName("Jan");
         mockStudent.setLastName("Novak");
 
@@ -305,7 +304,7 @@ public class StudentControllerTest extends BaseControllerTestRunner {
                 .andExpect(status().isNoContent())
                 .andReturn();
 
-        verify(studentServiceMock).dropFromParallel(eq(mockStudent.getId()), eq(mockParallel.getId()));
+        verify(studentServiceMock).dropFromParallelByUsername(eq(mockStudent.getUserName()), eq(mockParallel.getId()));
     }
 
     // Test7
@@ -346,4 +345,34 @@ public class StudentControllerTest extends BaseControllerTestRunner {
         verify(studentServiceMock).getParallelsFromCourseNextSemesterWhereLanguageIsChosen(eq(mockStudent.getId()), eq(String.valueOf(mockCourse.getLanguage())));
 
     }
-}
+
+
+
+    // Test8
+    @Test
+    @WithMockUser(roles = {"STUDENT"}, username = "student1234")
+    public void notStudentExceptionIsThrownWhenCallingTest() throws Exception {
+
+        Person mockStudent = new Student();
+        mockStudent.setId(1L);
+        mockStudent.setUserName("student1234");
+        mockStudent.setFirstName("Jan");
+        mockStudent.setLastName("Novak");
+
+        Parallel mockParallel = new Parallel();
+        mockParallel.setId(1L);
+        mockParallel.addStudent((Student) mockStudent);
+
+        Enrollment mockEnrollment = new Enrollment(mockParallel, (Student) mockStudent);
+        ((Student) mockStudent).addEnrollment(mockEnrollment);
+
+
+        // Perform the request
+        assertThrows(NotStudentException.class, () -> mockMvc.perform(delete("/student/enroll/{parallelId}", mockParallel.getId()))
+                .andExpect(status().isNoContent())
+                .andReturn());
+
+
+
+    }
+    }

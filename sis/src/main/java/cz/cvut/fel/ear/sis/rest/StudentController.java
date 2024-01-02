@@ -3,14 +3,17 @@ package cz.cvut.fel.ear.sis.rest;
 
 import cz.cvut.fel.ear.sis.model.Enrollment;
 import cz.cvut.fel.ear.sis.model.Parallel;
+import cz.cvut.fel.ear.sis.repository.StudentRepository;
 import cz.cvut.fel.ear.sis.security.model.CustomUserDetails;
 import cz.cvut.fel.ear.sis.service.StudentService;
 import cz.cvut.fel.ear.sis.utils.exception.*;
+import cz.cvut.fel.ear.sis.utils.exception.rest.NotStudentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
@@ -57,7 +60,7 @@ public class StudentController {
 
 
     ///////////////////////////////////
-    // SPECIAL GET WITH CRITERIA
+    // SPECIAL GET WITH CRITERIA API
     ///////////////////////////////////
 
 
@@ -87,10 +90,10 @@ public class StudentController {
 
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping(value = "/course", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Parallel>> listCoursesForNextSemester(Authentication auth) throws ParallelException {
+    public ResponseEntity<List<Parallel>> listCoursesForNextSemester(Authentication auth) throws ParallelException, NotStudentException {
+        User user = (User) auth.getPrincipal();
 
         List<Parallel> parallels = studentService.getAllParallelsForNextSemester();
-
         return new ResponseEntity<>(parallels, HttpStatus.OK);
     }
 
@@ -119,7 +122,6 @@ public class StudentController {
 
 //GET /student/report See report of all my enrollments including: semester, courseName, grade and status
 
-    //todo what does this mean, im pretty sure i dont still print out stuff
 
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping(value = "/report", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -140,9 +142,9 @@ public class StudentController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void enrollInParallelNextSemester(@PathVariable Long parallelId, Authentication auth)
             throws EnrollmentException, SemesterException, CourseException, ParallelException, StudentException {
-        Long studentId = ((CustomUserDetails) auth.getPrincipal()).getId();
-        studentService.enrollToParallel(studentId, parallelId);
-        LOG.debug("Enrolled student {} in parallel {} for the next semester.", studentId, parallelId);
+        User user = (User) auth.getPrincipal();
+        studentService.enrollToParallelByUsername(user.getUsername(), parallelId);
+        LOG.debug("Enrolled student {} in parallel {} for the next semester.", user.getUsername(), parallelId);
     }
 
     ///////////////////////////////////
@@ -153,7 +155,7 @@ public class StudentController {
     @DeleteMapping(value = "/enroll/{parallelId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void revertEnrollment(@PathVariable Long parallelId, Authentication auth)
-            throws EnrollmentException, SemesterException, ParallelException, StudentException {
+            throws EnrollmentException, SemesterException, ParallelException, StudentException, NotStudentException {
         User user = (User) auth.getPrincipal();
         studentService.dropFromParallelByUsername(user.getUsername(), parallelId);
         LOG.debug("Cancelled enrollment for student {} in parallel {} for next semester.", user.getUsername(), parallelId);

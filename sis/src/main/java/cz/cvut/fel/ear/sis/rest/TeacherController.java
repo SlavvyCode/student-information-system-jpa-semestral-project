@@ -63,7 +63,6 @@ public class TeacherController {
 
 
 
-//todo NotTeacherException
 
 
     ///////////////////////////////////
@@ -97,8 +96,6 @@ public class TeacherController {
 
 
 
-
-    //todo check if media type is correct
 
 
 

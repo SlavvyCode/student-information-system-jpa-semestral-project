@@ -46,7 +46,6 @@ public class Environment {
      *
      * @param user User to set as currently authenticated
      */
-    //todo
     public static void setCurrentUser(Person user) {
         final CustomUserDetails customUserDetails = new CustomUserDetails(user, new HashSet<>());
         SecurityContext context = new SecurityContextImpl();

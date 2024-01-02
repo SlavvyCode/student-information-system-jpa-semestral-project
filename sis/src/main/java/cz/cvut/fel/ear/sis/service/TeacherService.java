@@ -157,7 +157,6 @@ public class TeacherService {
 
 
 
-    //todo test this
     @Transactional
     public void updateCourse(long courseId, long teacherId, String courseName, String code, int ECTS,
                              Locale language) throws CourseException, PersonException {
@@ -235,10 +234,6 @@ public class TeacherService {
         courseRepository.save(oldCourse);
         courseRepository.save(course);
     }
-
-
-    // todo deleting
-    //  asi by bylo lechci udelat nejak kaskadove? vlastne jsme resili nejak jestli to ma smysl
 
 
 
