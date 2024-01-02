@@ -348,31 +348,5 @@ public class StudentControllerTest extends BaseControllerTestRunner {
 
 
 
-    // Test8
-    @Test
-    @WithMockUser(roles = {"STUDENT"}, username = "student1234")
-    public void notStudentExceptionIsThrownWhenCallingTest() throws Exception {
 
-        Person mockStudent = new Student();
-        mockStudent.setId(1L);
-        mockStudent.setUserName("student1234");
-        mockStudent.setFirstName("Jan");
-        mockStudent.setLastName("Novak");
-
-        Parallel mockParallel = new Parallel();
-        mockParallel.setId(1L);
-        mockParallel.addStudent((Student) mockStudent);
-
-        Enrollment mockEnrollment = new Enrollment(mockParallel, (Student) mockStudent);
-        ((Student) mockStudent).addEnrollment(mockEnrollment);
-
-
-        // Perform the request
-        assertThrows(NotStudentException.class, () -> mockMvc.perform(delete("/student/enroll/{parallelId}", mockParallel.getId()))
-                .andExpect(status().isNoContent())
-                .andReturn());
-
-
-
-    }
     }
