@@ -241,7 +241,7 @@ public class StudentService {
     }
 
     public List<Enrollment> getEnrollmentReportByUsername(String username) {
-        Student student = studentRepository.findByUsername(username).orElseThrow(()-> new StudentException("Student not found"));
+        Student student = studentRepository.findByUserName(username).orElseThrow(()-> new StudentException("Student not found"));
         return student.getMyEnrollments();
     }
 }
