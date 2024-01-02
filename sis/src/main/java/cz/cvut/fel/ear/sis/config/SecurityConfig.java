@@ -4,6 +4,7 @@ import cz.cvut.fel.ear.sis.repository.PersonRepository;
 import cz.cvut.fel.ear.sis.security.AuthenticationFailure;
 import cz.cvut.fel.ear.sis.security.AuthenticationSuccess;
 import cz.cvut.fel.ear.sis.service.security.CustomUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -15,6 +16,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -28,7 +30,6 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity     // Allows Spring Security
 @EnableMethodSecurity // Allow methods to be secured using annotation @PreAuthorize and @PostAuthorize
-@Profile("!test")
 public class SecurityConfig {
 
     private final ObjectMapper objectMapper;
@@ -38,13 +39,8 @@ public class SecurityConfig {
     private final PersonRepository personRepository;
 
 
-//    @Autowired
-//    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.userDetailsService(userDetailsServiceBean()).passwordEncoder(passwordEncoder());
-//    }
-
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userDetailsServiceBean()).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
     }
 
     @Bean
@@ -54,7 +50,7 @@ public class SecurityConfig {
 
 
     @Bean
-    public CustomUserDetailsService userDetailsServiceBean() {
+    public UserDetailsService userDetailsService() {
         return new CustomUserDetailsService(personRepository);
     }
 

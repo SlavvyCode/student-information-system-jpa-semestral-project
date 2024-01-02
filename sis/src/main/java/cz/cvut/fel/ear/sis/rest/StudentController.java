@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -99,8 +100,8 @@ public class StudentController {
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping(value = "/schedule/{semesterCode}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Parallel>> viewScheduleForSemester(@PathVariable String semesterCode, Authentication auth) throws ParallelException {
-        Long studentId = ((CustomUserDetails) auth.getPrincipal()).getId();
-        List<Parallel> schedule = studentService.getAllEnrolledParallelsForNextSemester(studentId, semesterCode);
+        User user = (User) auth.getPrincipal();
+        List<Parallel> schedule = studentService.getAllEnrolledParallelsForNextSemesterByStudentUsername(user.getUsername(), semesterCode);
         return new ResponseEntity<>(schedule, HttpStatus.OK);
     }
 
@@ -123,8 +124,8 @@ public class StudentController {
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping(value = "/report", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Enrollment>> viewEnrollmentReport(Authentication auth) throws StudentException {
-        Long studentId = ((CustomUserDetails) auth.getPrincipal()).getId();
-        List<Enrollment> report = studentService.getEnrollmentReport(studentId);
+        User user = (User) auth.getPrincipal();
+        List<Enrollment> report = studentService.getEnrollmentReportByUsername(user.getUsername());
         return new ResponseEntity<>(report, HttpStatus.OK);
     }
 
@@ -153,9 +154,9 @@ public class StudentController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void revertEnrollment(@PathVariable Long parallelId, Authentication auth)
             throws EnrollmentException, SemesterException, ParallelException, StudentException {
-        Long studentId = ((CustomUserDetails) auth.getPrincipal()).getId();
-        studentService.dropFromParallel(studentId, parallelId);
-        LOG.debug("Cancelled enrollment for student {} in parallel {} for next semester.", studentId, parallelId);
+        User user = (User) auth.getPrincipal();
+        studentService.dropFromParallelByUsername(user.getUsername(), parallelId);
+        LOG.debug("Cancelled enrollment for student {} in parallel {} for next semester.", user.getUsername(), parallelId);
     }
 
 

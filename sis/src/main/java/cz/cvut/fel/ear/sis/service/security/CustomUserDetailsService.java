@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements org.springframework.security.co
     }
 
     @Override
-    public CustomUserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         final Person user = personRepository.findByUserName(username);
 
         if (user == null) {
@@ -36,9 +36,7 @@ public class CustomUserDetailsService implements org.springframework.security.co
         Set<GrantedAuthority> authorities = new HashSet<>();
         authorities.add(new SimpleGrantedAuthority(user.getRole()));
 
-        CustomUserDetails customUserDetail = new CustomUserDetails(user);
-        customUserDetail.setAuthorities(authorities);
-
+        UserDetails customUserDetail = User.withUsername(user.getUserName()).password(user.getPassword()).authorities(authorities).build();
         return customUserDetail;
 
 
