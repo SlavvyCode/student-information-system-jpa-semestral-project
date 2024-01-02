@@ -91,4 +91,20 @@ public class Enrollment {
         this.parallel = parallel;
     }
 
+
+
+
+
+    @PreRemove
+    private void preRemove() {
+        if (parallel != null) {
+            parallel.getEnrollments().remove(this);
+            parallel.getStudents().remove(student);
+            parallel = null;
+        }
+        if (student != null) {
+            student.getMyEnrollments().remove(this);
+            student = null;
+        }
+    }
 }

@@ -10,6 +10,7 @@ import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
 import cz.cvut.fel.ear.sis.utils.enums.SemesterType;
 import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
 import cz.cvut.fel.ear.sis.utils.exception.*;
+import jakarta.persistence.EntityManager;
 import org.h2.server.Service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.Locale;
+import java.util.Optional;
 
 @SpringBootTest
 @Transactional
@@ -39,6 +41,10 @@ import java.util.Locale;
 public class StudentTest {
 
 
+    @Autowired
+    ParallelRepository parallelRepository;
+    @Autowired
+    EntityManager em;
 
     @Autowired
     PersonService personService;
@@ -119,6 +125,10 @@ public class StudentTest {
 
     }
 
+
+
+
+    ///CASCADE REMOVE TEST
     @Test
     @Transactional
     public void checkIfEnrollmentCascadeDeletesAlongWithStudent() throws PersonException, CourseException, SemesterException, ParallelException, ClassroomException, StudentException, EnrollmentException {
@@ -154,24 +164,49 @@ public class StudentTest {
         Parallel parallel = teacherService.createParallel
                 (teacher.getId(), parallelCapacity, timeSlot,dayOfWeek, semester.getId(), classroom.getId(), course.getId());
 
+        Parallel parallel1 = teacherService.createParallel
+                (teacher.getId(), parallelCapacity, timeSlot,DayOfWeek.THU, semester.getId(), classroom.getId(), course.getId());
+
+
+        parallelRepository.save(parallel);
+        parallelRepository.save(parallel1);
+
+
         //enroll student
         studentService.enrollToParallel(student.getId(), parallel.getId());
 
+        Enrollment enrollment = enrollmentRepository.findByStudent_IdAndParallel_Id(student.getId(), parallel.getId());
+
+        long enrollmentId = enrollment.getId();
         //check that student is enrolled
         Assertions.assertEquals(1, studentService.getMyEnrollments(student.getId()).size());
 
         //delete student
+
+        em.refresh(student);
+        em.refresh(parallel);
+
+
+        em.flush();
+        em.clear();
         adminService.deleteStudent(student.getId());
 
+
+        //check that student is deleted
+        Assertions.assertNull(studentRepository.findById(student.getId()).orElse(null));
+
+        Assertions.assertNotNull(parallelRepository.findById(parallel.getId()));
+
+        Assertions.assertNotNull(parallelRepository.findById(parallel1.getId()));
+
+        Optional<Enrollment> enrollmentAfterDeletion = Optional.ofNullable(enrollmentRepository.findById(enrollmentId).orElse(null));
+
+        Assertions.assertEquals(Optional.empty(),enrollmentAfterDeletion);
         //check that student is deleted
         Assertions.assertNull(studentRepository.findById(student.getId()).orElse(null));
 
         //check that enrollment is deleted
         Assertions.assertNull(enrollmentRepository.findByStudent_IdAndParallel_Id(student.getId(), parallel.getId()));
-
-
-
-
 
     }
 

@@ -11,8 +11,9 @@ import java.util.List;
 @DiscriminatorValue("STUDENT")
 public class Student extends Person {
 
-    @OneToMany(cascade=CascadeType.REMOVE)
-    @JoinColumn(name = "student_id")
+
+    ///CASCADE REMOVE
+    @OneToMany( cascade = CascadeType.REMOVE, orphanRemoval = true)    @JoinColumn(name = "student_id")
     @JsonManagedReference("student_enrollments")
     private List<Enrollment> myEnrollments = new ArrayList<>();
 
@@ -38,4 +39,18 @@ public class Student extends Person {
     public void removeEnrollment(Enrollment enrollment) {
         myEnrollments.remove(enrollment);
     }
+
+    @PreRemove
+    private void removeStudentFromEnrollments() {
+        for (Enrollment enrollment : myEnrollments) {
+
+            enrollment.getParallel().removeStudent(this);
+            enrollment.getParallel().removeEnrollment(enrollment);
+
+            enrollment.setStudent(null);
+            enrollment.setParallel(null);
+        }
+        myEnrollments.clear();
+    }
+
 }
