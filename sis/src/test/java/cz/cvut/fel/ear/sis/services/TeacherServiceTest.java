@@ -65,7 +65,8 @@ public class TeacherServiceTest {
     @Transactional
     public void createCourseAndParallelTest() throws PersonException, CourseException, CourseException, ParallelException, SemesterException, ClassroomException {
         //create teacher
-        Person teacher = personService.createANewPerson("Jirka", "Velebil", "jv@fel.cz", "1254456789", ageOver18, "Jnovak125984", "teacherKeyPass");
+        Person teacher = personService.
+                createANewPerson("Jirka", "Velebil", "jv@fel.cz", "1254456789", ageOver18, "Jnovak125984", "teacherKeyPass");
 
         String courseName = "Math";
         String courseCode = "MATH123";

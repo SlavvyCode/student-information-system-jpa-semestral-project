@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpHeaders;
 
@@ -72,11 +73,16 @@ public class TeacherController {
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @GetMapping(value = "/course", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Course>> listMyCourses(Authentication auth) {
-        //this line breaks it all
-        Long teacherId = ((UserDetails) auth.getPrincipal()).getId();
+        // Ensure loggedInUser's principal is an instance of CustomUserDetails
+        if (!(auth.getPrincipal() instanceof CustomUserDetails)) {
+            throw new IllegalStateException("UserDetails not found in the security context");
+        }
+
+        CustomUserDetails customUserDetails = (CustomUserDetails) auth.getPrincipal();
+        Long teacherId = customUserDetails.getId();
+
         List<Course> courses = teacherService.getCourseByTeacherId(teacherId);
         return new ResponseEntity<>(courses, HttpStatus.OK);
-
     }
 
 

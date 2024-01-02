@@ -2,8 +2,10 @@ package cz.cvut.fel.ear.sis.service;
 
 import cz.cvut.fel.ear.sis.model.Classroom;
 import cz.cvut.fel.ear.sis.model.Semester;
+import cz.cvut.fel.ear.sis.model.Student;
 import cz.cvut.fel.ear.sis.repository.ClassroomRepository;
 import cz.cvut.fel.ear.sis.repository.SemesterRepository;
+import cz.cvut.fel.ear.sis.repository.StudentRepository;
 import cz.cvut.fel.ear.sis.utils.enums.SemesterType;
 import cz.cvut.fel.ear.sis.utils.exception.ClassroomException;
 import cz.cvut.fel.ear.sis.utils.exception.SemesterException;
@@ -19,14 +21,17 @@ public class AdminService {
 
     private final SemesterRepository semesterRepository;
     private final ClassroomRepository classroomRepository;
+    private final StudentRepository studentRepository;
 
     @Autowired
     public AdminService(
             SemesterRepository semesterRepository,
-            ClassroomRepository classroomRepository
+            ClassroomRepository classroomRepository,
+            StudentRepository studentRepository
     ){
         this.semesterRepository = semesterRepository;
         this.classroomRepository = classroomRepository;
+        this.studentRepository = studentRepository;
     }
 
     @Transactional
@@ -93,5 +98,18 @@ public class AdminService {
     @Transactional
     public List<Classroom> getAllClassrooms(){
         return classroomRepository.findAll();
+    }
+
+    @Transactional
+    public boolean deleteStudent(long studentId){
+
+        Optional<Student> studentOptional =  studentRepository.findById(studentId);
+        if (studentOptional.isPresent()) {
+            Student student = studentOptional.get();
+            studentRepository.delete(student);
+            return true; // Student was found and deleted
+        } else {
+            return false; // Student with the given ID does not exist
+        }
     }
 }

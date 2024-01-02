@@ -1,10 +1,15 @@
 package cz.cvut.fel.ear.sis.dao;
 
-import cz.cvut.fel.ear.sis.model.Person;
-import cz.cvut.fel.ear.sis.repository.PersonRepository;
-import cz.cvut.fel.ear.sis.repository.StudentRepository;
+import cz.cvut.fel.ear.sis.model.*;
+import cz.cvut.fel.ear.sis.repository.*;
+import cz.cvut.fel.ear.sis.service.AdminService;
 import cz.cvut.fel.ear.sis.service.PersonService;
-import cz.cvut.fel.ear.sis.utils.exception.PersonException;
+import cz.cvut.fel.ear.sis.service.StudentService;
+import cz.cvut.fel.ear.sis.service.TeacherService;
+import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
+import cz.cvut.fel.ear.sis.utils.enums.SemesterType;
+import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
+import cz.cvut.fel.ear.sis.utils.exception.*;
 import org.h2.server.Service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -23,6 +28,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.Locale;
 
 @SpringBootTest
 @Transactional
@@ -33,13 +39,29 @@ import java.time.LocalDate;
 public class StudentTest {
 
 
+
     @Autowired
     PersonService personService;
+    @Autowired
+    TeacherService teacherService;
+
+    @Autowired
+    ClassroomRepository classroomRepository;
+    @Autowired
+    SemesterRepository semesterRepository;
+
 
     @Autowired
     PersonRepository personRepository;
     @Autowired
     StudentRepository studentRepository;
+
+    @Autowired
+    StudentService studentService;
+    @Autowired
+    AdminService adminService;
+    @Autowired
+    EnrollmentRepository enrollmentRepository;
 
     private LocalDate ageOver18 = LocalDate.of(2000, 2, 2);
 
@@ -94,6 +116,62 @@ public class StudentTest {
 
         studentRepository.findAll();
         Assertions.assertEquals(1, studentRepository.findAll().size());
+
+    }
+
+    @Test
+    @Transactional
+    public void checkIfEnrollmentCascadeDeletesAlongWithStudent() throws PersonException, CourseException, SemesterException, ParallelException, ClassroomException, StudentException, EnrollmentException {
+        //make new parallel teacher student and course and enroll the student then delete student and check if enrollmetn si missing
+
+        Person admin = personService.createANewPerson("Jirka", "Velebil", "jv@fel.cz", "1254456789", ageOver18, "Jnovak125984", "adminKeyPass");
+        Person student = personService.createANewPerson("Jan", "Novak", "jn4544@fel.cz", "123456789", ageOver18, "Jnovak125984", "studentKeyPass");
+        Person teacher = personService.createANewPerson("Petr", "Fifka", "velebil@fel.cz", "123688788", ageOver18, "Jnovak125984", "teacherKeyPass");
+
+        //make course and enroll student
+
+        String courseName = "Math";
+        String courseCode = "MATH123";
+        int ECTS = 5;
+        Locale language = Locale.ENGLISH;
+        Course course = teacherService.
+                createCourse(teacher.getId(), courseName, courseCode, ECTS, language);
+        SemesterType semesterType = SemesterType.SPRING;
+        int year = 2024;
+        Semester semester = new Semester(year, semesterType);
+
+        semesterRepository.save(semester);
+
+        int classroomCapacity = 30;
+        Classroom classroom = new Classroom("T9:123", classroomCapacity);
+        classroomRepository.save(classroom);
+
+        DayOfWeek dayOfWeek = DayOfWeek.MON;
+        TimeSlot timeSlot = TimeSlot.SLOT1;
+
+        int parallelCapacity = 30;
+        //create parallel
+        Parallel parallel = teacherService.createParallel
+                (teacher.getId(), parallelCapacity, timeSlot,dayOfWeek, semester.getId(), classroom.getId(), course.getId());
+
+        //enroll student
+        studentService.enrollToParallel(student.getId(), parallel.getId());
+
+        //check that student is enrolled
+        Assertions.assertEquals(1, studentService.getMyEnrollments(student.getId()).size());
+
+        //delete student
+        adminService.deleteStudent(student.getId());
+
+        //check that student is deleted
+        Assertions.assertNull(studentRepository.findById(student.getId()).orElse(null));
+
+        //check that enrollment is deleted
+        Assertions.assertNull(enrollmentRepository.findByStudent_IdAndParallel_Id(student.getId(), parallel.getId()));
+
+
+
+
 
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 @DiscriminatorValue("STUDENT")
 public class Student extends Person {
 
-    @OneToMany
+    @OneToMany(cascade=CascadeType.REMOVE)
     @JoinColumn(name = "student_id")
     @JsonManagedReference("student_enrollments")
     private List<Enrollment> myEnrollments = new ArrayList<>();
