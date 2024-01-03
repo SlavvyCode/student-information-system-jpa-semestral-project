@@ -336,4 +336,8 @@ public class TeacherService {
         return getCoursesByTeacherUsername(username);
     }
 
+    public Teacher getTeacherByUsername(String username) {
+
+        return teacherRepository.findByUserName(username);
+    }
 }

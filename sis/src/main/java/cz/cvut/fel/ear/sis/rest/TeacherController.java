@@ -149,9 +149,10 @@ public class TeacherController {
 
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @PostMapping(value = "/course", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Course> createCourse(@RequestParam Long courseId, @RequestParam String courseName,
-                                               @RequestParam String code, @RequestParam int ECTS,
-                                               @RequestParam String language) throws CourseException, PersonException {
+    public ResponseEntity<Course> createCourse(@RequestParam String courseName,
+                                               @RequestParam String code,
+                                               @RequestParam int ECTS,
+                                               @RequestParam String language)   throws CourseException, PersonException {
 
         //ensure that the language is a valid locale
 
@@ -168,11 +169,17 @@ public class TeacherController {
             locale = Locale.getDefault();
         }
 
-        teacherService.createCourse(courseId, courseName, code, ECTS, locale);
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        //get teacherId
+        Long teacherId = teacherService.getTeacherByUsername(user.getUsername()).getId();
+
+
+        teacherService.createCourse(teacherId, courseName, code, ECTS, locale);
 
 
         LOG.debug("Created course {}.", courseName);
-        final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/{id}", courseId);
+        final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/{id}", teacherId);
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
@@ -190,8 +197,13 @@ public class TeacherController {
 
         Course course = teacherService.getCourseById(courseId).orElseThrow(() -> new CourseException("Course not found"));
 
-        Parallel parallel = teacherService.createParallel(courseId, capacity, TimeSlot.valueOf(timeSlot),
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        long teacherId = teacherService.getTeacherByUsername(user.getUsername()).getId();
+
+
+        Parallel parallel = teacherService.createParallel(teacherId, capacity, TimeSlot.valueOf(timeSlot),
                 DayOfWeek.valueOf(dayOfWeek), semesterId, classroomId, courseId);
+
 
         LOG.debug("Created parallel {} for course {}.", parallel.getId(), course.getName());
         final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/{id}", parallel.getId());

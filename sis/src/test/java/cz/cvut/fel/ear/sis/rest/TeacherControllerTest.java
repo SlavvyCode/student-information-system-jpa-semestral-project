@@ -8,6 +8,8 @@ import cz.cvut.fel.ear.sis.repository.*;
 import cz.cvut.fel.ear.sis.service.PersonService;
 import cz.cvut.fel.ear.sis.service.TeacherService;
 import cz.cvut.fel.ear.sis.utils.enums.*;
+import cz.cvut.fel.ear.sis.utils.exception.CourseException;
+import cz.cvut.fel.ear.sis.utils.exception.PersonException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -99,6 +101,7 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
             return new TeacherController(teacherService);
         }
     }
+
 
 
 
@@ -341,9 +344,11 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
         mockParallel.setCourse(mockCourse);
 
         // Mock service response
-        when(teacherServiceMock.createParallel(eq(mockCourse.getId()), anyInt(), any(TimeSlot.class), any(DayOfWeek.class),
+        when(teacherServiceMock.createParallel(eq(mockTeacher.getId()), anyInt(), any(TimeSlot.class), any(DayOfWeek.class),
                 anyLong(), anyLong(), eq(mockCourse.getId()))).thenReturn(mockParallel);
 
+//        teacherService.getTeacherByUsername(user.getUsername()).getId()
+        when(teacherServiceMock.getTeacherByUsername(anyString())).thenReturn((Teacher) mockTeacher);
 
 //        createParallel(@PathVariable Long courseId,
 //                                                   @RequestParam int capacity, @RequestParam String timeSlot,
@@ -362,8 +367,35 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
 
 
         // Verify that the createParallel method was called with the expected parameters
-        verify(teacherServiceMock).createParallel(eq(mockCourse.getId()), eq(30), eq(TimeSlot.SLOT1),
+        verify(teacherServiceMock).createParallel(eq(mockTeacher.getId()), eq(30), eq(TimeSlot.SLOT1),
                 eq(DayOfWeek.MON), eq(123L), eq(456L), eq(mockCourse.getId()));
     }
 
+    @Test
+    @WithMockUser(roles = {"TEACHER"})
+    public void createCourseTestCreatesCourse() throws Exception {
+        Person mockTeacher = new Teacher();
+        mockTeacher.setId(1L);
+
+        // Mock service response
+        when(teacherServiceMock.createCourse(eq(mockTeacher.getId()), anyString(), anyString(), anyInt(), any(Locale.class))).thenReturn(new Course());
+        when(teacherServiceMock.getTeacherByUsername(anyString())).thenReturn((Teacher) mockTeacher);
+
+        // Perform the request
+
+        mockMvc.perform(post("/teacher/course")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .param("courseName", "Math")
+                        .param("code", "MATH123")
+                        .param("ECTS", "5")
+                        .param("language", "en"))
+                .andExpect(status().isCreated())
+                .andReturn();
+
+        // Verify that the createCourse method was called with the expected parameters
+        verify(teacherServiceMock).createCourse(eq(mockTeacher.getId()), eq("Math"), eq("MATH123"), eq(5), eq(Locale.ENGLISH));
+
+
+
+    }
 }
