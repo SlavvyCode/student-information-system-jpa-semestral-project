@@ -43,6 +43,14 @@ public class SecurityConfig {
         auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
     }
 
+//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+//        auth.inMemoryAuthentication()
+//                .withUser("user") // Add your in-memory users here
+//                .password(passwordEncoder().encode("password"))
+//                .roles("USER");
+//    }
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -72,8 +80,15 @@ public class SecurityConfig {
             .cors(conf -> conf.configurationSource(corsConfigurationSource()))
             .headers(customizer -> customizer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
             // Use custom success and failure handlers
-            .formLogin(fl -> fl.successHandler(authSuccess)
-                               .failureHandler(authenticationFailureHandler()))
+//            .formLogin(fl -> fl.successHandler(authSuccess)
+//                               .failureHandler(authenticationFailureHandler()))
+            .formLogin(fl->fl.loginProcessingUrl("/login")
+                    .successHandler(authSuccess)
+                    .failureHandler(authenticationFailureHandler())
+                    .usernameParameter("userName")
+                    .passwordParameter("password")
+                    .permitAll())
+
             .logout(lgt -> lgt.logoutSuccessHandler(authSuccess));
         return http.build();
     }

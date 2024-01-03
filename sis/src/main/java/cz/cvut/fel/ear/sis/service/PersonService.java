@@ -57,6 +57,7 @@ public class PersonService {
             case "adminKeyPass" -> new Admin(firstName, lastName, email, phoneNumber, birthDate, userName, password);
             default -> throw new PersonException("KeyPass is not valid");
         };
+
         personRepository.save(person);
         return person;
     }

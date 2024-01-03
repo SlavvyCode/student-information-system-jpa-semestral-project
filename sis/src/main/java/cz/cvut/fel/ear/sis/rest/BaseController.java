@@ -37,8 +37,8 @@ public class BaseController {
                 body.password,
                 body.roleKeypass
         );
-        final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/me");
-        return new ResponseEntity<>(headers, HttpStatus.CREATED);
+//        final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/me");
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
 }
