@@ -332,7 +332,7 @@ public class StudentControllerTest extends BaseControllerTestRunner {
         when(studentServiceMock.getParallelsFromCourseNextSemesterWhereLanguageIsChosen(eq(mockStudent.getId()), eq(String.valueOf(mockCourse.getLanguage())))).thenReturn(Collections.singletonList(mockParallel));
 
         // Perform the request
-        MvcResult result = mockMvc.perform(delete("/student/parallel/{courseId}/{language}", mockParallel.getId(), mockCourse.getLanguage()))
+        MvcResult result = mockMvc.perform(get("/student/parallel/{courseId}/{language}", mockParallel.getId(), mockCourse.getLanguage()))
                 .andExpect(status().isOk())
                 .andReturn();
 

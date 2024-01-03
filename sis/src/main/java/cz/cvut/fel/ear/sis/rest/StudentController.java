@@ -68,7 +68,7 @@ public class StudentController {
     //GET /student/parallel/{courseId}/{language} List all parallels for a given course available the next semester
 
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    @DeleteMapping(value = "/parallel/{courseId}/{language}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/parallel/{courseId}/{language}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Parallel>> listParallelsForCourseNextSemesterWithCourseIdLanguageCriteriaAPI(@PathVariable Long courseId, @PathVariable String language) {
         List<Parallel> parallels = studentService.getParallelsFromCourseNextSemesterWhereLanguageIsChosen(courseId, language);
         return new ResponseEntity<>(parallels, HttpStatus.OK);
