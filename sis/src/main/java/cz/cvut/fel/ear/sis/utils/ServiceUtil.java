@@ -15,32 +15,37 @@ public class ServiceUtil {
 
 
 
-    public static LocalDate getNextSemesterStartDate(){
-
-        SemesterType nextSemesterType;
-
-        int nextSemesterYear = LocalDate.now().getYear();
-
-        //if now is during spring semester, current semester is spring
-        if(LocalDate.now().isAfter( LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getStartDate().getMonth(), SemesterType.SPRING.getStartDate().getDayOfMonth() ))
-                && LocalDate.now().isBefore(LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getEndDate().getMonth(), SemesterType.SPRING.getEndDate().getDayOfMonth())))
-
-            nextSemesterType = SemesterType.FALL;
-        else
-            nextSemesterType = SemesterType.SPRING;
+//    public static LocalDate getNextSemesterStartDate(){
 
 
 
-        if(nextSemesterType == SemesterType.SPRING)
-            nextSemesterYear++;
 
 
-        LocalDate nextSemesterStartDate = LocalDate.of(nextSemesterYear, nextSemesterType.getStartDate().getMonth(), nextSemesterType.getStartDate().getDayOfMonth());
-
-        return nextSemesterStartDate;
+//        SemesterType nextSemesterType;
 
 
-    }
+//        int nextSemesterYear = LocalDate.now().getYear();
+//
+//        //if now is during spring semester, current semester is spring
+//        if(LocalDate.now().isAfter( LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getStartDate().getMonth(), SemesterType.SPRING.getStartDate().getDayOfMonth() ))
+//                && LocalDate.now().isBefore(LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getEndDate().getMonth(), SemesterType.SPRING.getEndDate().getDayOfMonth())))
+//
+//            nextSemesterType = SemesterType.FALL;
+//        else
+//            nextSemesterType = SemesterType.SPRING;
+//
+//
+//
+//        if(nextSemesterType == SemesterType.SPRING)
+//            nextSemesterYear++;
+//
+//
+//        LocalDate nextSemesterStartDate = LocalDate.of(nextSemesterYear, nextSemesterType.getStartDate().getMonth(), nextSemesterType.getStartDate().getDayOfMonth());
+//
+//        return nextSemesterStartDate;
+
+
+//    }
 
 
 

@@ -49,7 +49,7 @@ public class StudentController {
      */
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping(value = "/parallel/{courseId}/{language}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Parallel>> listParallelsForCourseNextSemesterWithCourseIdLanguageCriteriaAPI(@PathVariable Long courseId, @PathVariable String language) {
+    public ResponseEntity<List<Parallel>> listParallelsForCourseNextSemesterWithCourseIdLanguageCriteriaAPI(@PathVariable Long courseId, @PathVariable String language) throws SemesterException {
         List<Parallel> parallels = studentService.getParallelsFromCourseNextSemesterWhereLanguageIsChosen(courseId, language);
         return new ResponseEntity<>(parallels, HttpStatus.OK);
     }
@@ -62,7 +62,7 @@ public class StudentController {
      */
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping(value = "/course", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Parallel>> listCoursesForNextSemester() throws ParallelException {
+    public ResponseEntity<List<Parallel>> listCoursesForNextSemester() throws ParallelException, SemesterException {
         List<Parallel> parallels = studentService.getAllParallelsForNextSemester();
         return new ResponseEntity<>(parallels, HttpStatus.OK);
     }
@@ -90,7 +90,7 @@ public class StudentController {
      */
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping(value = "/parallel/{courseId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Parallel>> listParallelsForCourseNextSemester(@PathVariable Long courseId) {
+    public ResponseEntity<List<Parallel>> listParallelsForCourseNextSemester(@PathVariable Long courseId) throws SemesterException {
         List<Parallel> parallels = studentService.getParallelsForCourseNextSemester(courseId);
         return new ResponseEntity<>(parallels, HttpStatus.OK);
     }
@@ -139,7 +139,7 @@ public class StudentController {
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @DeleteMapping(value = "/enroll/{parallelId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void revertEnrollment(@PathVariable Long parallelId, Authentication auth) throws ParallelException, StudentException {
+    public void revertEnrollment(@PathVariable Long parallelId, Authentication auth) throws ParallelException, StudentException, SemesterException, EnrollmentException {
         User user = (User) auth.getPrincipal();
         studentService.dropFromParallelByUsername(user.getUsername(), parallelId);
         LOG.debug("Cancelled enrollment for student {} in parallel {} for next semester.", user.getUsername(), parallelId);

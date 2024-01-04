@@ -3,6 +3,7 @@ package cz.cvut.fel.ear.sis.services;
 import cz.cvut.fel.ear.sis.model.*;
 import cz.cvut.fel.ear.sis.model.Enrollment;
 import cz.cvut.fel.ear.sis.repository.*;
+import cz.cvut.fel.ear.sis.service.AdminService;
 import cz.cvut.fel.ear.sis.service.PersonService;
 import cz.cvut.fel.ear.sis.service.StudentService;
 import cz.cvut.fel.ear.sis.service.TeacherService;
@@ -45,12 +46,10 @@ public class StudentServiceTest {
     EnrollmentRepository enrollmentRepository;
 
 
-
-
-
     @Autowired
     PersonService personService;
-
+    @Autowired
+    AdminService adminService;
     @Autowired
     TeacherService teacherService;
     @Autowired
@@ -67,7 +66,6 @@ public class StudentServiceTest {
         Person studentPerson = personService.createANewPerson("Jan", "Novak", "jn4544@fel.cz", "123456789", ageOver18, "Jnovak125984", "studentKeyPass");
         Person teacher  = personService.createANewPerson("Petr", "Fifka", "velebil@fel.cz", "123688788", ageOver18, "Jnovak125984", "teacherKeyPass");
 
-
         Student student = (Student) studentPerson;
 
         Assertions.assertEquals(0, studentService.getMyEnrollments(student.getId()).size());
@@ -81,23 +79,16 @@ public class StudentServiceTest {
         Course course = teacherService.
                 createCourse(teacher.getId(), courseName, courseCode, ECTS, language);
 
-        SemesterType semesterType;
-
-
-        if(LocalDate.now().isAfter( LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getStartDate().getMonth(), SemesterType.SPRING.getStartDate().getDayOfMonth() ))
-                && LocalDate.now().isBefore(LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getEndDate().getMonth(), SemesterType.SPRING.getEndDate().getDayOfMonth())))
-            semesterType = SemesterType.SPRING;
-        else
-            semesterType = SemesterType.FALL;
 
 
 
-        int year = LocalDate.now().getYear();
 
-        Semester semester = new Semester(year, semesterType);
+        Semester currentSemester = new Semester(2024, SemesterType.SPRING);
+        Semester nextSemester = new Semester(2024, SemesterType.FALL);
 
-//        Semester semester = new Semester(year, semesterType);
-        semesterRepository.save(semester);
+        adminService.setActiveSemester(currentSemester);
+
+        semesterRepository.save(nextSemester);
 
         int classroomCapacity = 30;
         Classroom classroom = new Classroom("T9:123", classroomCapacity);
@@ -111,7 +102,7 @@ public class StudentServiceTest {
 
         //create parallel
         Parallel parallel = teacherService.createParallel
-                (teacher.getId(), parallelCapacity, timeSlot, dayOfWeek, semester.getId(), classroom.getId(), course.getId());
+                (teacher.getId(), parallelCapacity, timeSlot, dayOfWeek, nextSemester.getId(), classroom.getId(), course.getId());
 
 
         //enroll student in parallel
@@ -180,22 +171,12 @@ public class StudentServiceTest {
         Course course = teacherService.
                 createCourse(teacher.getId(), courseName, courseCode, ECTS, language);
 
-        SemesterType semesterType;
-
-
-        if(LocalDate.now().isAfter( LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getStartDate().getMonth(), SemesterType.SPRING.getStartDate().getDayOfMonth() ))
-                && LocalDate.now().isBefore(LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getEndDate().getMonth(), SemesterType.SPRING.getEndDate().getDayOfMonth())))
-            semesterType = SemesterType.SPRING;
-        else
-            semesterType = SemesterType.FALL;
 
 
 
-        int year = LocalDate.now().getYear();
 
-        Semester semester = new Semester(year, semesterType);
 
-//        Semester semester = new Semester(year, semesterType);
+        Semester semester = new Semester(2024, SemesterType.FALL);
         semesterRepository.save(semester);
 
         int classroomCapacity = 30;
@@ -218,7 +199,7 @@ public class StudentServiceTest {
 
 
 
-//check that student is enrolled in parallel
+        //check that student is enrolled in parallel
         assert (studentService.getMyEnrollments(student.getId()).contains(enrollment));
 
     }

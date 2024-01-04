@@ -17,4 +17,6 @@ public interface SemesterRepository extends JpaRepository<Semester, Long> {
 
     Optional<Semester> findSemesterByIsActiveIsTrue();
 
+
+
 }

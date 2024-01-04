@@ -9,7 +9,9 @@ import cz.cvut.fel.ear.sis.utils.enums.Status;
 import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
 import cz.cvut.fel.ear.sis.utils.exception.EnrollmentException;
 import cz.cvut.fel.ear.sis.utils.exception.ParallelException;
+import cz.cvut.fel.ear.sis.utils.exception.SemesterException;
 import cz.cvut.fel.ear.sis.utils.exception.StudentException;
+import cz.cvut.fel.ear.sis.utils.exception.rest.NotStudentException;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -82,35 +84,8 @@ public class StudentService {
         return enrollment;
     }
 
-    /**
-     * Drops a student from a parallel.
-     *
-     * @param studentId  The ID of the student to drop.
-     * @param parallelId The ID of the parallel to drop from.
-     * @throws ParallelException If the parallel is not found.
-     * @throws StudentException  If the student is not found or not enrolled in the parallel.
-     */
-    @Transactional
-    public void dropFromParallel(long studentId, long parallelId) throws ParallelException, StudentException {
-        Student student = studentRepository.findById(studentId).orElseThrow(()-> new StudentException("Student not found"));
-
-        Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
-        if(!parallel.getStudents().contains(student))
-            throw new StudentException("Student is not enrolled in this parallel");
-
-        Enrollment enrollmentToDrop = enrollmentRepository.findByStudent_IdAndParallel_Id(studentId, parallelId);
-        if (enrollmentToDrop == null)
-            throw new StudentException("Student is not enrolled in this parallel");
 
 
-        student.removeEnrollment(enrollmentToDrop);
-        parallel.removeStudent(student);
-
-        enrollmentRepository.delete(enrollmentToDrop);
-        parallelRepository.save(parallel);
-        studentRepository.save(student);
-
-    }
 
     /**
      * Retrieves a list of enrollments for a given student.
@@ -217,8 +192,13 @@ public class StudentService {
      * @return List of Parallel objects for the next semester.
      * @throws ParallelException If parallels are not found for the next semester.
      */
-    public List<Parallel> getAllParallelsForNextSemester() throws ParallelException {
-        return parallelRepository.findAllBySemester_StartDate(ServiceUtil.getNextSemesterStartDate());
+    public List<Parallel> getAllParallelsForNextSemester() throws ParallelException, SemesterException {
+        Semester activeSemester =  semesterRepository.findSemesterByIsActiveIsTrue().orElseThrow(()-> new SemesterException("Active semester not found"));
+        Semester nextSemester = semesterRepository.findByStartDate(activeSemester.getStartDate().plusYears(1));
+        LocalDate nextSemesterStartDate = nextSemester.getStartDate();
+
+
+        return parallelRepository.findAllBySemester_StartDate(nextSemesterStartDate);
     }
 
     /**
@@ -241,17 +221,22 @@ public class StudentService {
      * @param courseId The ID of the course.
      * @return List of Parallel objects for the course in the next semester.
      */
-    public List<Parallel> getParallelsForCourseNextSemester(Long courseId) {
-        return parallelRepository.findAllByCourse_IdAndSemester_StartDate(courseId, ServiceUtil.getNextSemesterStartDate());
+    public List<Parallel> getParallelsForCourseNextSemester(Long courseId) throws SemesterException {
+        Semester activeSemester =  semesterRepository.findSemesterByIsActiveIsTrue().orElseThrow(()-> new SemesterException("Active semester not found"));
+        Semester nextSemester = semesterRepository.findByStartDate(activeSemester.getStartDate().plusYears(1));
+        LocalDate nextSemesterStartDate = nextSemester.getStartDate();
+
+        return parallelRepository.findAllByCourse_IdAndSemester_StartDate(courseId, nextSemesterStartDate);
     }
 
-    /**
-     * Retrieves an enrollment report for a student.
-     *
-     * @param studentId The ID of the student.
-     * @return List of Enrollment objects for the student.
-     * @throws StudentException If the student is not found.
-     */
+
+        /**
+         * Retrieves an enrollment report for a student.
+         *
+         * @param studentId The ID of the student.
+         * @return List of Enrollment objects for the student.
+         * @throws StudentException If the student is not found.
+         */
     public List<Enrollment> getEnrollmentReport(Long studentId) throws StudentException {
         Student student = studentRepository.findById(studentId).orElseThrow(()-> new StudentException("Student not found"));
         return student.getMyEnrollments();
@@ -265,12 +250,19 @@ public class StudentService {
      * @param language The language chosen for the course.
      * @return List of Parallel objects for the course in the next semester with the chosen language.
      */
-    public List<Parallel> getParallelsFromCourseNextSemesterWhereLanguageIsChosen(Long courseId, String language) {
+    public List<Parallel> getParallelsFromCourseNextSemesterWhereLanguageIsChosen(Long courseId, String language) throws SemesterException {
         CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
         CriteriaQuery<Parallel> criteriaQuery = criteriaBuilder.createQuery(Parallel.class);
         Root<Parallel> from = criteriaQuery.from(Parallel.class);
+
+        Semester activeSemester =  semesterRepository.findSemesterByIsActiveIsTrue().orElseThrow(()-> new SemesterException("Active semester not found"));
+        Semester nextSemester = semesterRepository.findByStartDate(activeSemester.getStartDate().plusYears(1));
+
+
         criteriaQuery.select(from);
-        LocalDate nextSemesterStartDate = ServiceUtil.getNextSemesterStartDate();
+
+        LocalDate nextSemesterStartDate = nextSemester.getStartDate();
+
         criteriaQuery.where(
                 criteriaBuilder.equal(from.get("course").get("id"), courseId),
                 criteriaBuilder.equal(from.get("semester").get("startDate"), nextSemesterStartDate),
@@ -312,7 +304,7 @@ public class StudentService {
      * @throws StudentException  If the student is not found.
      * @throws ParallelException If the parallel is not found.
      */
-    public void dropFromParallelByUsername(String username, Long parallelId) throws StudentException, ParallelException {
+    public void dropFromParallelByUsername(String username, Long parallelId) throws StudentException, ParallelException, SemesterException, EnrollmentException {
         Student student = studentRepository.findByUserName(username).orElseThrow(()-> new StudentException("Student not found"));
         Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
         dropFromParallel(student.getId(), parallelId);
@@ -333,4 +325,46 @@ public class StudentService {
         Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
         enrollToParallel(student.getId(), parallelId);
     }
+
+
+    /**
+     * Drops a student from a parallel.
+     *
+     * @param studentId  The ID of the student to drop.
+     * @param parallelId The ID of the parallel to drop from.
+     * @throws ParallelException If the parallel is not found.
+     * @throws StudentException  If the student is not found or not enrolled in the parallel.
+     */
+    @Transactional
+    public void dropFromParallel(long studentId, long parallelId) throws ParallelException, StudentException, SemesterException, EnrollmentException {
+
+        //if parallel exists, remove student from it and it from enrollment
+        Student student = studentRepository.findById(studentId).orElseThrow(()-> new StudentException("Student not found"));
+
+        Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
+        if(!parallel.getStudents().contains(student))
+            throw new StudentException("Student is not enrolled in this parallel");
+
+        Semester activeSemester = semesterRepository.findSemesterByIsActiveIsTrue().orElseThrow(()-> new SemesterException("Active semester not found"));
+
+        if(!parallel.getSemester().getStartDate().isAfter(activeSemester.getEndDate()) && !parallel.getSemester().getStartDate().isBefore(activeSemester.getStartDate().plusYears(1)))
+            throw new EnrollmentException("Can't revert enrollment for a parallel that isn't in the next semester");
+
+
+        Enrollment enrollmentToDrop = enrollmentRepository.findByStudent_IdAndParallel_Id(studentId, parallelId);
+        if (enrollmentToDrop == null)
+            throw new StudentException("Student is not enrolled in this parallel");
+
+
+        student.removeEnrollment(enrollmentToDrop);
+        parallel.removeStudent(student);
+
+        enrollmentRepository.delete(enrollmentToDrop);
+        parallelRepository.save(parallel);
+        studentRepository.save(student);
+
+    }
+
+
+
 }
