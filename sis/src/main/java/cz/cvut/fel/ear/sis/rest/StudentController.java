@@ -40,33 +40,13 @@ public class StudentController {
         this.studentService = studentService;
     }
 
-    // include these functions
-
-
-//The following 6 endpoints will cause:
-//- NotStudentException in case the logged in user is not of type admin
-//GET /student/course List all courses with parallels the next semester
-//GET /student/schedule/{semesterCode} See all of parallels (and inherently the schedule, course, etc) that I am enrolled in for a given semester
-
-//GET /student/parallel/{courseId} List all parallels for a given course available the next semester
-//GET /student/report See report of all my enrollments including, semester, courseName, grade and status
-//POST /student/enroll/{parallelId} Enroll in a next semester’s parallel
-//DELETE /student/enroll/{parallelId} Revert such enrollment
-
-
-//    kdyz student hleda kurzy, implementuj kriteria : kurz ma kapacitu a zaroven kurz jazyk == tzn dalsi GET asi
-
-
-
-
-    ///////////////////////////////////
-    // SPECIAL GET WITH CRITERIA API
-    ///////////////////////////////////
-
-
-    //GET List all parallels which have room for the student and have the desired language the next semester
-    //GET /student/parallel/{courseId}/{language} List all parallels for a given course available the next semester
-
+    /**
+     * Endpoint to list parallels for a given course next semester based on language criteria.
+     *
+     * @param courseId The unique identifier for the course.
+     * @param language The language criteria to filter parallels.
+     * @return List of parallels matching the criteria.
+     */
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping(value = "/parallel/{courseId}/{language}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Parallel>> listParallelsForCourseNextSemesterWithCourseIdLanguageCriteriaAPI(@PathVariable Long courseId, @PathVariable String language) {
@@ -74,44 +54,40 @@ public class StudentController {
         return new ResponseEntity<>(parallels, HttpStatus.OK);
     }
 
-
-    ///////////////////////////////////
-    // GET
-    ///////////////////////////////////
-
-
-
-
-//GET /student/course List all courses with parallels the next semester
-
-
-
-
-
+    /**
+     * Endpoint to list all courses available for the next semester.
+     *
+     * @return List of all available parallels for the next semester.
+     * @throws ParallelException If there's an issue fetching parallels.
+     */
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping(value = "/course", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Parallel>> listCoursesForNextSemester(Authentication auth) throws ParallelException, NotStudentException {
-        User user = (User) auth.getPrincipal();
-
+    public ResponseEntity<List<Parallel>> listCoursesForNextSemester() throws ParallelException {
         List<Parallel> parallels = studentService.getAllParallelsForNextSemester();
         return new ResponseEntity<>(parallels, HttpStatus.OK);
     }
 
-
-    //GET /student/schedule/{semesterCode} See all parallels (and inherently the schedule, course, etc) that I am enrolled in for a given semester
-
+    /**
+     * Endpoint to view the schedule for a given semester.
+     *
+     * @param semesterCode The code identifying the semester.
+     * @param auth The authentication details of the student.
+     * @return List of enrolled parallels for the semester.
+     */
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping(value = "/schedule/{semesterCode}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<Parallel>> viewScheduleForSemester(@PathVariable String semesterCode, Authentication auth) throws ParallelException {
+    public ResponseEntity<List<Parallel>> viewScheduleForSemester(@PathVariable String semesterCode, Authentication auth) {
         User user = (User) auth.getPrincipal();
         List<Parallel> schedule = studentService.getAllEnrolledParallelsForNextSemesterByStudentUsername(user.getUsername(), semesterCode);
         return new ResponseEntity<>(schedule, HttpStatus.OK);
     }
 
-
-
-    //GET /student/parallel/{courseId} List all parallels for a given course available the next semester
-
+    /**
+     * Endpoint to list parallels for a given course in the next semester.
+     *
+     * @param courseId The unique identifier for the course.
+     * @return List of parallels for the course in the next semester.
+     */
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping(value = "/parallel/{courseId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Parallel>> listParallelsForCourseNextSemester(@PathVariable Long courseId) {
@@ -119,10 +95,13 @@ public class StudentController {
         return new ResponseEntity<>(parallels, HttpStatus.OK);
     }
 
-
-//GET /student/report See report of all my enrollments including: semester, courseName, grade and status
-
-
+    /**
+     * Endpoint to view the enrollment report for a student.
+     *
+     * @param auth The authentication details of the student.
+     * @return List of enrollments for the student.
+     * @throws StudentException If there's an issue fetching the enrollment report.
+     */
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @GetMapping(value = "/report", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Enrollment>> viewEnrollmentReport(Authentication auth) throws StudentException {
@@ -131,40 +110,40 @@ public class StudentController {
         return new ResponseEntity<>(report, HttpStatus.OK);
     }
 
-
-
-    ///////////////////////////////////
-    // POST
-    ///////////////////////////////////
-
+    /**
+     * Endpoint to enroll a student in a parallel for the next semester.
+     *
+     * @param parallelId The unique identifier for the parallel.
+     * @param auth The authentication details of the student.
+     * @throws EnrollmentException If there's an issue enrolling the student.
+     * @throws ParallelException If there's an issue with the parallel.
+     * @throws StudentException If there's an issue with the student.
+     */
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @PostMapping(value = "/enroll/{parallelId}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void enrollInParallelNextSemester(@PathVariable Long parallelId, Authentication auth)
-            throws EnrollmentException, SemesterException, CourseException, ParallelException, StudentException {
+    public void enrollInParallelNextSemester(@PathVariable Long parallelId, Authentication auth) throws EnrollmentException, ParallelException, StudentException {
         User user = (User) auth.getPrincipal();
         studentService.enrollToParallelByUsername(user.getUsername(), parallelId);
         LOG.debug("Enrolled student {} in parallel {} for the next semester.", user.getUsername(), parallelId);
     }
 
-    ///////////////////////////////////
-    // DELETE
-    ///////////////////////////////////
-
+    /**
+     * Endpoint to cancel the enrollment of a student in a parallel for the next semester.
+     *
+     * @param parallelId The unique identifier for the parallel.
+     * @param auth The authentication details of the student.
+     * @throws ParallelException If there's an issue with the parallel.
+     * @throws StudentException If there's an issue with the student.
+     */
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @DeleteMapping(value = "/enroll/{parallelId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void revertEnrollment(@PathVariable Long parallelId, Authentication auth)
-            throws EnrollmentException, SemesterException, ParallelException, StudentException, NotStudentException {
+    public void revertEnrollment(@PathVariable Long parallelId, Authentication auth) throws ParallelException, StudentException {
         User user = (User) auth.getPrincipal();
         studentService.dropFromParallelByUsername(user.getUsername(), parallelId);
         LOG.debug("Cancelled enrollment for student {} in parallel {} for next semester.", user.getUsername(), parallelId);
     }
-
-
-
-
-
 
 }
 

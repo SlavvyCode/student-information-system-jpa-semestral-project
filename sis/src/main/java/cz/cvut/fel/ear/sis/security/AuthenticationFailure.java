@@ -12,11 +12,6 @@ import org.springframework.security.web.authentication.AuthenticationFailureHand
 
 import java.io.IOException;
 
-/**
- * Returns info about authentication failure.
- *
- * Differs from default implementation in that it returns a custom JSON response.
- */
 public class AuthenticationFailure implements AuthenticationFailureHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationFailure.class);

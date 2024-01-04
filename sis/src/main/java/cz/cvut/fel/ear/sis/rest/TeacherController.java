@@ -40,37 +40,17 @@ public class TeacherController {
 
     private static final Logger LOG = LoggerFactory.getLogger(TeacherController.class);
 
-
-
-
     @Autowired
     public TeacherController(TeacherService teacherService) {
         this.teacherService = teacherService;
     }
 
-
-
-
-    // include these functions
-//    GET /teacher/course List all of my courses
-//    GET /teacher/parallel/{courseId} List all of parallels for my course id
-//    GET /teacher/students/{parallelId} List all signed up students for my parallelId
-
-
-//    POST /teacher/course Create a new course
-//    POST /teacher/parallel/{courseId} Create a new parallel for a given course
-//    POST /teacher/grade/{parallelId}/ {studentId}Grade a student within my parallel
-
-
-
-
-
-    ///////////////////////////////////
-
-    // GET MAPPING
-
-    ///////////////////////////////////
-
+    /**
+     * Endpoint to list all courses associated with the authenticated teacher.
+     *
+     * @param auth The authentication details of the teacher.
+     * @return List of courses associated with the teacher.
+     */
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @GetMapping(value = "/course", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Course>> listMyCourses(Authentication auth) {
@@ -79,7 +59,12 @@ public class TeacherController {
         return new ResponseEntity<>(courses, HttpStatus.OK);
     }
 
-
+    /**
+     * Endpoint to list all parallels associated with a given course.
+     *
+     * @param courseId The unique identifier for the course.
+     * @return List of parallels associated with the course.
+     */
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @GetMapping(value = "/parallel/{courseId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Parallel>> listParallelsForCourse(@PathVariable Long courseId) {
@@ -87,6 +72,12 @@ public class TeacherController {
         return new ResponseEntity<>(parallels, HttpStatus.OK);
     }
 
+    /**
+     * Endpoint to list all students enrolled in a specific parallel.
+     *
+     * @param parallelId The unique identifier for the parallel.
+     * @return List of students enrolled in the parallel.
+     */
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @GetMapping(value = "/students/{parallelId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<Student>> listStudentsForParallel(@PathVariable Long parallelId) {
@@ -94,124 +85,103 @@ public class TeacherController {
         return new ResponseEntity<>(students, HttpStatus.OK);
     }
 
-
-
-
-
-
-    ///////////////////////////////////
-
-    // POST MAPPING
-
-    ///////////////////////////////////
-
-//    POST /teacher/grade/{parallelId}/ {studentId}Grade a student within my parallel
-//    POST /teacher/course Create a new course
-//    POST /teacher/parallel/{courseId} Create a new parallel for a given course
-
+    /**
+     * Endpoint to grade a student for a particular parallel.
+     *
+     * @param parallelId The unique identifier for the parallel.
+     * @param studentId The unique identifier for the student.
+     * @param gradeString The grade to assign to the student.
+     * @throws SemesterException If there's an issue related to the semester.
+     * @throws StudentException If there's an issue related to the student.
+     * @throws EnrollmentException If there's an issue with enrollment.
+     * @throws CourseException If there's an issue with the course.
+     */
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @PostMapping(value = "/grade/{parallelId}/{studentId}", consumes = MediaType.TEXT_PLAIN_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void gradeStudent(@PathVariable Long parallelId, @PathVariable Long studentId, @RequestBody String gradeString)
-            throws SemesterException, StudentException, EnrollmentException, CourseException {
-
-
-        //check that grade string is valid
+    public void gradeStudent(@PathVariable Long parallelId,
+                             @PathVariable Long studentId,
+                             @RequestBody String gradeString) throws SemesterException, StudentException, EnrollmentException, CourseException {
         Grade grade;
         try {
             grade = Grade.valueOf(gradeString);
-
-
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid grade format", e);
         }
-
         teacherService.gradeStudent(parallelId, studentId, grade);
         LOG.debug("Graded student {} in parallel {}.", studentId, parallelId);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    /**
+     * Endpoint to create a new course.
+     *
+     * @param courseName The name of the course.
+     * @param code The code of the course.
+     * @param ECTS The ECTS credits for the course.
+     * @param language The language tag for the course.
+     * @return Response entity with headers indicating the location of the newly created course.
+     * @throws CourseException If there's an issue with the course.
+     * @throws PersonException If there's an issue related to the person.
+     */
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @PostMapping(value = "/course", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Course> createCourse(@RequestParam String courseName,
                                                @RequestParam String code,
                                                @RequestParam int ECTS,
-                                               @RequestParam String language)   throws CourseException, PersonException {
-
-        //ensure that the language is a valid locale
-
+                                               @RequestParam String language) throws CourseException, PersonException {
         Locale locale;
         if (language != null) {
             try {
                 locale = Locale.forLanguageTag(language);
             } catch (IllformedLocaleException e) {
-                // Handle invalid locale format
                 throw new IllegalArgumentException("Invalid locale format", e);
             }
         } else {
-            // Use the system's default locale as a fallback
             locale = Locale.getDefault();
         }
-
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        //get teacherId
         Long teacherId = teacherService.getTeacherByUsername(user.getUsername()).getId();
-
-
         teacherService.createCourse(teacherId, courseName, code, ECTS, locale);
-
-
         LOG.debug("Created course {}.", courseName);
         final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/{id}", teacherId);
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
-
+    /**
+     * Endpoint to create a new parallel for a given course.
+     *
+     * @param courseId The unique identifier for the course.
+     * @param capacity The capacity of the parallel.
+     * @param timeSlot The time slot for the parallel.
+     * @param dayOfWeek The day of the week for the parallel.
+     * @param semesterId The unique identifier for the semester.
+     * @param classroomId The unique identifier for the classroom.
+     * @return Response entity with headers indicating the location of the newly created parallel.
+     * @throws SemesterException If there's an issue with the semester.
+     * @throws ParallelException If there's an issue with the parallel.
+     * @throws ClassroomException If there's an issue with the classroom.
+     * @throws CourseException If there's an issue with the course.
+     * @throws PersonException If there's an issue with the person.
+     */
     @PreAuthorize("hasRole('ROLE_TEACHER')")
     @PostMapping(value = "/parallel/{courseId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     public ResponseEntity<Parallel> createParallel(@PathVariable Long courseId,
-                                                   @RequestParam int capacity, @RequestParam String timeSlot,
-                                                   @RequestParam String dayOfWeek, @RequestParam long semesterId,
+                                                   @RequestParam int capacity,
+                                                   @RequestParam String timeSlot,
+                                                   @RequestParam String dayOfWeek,
+                                                   @RequestParam long semesterId,
                                                    @RequestParam long classroomId)
             throws SemesterException, ParallelException, ClassroomException, CourseException, PersonException {
         LOG.info("Received request with courseId: {}, capacity: {}, timeSlot: {}, dayOfWeek: {}, semesterId: {}, classroomId: {}",
                 courseId, capacity, timeSlot, dayOfWeek, semesterId, classroomId);
-
-
         Course course = teacherService.getCourseById(courseId).orElseThrow(() -> new CourseException("Course not found"));
-
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         long teacherId = teacherService.getTeacherByUsername(user.getUsername()).getId();
-
-
         Parallel parallel = teacherService.createParallel(teacherId, capacity, TimeSlot.valueOf(timeSlot),
                 DayOfWeek.valueOf(dayOfWeek), semesterId, classroomId, courseId);
-
-
         LOG.debug("Created parallel {} for course {}.", parallel.getId(), course.getName());
         final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/{id}", parallel.getId());
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
-
-
-
-
 
 }

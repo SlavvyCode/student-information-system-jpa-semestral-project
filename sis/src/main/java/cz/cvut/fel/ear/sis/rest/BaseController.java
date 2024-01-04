@@ -23,16 +23,20 @@ public class BaseController {
 
     private final PersonService personService;
 
-    //password encryption
-    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
     @Autowired
     public BaseController(PersonService personService){this.personService = personService;}
 
+    /**
+     * Endpoint to register a new person.
+     *
+     * @param body The request body containing details to create a new person.
+     * @return ResponseEntity with a status code indicating successful creation or error.
+     * @throws PersonException If there's an issue creating the person.
+     */
     @PreAuthorize("isAnonymous()")
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> register(@RequestBody CreatePersonRequestBody body) throws PersonException {
-        Person person = personService.createANewPerson(
+        personService.createANewPerson(
                 body.firstName,
                 body.lastName,
                 body.email,
@@ -41,16 +45,7 @@ public class BaseController {
                 body.password,
                 body.roleKeypass
         );
-//        final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/me");
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
-
-
-
-
-
-
-
-
 
 }

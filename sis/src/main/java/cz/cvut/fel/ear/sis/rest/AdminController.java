@@ -30,12 +30,24 @@ public class AdminController {
         this.adminService = adminService;
     }
 
+    /**
+     * Endpoint to retrieve all classrooms.
+     *
+     * @return List of all classrooms.
+     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/room", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Classroom> getClassrooms(){
         return adminService.getAllClassrooms();
     }
 
+    /**
+     * Endpoint to create a new classroom.
+     *
+     * @param body The request body containing details to create a new classroom.
+     * @return ResponseEntity with a location header indicating successful creation or error.
+     * @throws ClassroomException If there's an issue creating the classroom.
+     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/classroom", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createClassroom(@RequestBody CreateClassroomRequestBody body) throws ClassroomException {
@@ -44,6 +56,13 @@ public class AdminController {
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
+    /**
+     * Endpoint to retrieve a classroom by its code.
+     *
+     * @param code The unique code identifying the classroom.
+     * @return The classroom corresponding to the provided code.
+     * @throws ClassroomException If the classroom with the provided code is not found.
+     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/classroom/{code}")
     public Classroom getClassroomByCode(@PathVariable String code) throws ClassroomException {
@@ -54,12 +73,24 @@ public class AdminController {
         return classroom.get();
     }
 
+    /**
+     * Endpoint to retrieve all semesters.
+     *
+     * @return List of all semesters.
+     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/semester", produces = MediaType.APPLICATION_JSON_VALUE)
     public List<Semester> getSemesters(){
         return adminService.getAllSemesters();
     }
 
+    /**
+     * Endpoint to create a new semester.
+     *
+     * @param body The request body containing details to create a new semester.
+     * @return ResponseEntity with a location header indicating successful creation or error.
+     * @throws SemesterException If there's an issue creating the semester.
+     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping(value = "/semester", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Void> createSemester(@RequestBody CreateSemesterRequestBody body) throws SemesterException {
@@ -68,6 +99,13 @@ public class AdminController {
         return new ResponseEntity<>(headers, HttpStatus.CREATED);
     }
 
+    /**
+     * Endpoint to retrieve a semester by its code.
+     *
+     * @param code The unique code identifying the semester.
+     * @return The semester corresponding to the provided code.
+     * @throws SemesterException If the semester with the provided code is not found.
+     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/semester/{code}")
     public Semester getSemesterByCode(@PathVariable String code) throws SemesterException {
@@ -78,9 +116,16 @@ public class AdminController {
         return semester.get();
     }
 
+    /**
+     * Endpoint to set an active semester based on its code.
+     *
+     * @param code The unique code identifying the semester.
+     * @return ResponseEntity with a location header indicating the operation success.
+     * @throws SemesterException If the semester with the provided code is not found.
+     */
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PatchMapping(value = "/semester/{code}")
-    public ResponseEntity<Void> createSemester(@PathVariable String code) throws SemesterException {
+    public ResponseEntity<Void> setActiveSemester(@PathVariable String code) throws SemesterException {
         Optional<Semester> semester = adminService.getSemesterByCode(code);
         if(semester.isEmpty()){
             throw new SemesterException("Semester not found.");

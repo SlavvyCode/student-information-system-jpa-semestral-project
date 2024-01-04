@@ -19,8 +19,6 @@ import static cz.cvut.fel.ear.sis.utils.ServiceUtil.doesNotConformRegex;
 @Service
 public class TeacherService {
 
-
-    private final PersonRepository personRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
     private final CourseRepository courseRepository;
@@ -31,8 +29,7 @@ public class TeacherService {
     private final EnrollmentRepository enrollmentRepository;
 
     @Autowired
-    public TeacherService(PersonRepository personRepository, StudentRepository studentRepository, TeacherRepository teacherRepository, CourseRepository courseRepository, ParallelRepository parallelRepository, SemesterRepository semesterRepository, ClassroomRepository classroomRepository, EnrollmentRepository enrollmentRepository) {
-        this.personRepository = personRepository;
+    public TeacherService(StudentRepository studentRepository, TeacherRepository teacherRepository, CourseRepository courseRepository, ParallelRepository parallelRepository, SemesterRepository semesterRepository, ClassroomRepository classroomRepository, EnrollmentRepository enrollmentRepository) {
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
         this.courseRepository = courseRepository;
@@ -41,12 +38,24 @@ public class TeacherService {
         this.classroomRepository = classroomRepository;
         this.enrollmentRepository = enrollmentRepository;
     }
-    //vytvoreni kurzu a paralelek
 
+    /**
+     * Creates a new course with the provided details.
+     *
+     * @param teacherId   The ID of the teacher creating the course.
+     * @param courseName  The name of the course.
+     * @param code        The code of the course.
+     * @param ECTS        The ECTS credits for the course.
+     * @param language    The language of the course (either "CZ" or "EN").
+     * @return The created Course object.
+     * @throws CourseException  If course details are not valid.
+     * @throws PersonException  If the teacher is not found or not valid.
+     */
     @Transactional
-    public Course createCourse(long teacherId, String courseName, String code, int ECTS,Locale language)
-            throws CourseException, PersonException {
-
+    public Course createCourse(long teacherId,
+                               String courseName,
+                               String code,
+                               int ECTS,Locale language) throws CourseException, PersonException {
         Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(()-> new PersonException("Teacher not found"));
         areCourseDetailsValid(teacher, courseName, code, ECTS, language);
         Course course = new Course(teacher, courseName, code, ECTS, language);
@@ -55,10 +64,22 @@ public class TeacherService {
         return course;
     }
 
-
-    private void areCourseDetailsValid(Teacher teacher, String courseName, String code,
-                                       int ECTS, Locale language) throws CourseException, PersonException {
-
+    /**
+     * Validates the course details based on the provided parameters.
+     *
+     * @param teacher     The teacher object.
+     * @param courseName  The name of the course.
+     * @param code        The code of the course.
+     * @param ECTS        The ECTS credits for the course.
+     * @param language    The language of the course.
+     * @throws CourseException  If course details are not valid.
+     * @throws PersonException  If the teacher is not valid.
+     */
+    private void areCourseDetailsValid(Teacher teacher,
+                                       String courseName,
+                                       String code,
+                                       int ECTS,
+                                       Locale language) throws CourseException, PersonException {
         //check if teacher is not null,
         //the teacher should be valid - see  checks in personService
         if (teacher == null) {
@@ -84,10 +105,31 @@ public class TeacherService {
 
     }
 
+    /**
+     * Creates a new parallel with the provided details.
+     *
+     * @param teacherId   The ID of the teacher creating the parallel.
+     * @param capacity    The capacity of the parallel.
+     * @param timeSlot    The time slot for the parallel.
+     * @param dayOfWeek   The day of the week for the parallel.
+     * @param semesterId  The ID of the semester for the parallel.
+     * @param classroomId The ID of the classroom for the parallel.
+     * @param courseId    The ID of the course for the parallel.
+     * @return The created Parallel object.
+     * @throws CourseException    If course details are not valid.
+     * @throws PersonException    If the teacher is not found or not valid.
+     * @throws ParallelException  If parallel details are not valid.
+     * @throws ClassroomException If the classroom is not found.
+     * @throws SemesterException  If the semester is not found.
+     */
     @Transactional
-    public Parallel createParallel(long teacherId, int capacity, TimeSlot timeSlot, DayOfWeek dayOfWeek,
-                                   long semesterId, long classroomId, long courseId) throws CourseException, PersonException, ParallelException, ClassroomException, SemesterException {
-
+    public Parallel createParallel(long teacherId,
+                                   int capacity,
+                                   TimeSlot timeSlot,
+                                   DayOfWeek dayOfWeek,
+                                   long semesterId,
+                                   long classroomId,
+                                   long courseId) throws CourseException, PersonException, ParallelException, ClassroomException, SemesterException {
         Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(()-> new PersonException("Teacher not found"));
         Semester semester = semesterRepository.findById(semesterId).orElseThrow(()-> new SemesterException("Semester not found"));
         Classroom classroom = classroomRepository.findById(classroomId).orElseThrow(()-> new ClassroomException("Classroom not found"));
@@ -106,10 +148,28 @@ public class TeacherService {
         return parallel;
     }
 
-
-
-    private boolean areParalellDetailsValid(Teacher teacher, int capacity, TimeSlot timeSlot, DayOfWeek dayOfWeek,
-                                            Semester semester, Classroom classroom, Course course) throws CourseException, PersonException, ParallelException, ClassroomException, SemesterException {
+    /**
+     * Validates the parallel details based on the provided parameters.
+     *
+     * @param teacher   The teacher object.
+     * @param capacity  The capacity of the parallel.
+     * @param timeSlot  The time slot for the parallel.
+     * @param dayOfWeek The day of the week for the parallel.
+     * @param semester  The semester for the parallel.
+     * @param classroom The classroom for the parallel.
+     * @param course    The course for the parallel.
+     * @throws PersonException    If the teacher is not valid.
+     * @throws ParallelException  If parallel details are not valid.
+     * @throws ClassroomException If the classroom already has an occupied time slot.
+     * @throws SemesterException  If the semester date is not valid.
+     */
+    private boolean areParalellDetailsValid(Teacher teacher,
+                                            int capacity,
+                                            TimeSlot timeSlot,
+                                            DayOfWeek dayOfWeek,
+                                            Semester semester,
+                                            Classroom classroom,
+                                            Course course) throws PersonException, ParallelException, ClassroomException, SemesterException {
 
         //check if capacity is within the classroom's bounds
         if(capacity<=0 || capacity>classroom.getCapacity()){
@@ -155,13 +215,25 @@ public class TeacherService {
         return true;
     }
 
-
-
+    /**
+     * Updates the details of an existing course.
+     *
+     * @param courseId   The ID of the course to update.
+     * @param teacherId  The ID of the teacher updating the course.
+     * @param courseName The new name of the course.
+     * @param code       The new code of the course.
+     * @param ECTS       The new ECTS credits for the course.
+     * @param language   The new language of the course.
+     * @throws CourseException If course details are not valid.
+     * @throws PersonException If the teacher is not found or not valid.
+     */
     @Transactional
-    public void updateCourse(long courseId, long teacherId, String courseName, String code, int ECTS,
+    public void updateCourse(long courseId,
+                             long teacherId,
+                             String courseName,
+                             String code,
+                             int ECTS,
                              Locale language) throws CourseException, PersonException {
-
-
         Course course = courseRepository.findById(courseId).orElseThrow(()-> new CourseException("Course not found"));
         Teacher teacher = teacherRepository.findById(teacherId).orElseThrow(()-> new PersonException("Teacher not found"));
 
@@ -182,8 +254,17 @@ public class TeacherService {
         teacherRepository.save(teacher);
     }
 
+    /**
+     * Grades a student based on the provided enrollment ID and grade.
+     *
+     * @param studentId    The ID of the student.
+     * @param enrollmentId The ID of the enrollment.
+     * @param grade        The grade to assign to the student.
+     * @throws StudentException    If the student is not found or not valid.
+     * @throws EnrollmentException If the enrollment is not found or already graded.
+     */
     @Transactional
-    public void gradeStudent(long studentId, long enrollmentId, Grade grade) throws StudentException, CourseException, SemesterException, EnrollmentException {
+    public void gradeStudent(long studentId, long enrollmentId, Grade grade) throws StudentException, EnrollmentException {
 
 
         Student student = studentRepository.findById(studentId).orElseThrow(()-> new StudentException("Student not found"));
@@ -211,13 +292,34 @@ public class TeacherService {
 
     }
 
+    /**
+     * Updates the details of an existing parallel.
+     *
+     * @param parallel   The parallel object to update.
+     * @param teacher    The teacher object.
+     * @param capacity   The new capacity of the parallel.
+     * @param timeSlot   The new time slot for the parallel.
+     * @param dayOfWeek  The new day of the week for the parallel.
+     * @param semester   The new semester for the parallel.
+     * @param classroom  The new classroom for the parallel.
+     * @param course     The new course for the parallel.
+     * @throws PersonException    If the teacher is not valid.
+     * @throws ParallelException  If parallel details are not valid.
+     * @throws SemesterException  If the semester date is not valid.
+     * @throws ClassroomException If the classroom already has an occupied time slot.
+     */
     @Transactional
-    public void updateParallel(Parallel parallel, Teacher teacher, int capacity, TimeSlot timeSlot, DayOfWeek dayOfWeek,
-                               Semester semester, Classroom classroom, Course course) throws CourseException, PersonException, ParallelException, SemesterException, ClassroomException {
+    public void updateParallel(Parallel parallel,
+                               Teacher teacher,
+                               int capacity,
+                               TimeSlot timeSlot,
+                               DayOfWeek dayOfWeek,
+                               Semester semester,
+                               Classroom classroom,
+                               Course course) throws PersonException, ParallelException, SemesterException, ClassroomException {
         areParalellDetailsValid(teacher, capacity, timeSlot, dayOfWeek, semester, classroom, course);
 
         Course oldCourse = parallel.getCourse();
-        //old course remove
         oldCourse.removeParallel(parallel);
 
         parallel.setCapacity(capacity);
@@ -235,20 +337,33 @@ public class TeacherService {
         courseRepository.save(course);
     }
 
-
-
-
-
+    /**
+     * Retrieves all courses.
+     *
+     * @return List of all courses.
+     */
     @Transactional(readOnly = true)
     public List<Course> getAllCoruses(){
         return courseRepository.findAll();
     }
+
+    /**
+     * Retrieves all parallels.
+     *
+     * @return List of all parallels.
+     */
     @Transactional(readOnly = true)
     public List<Parallel> getAllParallels(){
         return parallelRepository.findAll();
     }
 
-
+    /**
+     * Retrieves parallels for the upcoming semester associated with a teacher.
+     *
+     * @param teacherId The ID of the teacher.
+     * @return List of parallels for the upcoming semester.
+     * @throws SemesterException If the semester is not found.
+     */
     @Transactional(readOnly = true)
     public List<Parallel> getNextSemesterTeacherParallels(long teacherId) throws SemesterException {
         //Teachers may list parallels only for the upcoming semester
@@ -268,15 +383,12 @@ public class TeacherService {
 
 
         Semester nextSemester;
-        //if todays date is between spring start and end then next semester is fall semester
-        //else spring semester
         if(LocalDate.now().isAfter(springSemesterStartDate) && LocalDate.now().isBefore(springSemesterEndDate))
         {
             nextSemester = semesterRepository.findByStartDate(fallSemesterStartDate);
         }
         else
         {
-            //Account for the fact that the next semester is in the next year
             LocalDate nextSpringSemesterDate = springSemesterStartDate.plusYears(1);
             nextSemester = semesterRepository.findByStartDate(nextSpringSemesterDate);
 
@@ -289,55 +401,124 @@ public class TeacherService {
 
     }
 
+    /**
+     * Retrieves all teachers.
+     *
+     * @return List of all teachers.
+     */
     @Transactional(readOnly = true)
     public List<Teacher> getAllTeachers(){
         return teacherRepository.findAll();
     }
+
+    /**
+     * Retrieves all students associated with a course.
+     *
+     * @param course The course for which students are to be retrieved.
+     * @return List of students associated with the course.
+     */
     @Transactional(readOnly = true)
     public List<Student> getAllStudentsFromCourse(Course course){
         return studentRepository.findAllByCourse(course);
     }
+
+    /**
+     * Retrieves all students associated with a parallel.
+     *
+     * @param parallel The parallel for which students are to be retrieved.
+     * @return List of students associated with the parallel.
+     */
     @Transactional(readOnly = true)
     public List<Student> getAllStudentsFromParallel(Parallel parallel){
         Course course = parallel.getCourse();
         return studentRepository.findAllByParallel(parallel.getId(), course);
     }
 
+    /**
+     * Retrieves a teacher by ID.
+     *
+     * @param id The ID of the teacher.
+     * @return Optional containing the teacher, or empty if not found.
+     */
     @Transactional(readOnly = true)
     public Optional<Teacher> getTeacherById(Long id){
         return teacherRepository.findById(id);
     }
+
+    /**
+     * Retrieves a course by ID.
+     *
+     * @param id The ID of the course.
+     * @return Optional containing the course, or empty if not found.
+     */
+
     @Transactional(readOnly = true)
     public Optional<Course> getCourseById(Long id){
         return courseRepository.findById(id);
     }
+
+    /**
+     * Retrieves courses by a teacher's ID.
+     *
+     * @param id The ID of the teacher.
+     * @return List of courses associated with the teacher.
+     */
     @Transactional(readOnly = true)
     public List<Course> getCourseByTeacherId(Long id){
         return courseRepository.findAllByTeacher_Id(id);
     }
+
+    /**
+     * Retrieves a parallel by ID.
+     *
+     * @param id The ID of the parallel.
+     * @return Optional containing the parallel, or empty if not found.
+     */
     @Transactional(readOnly = true)
     public Optional<Parallel> getParallelById(Long id){
         return parallelRepository.findById(id);
     }
 
+    /**
+     * Retrieves parallels by a course's ID.
+     *
+     * @param id The ID of the course.
+     * @return List of parallels associated with the course.
+     */
     @Transactional(readOnly = true)
     public List<Parallel> getParallelByCourseId(Long id){
         return parallelRepository.findAllByCourse_Id(id);
     }
 
+    /**
+     * Retrieves all students by a parallel's ID.
+     *
+     * @param id The ID of the parallel.
+     * @return List of students associated with the parallel.
+     */
     @Transactional(readOnly = true)
     public List<Student> getAllStudentsByParallelId(Long id){
         return studentRepository.findAllByParallelId(id);
     }
 
-
+    /**
+     * Retrieves courses by a teacher's username.
+     *
+     * @param username The username of the teacher.
+     * @return List of courses associated with the teacher's username.
+     */
     @Transactional(readOnly = true)
     public List<Course> getCoursesByTeacherUsername(String username){
         return getCoursesByTeacherUsername(username);
     }
 
+    /**
+     * Retrieves a teacher by username.
+     *
+     * @param username The username of the teacher.
+     * @return The teacher associated with the given username.
+     */
     public Teacher getTeacherByUsername(String username) {
-
         return teacherRepository.findByUserName(username);
     }
 }

@@ -15,11 +15,6 @@ import org.springframework.security.web.authentication.logout.LogoutSuccessHandl
 
 import java.io.IOException;
 
-/**
- * Writes basic login/logout information into the response.
- *
- * Differs from default implementation in that it returns a custom JSON response.
- */
 public class AuthenticationSuccess implements AuthenticationSuccessHandler, LogoutSuccessHandler {
 
     private static final Logger LOG = LoggerFactory.getLogger(AuthenticationSuccess.class);
