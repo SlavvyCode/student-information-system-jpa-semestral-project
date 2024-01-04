@@ -12,6 +12,7 @@ import cz.cvut.fel.ear.sis.utils.enums.Role;
 import cz.cvut.fel.ear.sis.utils.exception.PersonException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,6 +42,7 @@ public class PersonService {
         this.teacherRepository = teacherRepository;
     }
 
+    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     @Transactional
     public Person createANewPerson(String firstName, String lastName, String email, String phoneNumber,
                                  LocalDate birthDate, String password, String roleKeypass) throws PersonException {
@@ -52,9 +54,9 @@ public class PersonService {
 
         // createTheRightTypeOfUser
         Person person = switch (roleKeypass) {
-            case "studentKeyPass" -> new Student(firstName, lastName, email, phoneNumber, birthDate, userName, password);
-            case "teacherKeyPass" -> new Teacher(firstName, lastName, email, phoneNumber, birthDate, userName, password);
-            case "adminKeyPass" -> new Admin(firstName, lastName, email, phoneNumber, birthDate, userName, password);
+            case "studentKeyPass" -> new Student(firstName, lastName, email, phoneNumber, birthDate, userName, passwordEncoder.encode(password));
+            case "teacherKeyPass" -> new Teacher(firstName, lastName, email, phoneNumber, birthDate, userName, passwordEncoder.encode(password));
+            case "adminKeyPass" -> new Admin(firstName, lastName, email, phoneNumber, birthDate, userName, passwordEncoder.encode(password));
             default -> throw new PersonException("KeyPass is not valid");
         };
 

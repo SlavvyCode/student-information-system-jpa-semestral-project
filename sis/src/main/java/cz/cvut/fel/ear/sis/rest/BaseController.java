@@ -14,13 +14,17 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/person")
+@RequestMapping("/rest/person")
 public class BaseController {
 
     private final PersonService personService;
+
+    //password encryption
+    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Autowired
     public BaseController(PersonService personService){this.personService = personService;}
@@ -40,5 +44,13 @@ public class BaseController {
 //        final HttpHeaders headers = RestUtils.createLocationHeaderFromCurrentUri("/me");
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
+
+
+
+
+
+
+
+
 
 }

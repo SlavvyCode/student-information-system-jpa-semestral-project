@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 
@@ -44,7 +45,9 @@ public class AuthenticationSuccess implements AuthenticationSuccessHandler, Logo
         if (authentication == null) {
             return "";
         }
-        return ((CustomUserDetails) authentication.getPrincipal()).getUsername();
+        User user = (User) authentication.getPrincipal();
+        return user.getUsername();
+
     }
 
     @Override

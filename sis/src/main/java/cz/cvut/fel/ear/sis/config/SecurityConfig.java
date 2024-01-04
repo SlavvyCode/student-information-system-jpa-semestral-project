@@ -10,15 +10,19 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.SecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfiguration;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
@@ -30,7 +34,7 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity     // Allows Spring Security
 @EnableMethodSecurity // Allow methods to be secured using annotation @PreAuthorize and @PostAuthorize
-public class SecurityConfig {
+public class SecurityConfig extends SecurityConfigurerAdapter<DefaultSecurityFilterChain, HttpSecurity> {
 
     private final ObjectMapper objectMapper;
 
@@ -42,13 +46,34 @@ public class SecurityConfig {
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(userDetailsService()).passwordEncoder(passwordEncoder());
     }
+    @Override
+    public void configure(HttpSecurity http) throws Exception {
+        final AuthenticationSuccess authSuccess = authenticationSuccess();
 
-//    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.inMemoryAuthentication()
-//                .withUser("user") // Add your in-memory users here
-//                .password(passwordEncoder().encode("password"))
-//                .roles("USER");
-//    }
+        http.authorizeRequests((auth) -> auth.anyRequest().permitAll())
+                .exceptionHandling(ehc -> ehc.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(conf -> conf.configurationSource(corsConfigurationSource()))
+                .headers(customizer -> customizer.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .formLogin(fl -> fl.loginProcessingUrl("/login")
+                        .successHandler(authSuccess)
+                        .failureHandler(authenticationFailureHandler())
+                        .usernameParameter("username")
+                        .passwordParameter("password")
+                        .permitAll())
+                .logout(lgt -> lgt.logoutSuccessHandler(authSuccess))
+                .authenticationProvider(authenticationProvider());
+    }
+
+
+
+    @Bean
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setPasswordEncoder(passwordEncoder());
+        return authProvider;
+    }
 
 
     @Bean
@@ -85,7 +110,7 @@ public class SecurityConfig {
             .formLogin(fl->fl.loginProcessingUrl("/login")
                     .successHandler(authSuccess)
                     .failureHandler(authenticationFailureHandler())
-                    .usernameParameter("userName")
+                    .usernameParameter("username")
                     .passwordParameter("password")
                     .permitAll())
 
