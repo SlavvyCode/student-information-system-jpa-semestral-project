@@ -120,7 +120,7 @@ public class StudentController {
      * @throws StudentException If there's an issue with the student.
      */
     @PreAuthorize("hasRole('ROLE_STUDENT')")
-    @PostMapping(value = "/enroll/{parallelId}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/enroll/{parallelId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void enrollInParallelNextSemester(@PathVariable Long parallelId, Authentication auth) throws EnrollmentException, ParallelException, StudentException {
         User user = (User) auth.getPrincipal();

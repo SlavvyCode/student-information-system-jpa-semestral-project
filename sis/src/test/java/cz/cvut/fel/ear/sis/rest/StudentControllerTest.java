@@ -272,7 +272,6 @@ public class StudentControllerTest extends BaseControllerTestRunner {
 
         // Perform the request
         mockMvc.perform(post("/student/enroll/{parallelId}", mockParallel.getId())
-                        .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(mockStudent)))
                 .andExpect(status().isNoContent())
                 .andReturn();
