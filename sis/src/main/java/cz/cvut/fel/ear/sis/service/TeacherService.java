@@ -202,15 +202,6 @@ public class TeacherService {
         if(!sameTimeSlotParallels.isEmpty())
             throw new ClassroomException("That classroom already has a parallel with this timeslot occupied");
 
-        //throw if teacher teaches more than one course
-        List<Course> teacherCourses =  courseRepository.findAllByTeacher_Id(teacher.getId());
-        if(teacherCourses.size()>1)
-            throw new PersonException("Teacher teaches multiple courses!");
-
-        //throw if teacher teaches a different course
-        if(teacherCourses.size()==1 && !teacherCourses.get(0).equals(course))
-            throw new PersonException("Teacher already teaches another course");
-
 
         return true;
     }
