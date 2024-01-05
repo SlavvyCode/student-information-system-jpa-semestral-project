@@ -509,7 +509,7 @@ public class TeacherService {
      */
     @Transactional(readOnly = true)
     public List<Course> getCoursesByTeacherUsername(String username){
-        return getCoursesByTeacherUsername(username);
+        return courseRepository.findAllByTeacher_UserName(username);
     }
 
     /**
