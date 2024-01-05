@@ -23,16 +23,18 @@ public class TeacherService {
     private final TeacherRepository teacherRepository;
     private final CourseRepository courseRepository;
 
+    private final AdminService adminService;
     private final ParallelRepository parallelRepository;
     private final SemesterRepository semesterRepository;
     private final ClassroomRepository classroomRepository;
     private final EnrollmentRepository enrollmentRepository;
 
     @Autowired
-    public TeacherService(StudentRepository studentRepository, TeacherRepository teacherRepository, CourseRepository courseRepository, ParallelRepository parallelRepository, SemesterRepository semesterRepository, ClassroomRepository classroomRepository, EnrollmentRepository enrollmentRepository) {
+    public TeacherService(StudentRepository studentRepository, TeacherRepository teacherRepository, CourseRepository courseRepository, AdminService adminService, ParallelRepository parallelRepository, SemesterRepository semesterRepository, ClassroomRepository classroomRepository, EnrollmentRepository enrollmentRepository) {
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
         this.courseRepository = courseRepository;
+        this.adminService = adminService;
         this.parallelRepository = parallelRepository;
         this.semesterRepository = semesterRepository;
         this.classroomRepository = classroomRepository;
@@ -176,26 +178,12 @@ public class TeacherService {
             throw new ParallelException("Capacity is not valid");
         }
 
-        //can only make a parallel 2 semesters in advance
-        if (semester.getSemesterType() == SemesterType.SPRING){
+        Semester activeSemester = adminService.getActiveSemester().orElseThrow(()-> new SemesterException("Active semester not found"));
+        //can only make a parallel 2 semesters in advance of active semester
 
-            LocalDate thisYearsDefaultSpringSemesterStartDate = LocalDate.of(LocalDate.now().getYear(),
-                    SemesterType.SPRING.getStartDate().getMonth(),SemesterType.SPRING.getStartDate().getDayOfMonth());
+        if(semester.getStartDate().isAfter(activeSemester.getStartDate().plusYears(1)))
+            throw new SemesterException("You can only make a parallel 2 semesters in advance of active semester");
 
-            if(semester.getStartDate().isAfter(thisYearsDefaultSpringSemesterStartDate.plusYears(2)) ||
-                    semester.getStartDate().isBefore(thisYearsDefaultSpringSemesterStartDate))
-                throw new SemesterException("Semester date is not valid");
-        }
-        else
-        {
-
-            LocalDate thisYearsDefaultFallSemesterStartDate = LocalDate.of(LocalDate.now().getYear(),
-                    SemesterType.FALL.getStartDate().getMonth(),SemesterType.FALL.getStartDate().getDayOfMonth());
-
-            if(semester.getStartDate().isAfter(thisYearsDefaultFallSemesterStartDate.plusYears(2)) ||
-                    semester.getStartDate().isBefore(thisYearsDefaultFallSemesterStartDate))
-                throw new SemesterException("Semester date is not valid");
-        }
 
         //check if classroom already has a parallel with the timeslot and day of week occupied
         List<Parallel> sameTimeSlotParallels = parallelRepository.findByClassroomAndSemesterAndDayOfWeekAndTimeSlot(classroom, semester,dayOfWeek, timeSlot);
@@ -359,31 +347,7 @@ public class TeacherService {
     public List<Parallel> getNextSemesterTeacherParallels(long teacherId) throws SemesterException {
         //Teachers may list parallels only for the upcoming semester
 
-        LocalDate springSemesterStartDate = LocalDate.of(LocalDate.now().getYear(),
-                SemesterType.SPRING.getStartDate().getMonth(),SemesterType.SPRING.getStartDate().getDayOfMonth());
-        LocalDate fallSemesterStartDate = LocalDate.of(LocalDate.now().getYear(),
-                SemesterType.FALL.getStartDate().getMonth(),SemesterType.FALL.getStartDate().getDayOfMonth());
-
-
-        LocalDate springSemesterEndDate = LocalDate.of(LocalDate.now().getYear(),
-                SemesterType.SPRING.getEndDate().getMonth(),SemesterType.SPRING.getEndDate().getDayOfMonth());
-        LocalDate fallSemesterEndDate = LocalDate.of(LocalDate.now().getYear(),
-                SemesterType.FALL.getEndDate().getMonth(),SemesterType.FALL.getEndDate().getDayOfMonth());
-
-
-
-
-        Semester nextSemester;
-        if(LocalDate.now().isAfter(springSemesterStartDate) && LocalDate.now().isBefore(springSemesterEndDate))
-        {
-            nextSemester = semesterRepository.findByStartDate(fallSemesterStartDate);
-        }
-        else
-        {
-            LocalDate nextSpringSemesterDate = springSemesterStartDate.plusYears(1);
-            nextSemester = semesterRepository.findByStartDate(nextSpringSemesterDate);
-
-        }
+        Semester nextSemester = adminService.findNextSemester();
 
         if(nextSemester==null)
             throw new SemesterException("Semester not found");
@@ -511,5 +475,10 @@ public class TeacherService {
      */
     public Teacher getTeacherByUsername(String username) {
         return teacherRepository.findByUserName(username);
+    }
+
+
+    public Enrollment getEnrollmentByParallelIdAndStudentId(Long parallelId, Long studentId) {
+        return enrollmentRepository.findByParallelAndStudent_IdAndParallel_Semester_IsActive(parallelId, studentId);
     }
 }

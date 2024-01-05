@@ -177,4 +177,15 @@ public class AdminService {
             return false;
         }
     }
+    public Semester findNextSemester() throws SemesterException {
+        Semester activeSemester = semesterRepository.findSemesterByIsActiveIsTrue().orElseThrow(()-> new SemesterException("Active semester not found"));
+        Semester nextSemester;
+
+        if(activeSemester.getSemesterType().equals(SemesterType.SPRING))
+            nextSemester = semesterRepository.findSemesterByCode("FALL"+activeSemester.getStartDate().getYear()).orElseThrow(()-> new SemesterException("Next semester not found, tried to find FALL"+activeSemester.getStartDate().getYear()));
+        else
+            nextSemester = semesterRepository.findSemesterByCode("SPRING"+(activeSemester.getStartDate().getYear()+1)).orElseThrow(()-> new SemesterException("Next semester not found, tried to find SPRING"+activeSemester.getStartDate().getYear()+1));
+
+        return nextSemester;
+    }
 }

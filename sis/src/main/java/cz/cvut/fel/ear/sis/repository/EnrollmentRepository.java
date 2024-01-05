@@ -43,4 +43,6 @@ public interface EnrollmentRepository extends JpaRepository<Enrollment, Long> {
 
     public List<Enrollment> findAllByStudent_IdAndParallel_Semester_IdOrderByParallel_DayOfWeekAscParallel_TimeSlotAsc(long studentId, long semesterId);
 
+    @Query("SELECT e FROM Enrollment e WHERE e.parallel.id = :parallelId AND e.student.id = :studentId AND e.parallel.semester.isActive = true")
+    Enrollment findByParallelAndStudent_IdAndParallel_Semester_IsActive(@Param("parallelId") Long parallelId, @Param("studentId") Long studentId);
 }

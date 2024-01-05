@@ -26,6 +26,7 @@ public class Parallel {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, updatable = false)
     private DayOfWeek dayOfWeek;
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
     private Semester semester;
 
@@ -43,6 +44,8 @@ public class Parallel {
     @OneToMany
     @JoinColumn(name = "parallel_id")
     private List<Enrollment> enrollments = new ArrayList<>();
+
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToMany
     @JoinTable(name = "parallel_student",
             joinColumns = @JoinColumn(name = "parallel_id"),

@@ -3,6 +3,7 @@ package cz.cvut.fel.ear.sis.services;
 import cz.cvut.fel.ear.sis.model.*;
 import cz.cvut.fel.ear.sis.model.Enrollment;
 import cz.cvut.fel.ear.sis.repository.*;
+import cz.cvut.fel.ear.sis.service.AdminService;
 import cz.cvut.fel.ear.sis.service.PersonService;
 import cz.cvut.fel.ear.sis.service.StudentService;
 import cz.cvut.fel.ear.sis.service.TeacherService;
@@ -43,6 +44,8 @@ public class TeacherServiceTest {
 
 
 
+    @Autowired
+    AdminService adminService;
 
     @Autowired
     PersonService personService;
@@ -80,7 +83,7 @@ public class TeacherServiceTest {
         int year = 2024;
 
         Semester semester = new Semester(year, semesterType);
-
+        adminService.setActiveSemester(semester);
 //        Semester semester = new Semester(year, semesterType);
         semesterRepository.save(semester);
 
@@ -246,22 +249,15 @@ public class TeacherServiceTest {
         Course course = teacherService.
                 createCourse(teacher.getId(), courseName, courseCode, ECTS, language);
 
-        SemesterType semesterType;
 
 
-        if(LocalDate.now().isAfter( LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getStartDate().getMonth(), SemesterType.SPRING.getStartDate().getDayOfMonth() ))
-            && LocalDate.now().isBefore(LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getEndDate().getMonth(), SemesterType.SPRING.getEndDate().getDayOfMonth())))
-            semesterType = SemesterType.SPRING;
-        else
-            semesterType = SemesterType.FALL;
+        Semester semester = new Semester(2023, SemesterType.FALL);
+        Semester nextSemester = new Semester(2024, SemesterType.SPRING);
+
+        semesterRepository.save(nextSemester);
+        adminService.setActiveSemester(semester);
 
 
-
-        int year = LocalDate.now().getYear();
-
-        Semester semester = new Semester(year, semesterType);
-
-//        Semester semester = new Semester(year, semesterType);
         semesterRepository.save(semester);
 
         int classroomCapacity = 30;
@@ -276,7 +272,7 @@ public class TeacherServiceTest {
 
         //create parallel
         Parallel parallel = teacherService.createParallel
-                (teacher.getId(), parallelCapacity, timeSlot, dayOfWeek, semester.getId(), classroom.getId(), course.getId());
+                (teacher.getId(), parallelCapacity, timeSlot, dayOfWeek, nextSemester.getId(), classroom.getId(), course.getId());
 
 
         //enroll student in parallel

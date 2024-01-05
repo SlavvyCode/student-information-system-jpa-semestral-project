@@ -177,6 +177,7 @@ public class StudentServiceTest {
 
 
         Semester semester = new Semester(2024, SemesterType.FALL);
+        adminService.setActiveSemester(semester);
         semesterRepository.save(semester);
 
         int classroomCapacity = 30;

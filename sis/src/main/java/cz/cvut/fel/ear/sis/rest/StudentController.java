@@ -122,7 +122,7 @@ public class StudentController {
     @PreAuthorize("hasRole('ROLE_STUDENT')")
     @PostMapping(value = "/enroll/{parallelId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void enrollInParallelNextSemester(@PathVariable Long parallelId, Authentication auth) throws EnrollmentException, ParallelException, StudentException {
+    public void enrollInParallelNextSemester(@PathVariable Long parallelId, Authentication auth) throws EnrollmentException, ParallelException, StudentException, SemesterException {
         User user = (User) auth.getPrincipal();
         studentService.enrollToParallelByUsername(user.getUsername(), parallelId);
         LOG.debug("Enrolled student {} in parallel {} for the next semester.", user.getUsername(), parallelId);

@@ -65,7 +65,7 @@ public class StudentService {
      * @throws ParallelException  If the parallel is not found.
      * @throws EnrollmentException If enrollment details are not valid.
      */
-    public Enrollment enrollToParallel(long studentId, long parallelId) throws StudentException, ParallelException, EnrollmentException {
+    public Enrollment enrollToParallel(long studentId, long parallelId) throws StudentException, ParallelException, EnrollmentException, SemesterException {
         Student student = studentRepository.findById(studentId).orElseThrow(()-> new StudentException("Teacher not found"));
         Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
 
@@ -109,7 +109,7 @@ public class StudentService {
      * @throws StudentException   If the student is not found.
      * @throws EnrollmentException If enrollment details are not valid.
      */
-    public boolean checkThatEnrollmentDetailsAreValid(Parallel parallel,Student student) throws ParallelException, StudentException, EnrollmentException {
+    public boolean checkThatEnrollmentDetailsAreValid(Parallel parallel,Student student) throws ParallelException, StudentException, EnrollmentException, SemesterException {
         long studentId = student.getId();
         long parallelId = parallel.getId();
         long parallelCourseId = parallel.getCourse().getId();
@@ -121,8 +121,8 @@ public class StudentService {
 
         SemesterType parallelSemesterType = parallel.getSemester().getSemesterType();
 
-        LocalDate semesterStartDate = LocalDate.of(LocalDate.now().getYear(), parallelSemesterType.getStartDate().getMonth(), parallelSemesterType.getStartDate().getDayOfMonth());
-
+        Semester activeSemester = adminService.getActiveSemester().orElseThrow(()-> new SemesterException("Active semester not found"));
+        LocalDate semesterStartDate = activeSemester.getStartDate();
         LocalDate parallelStartDate = parallel.getSemester().getStartDate();
 
 //        Students can enroll only in class sections listed for the next semester and only during the current semester
@@ -181,7 +181,7 @@ public class StudentService {
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(()-> new EnrollmentException("Enrollment not found"));
         Student student = enrollment.getStudent();
 
-        if(enrollment.getParallel().getSemester().getStartDate().isBefore(LocalDate.now()))
+        if(enrollment.getParallel().getSemester().getStartDate().isBefore(adminService.getActiveSemester().orElseThrow(()-> new EnrollmentException("Active semester not found")).getStartDate()))
             throw new EnrollmentException("Students can cancel enrollment only BEFORE the semester begins");
 
         student.removeEnrollment(enrollment);
@@ -311,7 +311,7 @@ public class StudentService {
      * @throws ParallelException  If the parallel is not found.
      * @throws EnrollmentException If enrollment details are not valid.
      */
-    public void enrollToParallelByUsername(String username, Long parallelId) throws StudentException, ParallelException, EnrollmentException {
+    public void enrollToParallelByUsername(String username, Long parallelId) throws StudentException, ParallelException, EnrollmentException, SemesterException {
         Student student = studentRepository.findByUserName(username).orElseThrow(()-> new StudentException("Student not found"));
         Parallel parallel = parallelRepository.findById(parallelId).orElseThrow(()-> new ParallelException("Parallel not found"));
         enrollToParallel(student.getId(), parallelId);
@@ -362,7 +362,7 @@ public class StudentService {
      * @return The next semester.
      * @throws SemesterException If the next semester is not found.
      */
-    private Semester findNextSemester() throws SemesterException {
+    public Semester findNextSemester() throws SemesterException {
         Semester activeSemester = semesterRepository.findSemesterByIsActiveIsTrue().orElseThrow(()-> new SemesterException("Active semester not found"));
         Semester nextSemester;
 

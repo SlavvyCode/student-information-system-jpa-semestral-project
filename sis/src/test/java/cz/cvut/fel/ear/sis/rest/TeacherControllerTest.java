@@ -300,6 +300,9 @@ public class TeacherControllerTest extends BaseControllerTestRunner{
 
 
 
+        when(teacherServiceMock.getEnrollmentByParallelIdAndStudentId(eq(mockParallel.getId()), eq(mockStudent.getId()))).thenReturn(mockEnrollment);
+
+        when(teacherServiceMock.getTeacherByUsername(anyString())).thenReturn((Teacher) mockTeacher);
 
         // Perform the request with the grade as a JSON string
         mockMvc.perform(post("/teacher/grade/{parallelId}/{studentId}", mockParallel.getId(), mockStudent.getId())

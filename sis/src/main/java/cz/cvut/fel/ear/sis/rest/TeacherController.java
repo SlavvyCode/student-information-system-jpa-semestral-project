@@ -1,6 +1,7 @@
 package cz.cvut.fel.ear.sis.rest;
 
 import cz.cvut.fel.ear.sis.model.Course;
+import cz.cvut.fel.ear.sis.model.Enrollment;
 import cz.cvut.fel.ear.sis.model.Parallel;
 import cz.cvut.fel.ear.sis.model.Student;
 import cz.cvut.fel.ear.sis.rest.handler.utils.RestUtils;
@@ -108,7 +109,12 @@ public class TeacherController {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("Invalid grade format", e);
         }
-        teacherService.gradeStudent(parallelId, studentId, grade);
+        Enrollment enrollment =  teacherService.getEnrollmentByParallelIdAndStudentId(parallelId, studentId);
+
+        if(enrollment == null){
+            throw new EnrollmentException("Enrollment not found");
+        }
+        teacherService.gradeStudent(studentId,enrollment.getId(), grade);
         LOG.debug("Graded student {} in parallel {}.", studentId, parallelId);
     }
 
