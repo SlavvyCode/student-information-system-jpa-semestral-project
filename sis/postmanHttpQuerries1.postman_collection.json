@@ -1,0 +1,2488 @@
+{
+	"info": {
+		"_postman_id": "a317f36f-2631-448c-b392-07af13b545f2",
+		"name": "postmanHttpQuerries1",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32113749"
+	},
+	"item": [
+		{
+			"name": "registration of admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 201 (Created)\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Admin\",\r\n    \"lastName\": \"Admin\",\r\n    \"email\": \"admin.admin@example.com\",\r\n    \"phoneNumber\": \"1231141124\",\r\n    \"birthDate\": \"1990-01-01\",\r\n    \"password\": \"admin123\",\r\n    \"roleKeypass\": \"adminKeyPass\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/person",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"person"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check the status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Parse the response JSON\r",
+							"const expectedResponseBody = {\r",
+							"    \"loggedIn\": true,\r",
+							"    \"username\": \"1AdminAdmin\",\r",
+							"    \"errorMessage\": null,\r",
+							"    \"success\": true\r",
+							"};\r",
+							"\r",
+							"// Check the response body\r",
+							"pm.test(\"Response body matches expected JSON\", function () {\r",
+							"    pm.expect(pm.response.json()).to.deep.equal(expectedResponseBody);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password123",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "1AdminAdmin",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "admin123",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin creates semester",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"    // Check if the response status code is 201 (Created)\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"// Check if the response contains the Location header\r",
+							"pm.test(\"Location header is present\", function () {\r",
+							"    pm.response.to.have.header(\"Location\");\r",
+							"});\r",
+							"\r",
+							"// Check if the Location header is a valid URI\r",
+							"pm.test(\"Location header is a valid URI\", function () {\r",
+							"    const locationHeader = pm.response.headers.get(\"Location\");\r",
+							"    pm.expect(locationHeader).to.be.a(\"string\");\r",
+							"    pm.expect(locationHeader).to.match(/^http(s)?:\\/\\/.+/);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "username",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"year\": 2024,\r\n  \"semesterType\": \"FALL\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/admin/semester",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"admin",
+						"semester"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin creates semester 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 201 (Created)\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"// Check if the response contains the Location header\r",
+							"pm.test(\"Location header is present\", function () {\r",
+							"    pm.response.to.have.header(\"Location\");\r",
+							"});\r",
+							"\r",
+							"// Check if the Location header is a valid URI\r",
+							"pm.test(\"Location header is a valid URI\", function () {\r",
+							"    const locationHeader = pm.response.headers.get(\"Location\");\r",
+							"    pm.expect(locationHeader).to.be.a(\"string\");\r",
+							"    pm.expect(locationHeader).to.match(/^http(s)?:\\/\\/.+/);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password123",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"year\": 2025,\r\n  \"semesterType\": \"SPRING\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/admin/semester",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"admin",
+						"semester"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin creates classroom1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 201 (Created)\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"// Check if the response contains the Location header\r",
+							"pm.test(\"Location header is present\", function () {\r",
+							"    pm.response.to.have.header(\"Location\");\r",
+							"});\r",
+							"\r",
+							"// Check if the Location header is a valid URI\r",
+							"pm.test(\"Location header is a valid URI\", function () {\r",
+							"    const locationHeader = pm.response.headers.get(\"Location\");\r",
+							"    pm.expect(locationHeader).to.be.a(\"string\");\r",
+							"    pm.expect(locationHeader).to.match(/^http(s)?:\\/\\/.+/);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"code\": \"C101\",\r\n  \"capacity\": 30\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/admin/classroom",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"admin",
+						"classroom"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Admin creates classroom2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 201 (Created)\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"// Check if the response contains the Location header\r",
+							"pm.test(\"Location header is present\", function () {\r",
+							"    pm.response.to.have.header(\"Location\");\r",
+							"});\r",
+							"\r",
+							"// Check if the Location header is a valid URI\r",
+							"pm.test(\"Location header is a valid URI\", function () {\r",
+							"    const locationHeader = pm.response.headers.get(\"Location\");\r",
+							"    pm.expect(locationHeader).to.be.a(\"string\");\r",
+							"    pm.expect(locationHeader).to.match(/^http(s)?:\\/\\/.+/);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"code\": \"C102\",\r\n  \"capacity\": 25\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/admin/classroom",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"admin",
+						"classroom"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "setActiveSemester",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 202 (Accepted)\r",
+							"pm.test(\"Status code is 202\", function () {\r",
+							"    pm.response.to.have.status(202);\r",
+							"});\r",
+							"\r",
+							"// Check if the response contains the Location header\r",
+							"pm.test(\"Location header is present\", function () {\r",
+							"    pm.response.to.have.header(\"Location\");\r",
+							"});\r",
+							"\r",
+							"// Check if the Location header is a valid URI\r",
+							"pm.test(\"Location header is a valid URI\", function () {\r",
+							"    const locationHeader = pm.response.headers.get(\"Location\");\r",
+							"    pm.expect(locationHeader).to.be.a(\"string\");\r",
+							"    pm.expect(locationHeader).to.match(/^http(s)?:\\/\\/.+/);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/rest/admin/semester/FALL2024",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"admin",
+						"semester",
+						"FALL2024"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getClassRooms",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 200 (OK)\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if the response is a JSON object\r",
+							"pm.test(\"Response is a JSON object\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"\r",
+							"    // Additional check for object structure\r",
+							"    pm.response.to.satisfy(function (value) {\r",
+							"        return typeof value === \"object\" && !Array.isArray(value);\r",
+							"    }, \"Response should be a JSON object\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/rest/admin/room",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"admin",
+						"room"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getClassRoom by code",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 200 (OK)\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if the response is a JSON object (classroom)\r",
+							"pm.test(\"Response is a JSON object\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"});\r",
+							"\r",
+							"// Check if the response body contains expected properties of a classroom\r",
+							"pm.test(\"Response contains expected properties\", function () {\r",
+							"    const responseBody = pm.response.json();\r",
+							"    pm.expect(responseBody).to.have.property(\"code\"); \r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/rest/admin/classroom/C101",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"admin",
+						"classroom",
+						"C101"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getSemesters",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check the response status code\r",
+							"pm.test(\"Status code is 200 OK\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check the content type of the response\r",
+							"pm.test(\"Content type is JSON\", function () {\r",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+							"});\r",
+							"\r",
+							"// Parse the response JSON\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Check if the response contains an array of semesters\r",
+							"pm.test(\"Response contains an array of semesters\", function () {\r",
+							"    pm.expect(jsonData).to.be.an('array');\r",
+							"    pm.expect(jsonData.length).to.be.above(0);\r",
+							"});\r",
+							"\r",
+							"// Check properties of the first semester in the array\r",
+							"pm.test(\"Each semester has required properties\", function () {\r",
+							"    var firstSemester = jsonData[0];\r",
+							"    pm.expect(firstSemester).to.have.property(\"code\");\r",
+							"    pm.expect(firstSemester).to.have.property(\"endDate\");\r",
+							"    pm.expect(firstSemester).to.have.property(\"startDate\");\r",
+							"    pm.expect(firstSemester).to.have.property(\"semesterType\");\r",
+							"    // Add more properties as needed based on your response structure\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/rest/admin/semester",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"admin",
+						"semester"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getSemester by code",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check the response status code\r",
+							"pm.test(\"Status code is 200 OK\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check the content type of the response\r",
+							"pm.test(\"Content type is JSON\", function () {\r",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+							"});\r",
+							"\r",
+							"// Parse the response JSON\r",
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/rest/admin/semester/FALL2024",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"admin",
+						"semester",
+						"FALL2024"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout admin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 200 (OK)\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if the response is a JSON object\r",
+							"pm.test(\"Response is a JSON object\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"\r",
+							"    // Additional check for object structure\r",
+							"    pm.response.to.satisfy(function (value) {\r",
+							"        return typeof value === \"object\" && !Array.isArray(value);\r",
+							"    }, \"Response should be a JSON object\");\r",
+							"});\r",
+							"\r",
+							"// Check if the response contains the expected logout data\r",
+							"pm.test(\"Response contains expected logout data\", function () {\r",
+							"    const expectedLogoutData = {\r",
+							"        \"loggedIn\": false,\r",
+							"        \"username\": null,\r",
+							"        \"errorMessage\": null,\r",
+							"        \"success\": true\r",
+							"    };\r",
+							"\r",
+							"    const responseBody = pm.response.json();\r",
+							"\r",
+							"    // Debug: Output the actual response to the console\r",
+							"    console.log(\"Actual Response:\", responseBody);\r",
+							"\r",
+							"    // Check if the actual response matches the expected logout data\r",
+							"    pm.expect(responseBody).to.deep.equal(expectedLogoutData);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password123",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"logout"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TEACHER register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 201 (Created)\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Teacher\",\r\n    \"lastName\": \"Teacher\",\r\n    \"email\": \"Teacher.Teacher@example.com\",\r\n    \"phoneNumber\": \"12341141124\",\r\n    \"birthDate\": \"1991-01-01\",\r\n    \"password\": \"teacher123\",\r\n    \"roleKeypass\": \"teacherKeyPass\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/person",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"person"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login Teacher",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check the status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Parse the response JSON\r",
+							"const expectedResponseBody = pm.response.json();\r",
+							"\r",
+							"// Check the response body\r",
+							"pm.test(\"Response body matches expected JSON\", function () {\r",
+							"    pm.expect(expectedResponseBody).to.deep.equal({\r",
+							"        \"loggedIn\": true,\r",
+							"        \"username\": \"1TeacherTeacher\",\r",
+							"        \"errorMessage\": null,\r",
+							"        \"success\": true\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "1TeacherTeacher",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "teacher123",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check the status code\r",
+							"pm.test(\"Status code is 201 Created\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Check the presence of the Location header\r",
+							"pm.test(\"Location header is present\", function () {\r",
+							"    pm.response.to.have.header(\"Location\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/teacher/course?courseName=Introduction to Programming&code=CS101&ECTS=7&language=en",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"course"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "courseName",
+							"value": "Introduction to Programming"
+						},
+						{
+							"key": "code",
+							"value": "CS101"
+						},
+						{
+							"key": "ECTS",
+							"value": "7"
+						},
+						{
+							"key": "language",
+							"value": "en"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create another course",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check the status code\r",
+							"pm.test(\"Status code is 201 Created\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"// Check the presence of the Location header\r",
+							"pm.test(\"Location header is present\", function () {\r",
+							"    pm.response.to.have.header(\"Location\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/teacher/course?courseName=Programování 2&code=CS102&ECTS=4&language=cz",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"course"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						},
+						{
+							"key": "courseName",
+							"value": "Programování 2"
+						},
+						{
+							"key": "code",
+							"value": "CS102"
+						},
+						{
+							"key": "ECTS",
+							"value": "4"
+						},
+						{
+							"key": "language",
+							"value": "cz"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getMyCourses",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test listMyCourses endpoint\r",
+							"pm.test(\"Status code is 200 for listMyCourses\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a JSON array for listMyCourses\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"    pm.response.to.have.jsonBody([]);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/teacher/course",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"course"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a parallel",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test createParallel endpoint\r",
+							"pm.test(\"Status code is 201 for createParallel\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Location header is present for createParallel\", function () {\r",
+							"    pm.response.to.have.header(\"Location\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/teacher/parallel/1?capacity=20&timeSlot=SLOT1&dayOfWeek=MON&semesterId=1&classroomId=1&courseId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"parallel",
+						"1"
+					],
+					"query": [
+						{
+							"key": "capacity",
+							"value": "20"
+						},
+						{
+							"key": "timeSlot",
+							"value": "SLOT1"
+						},
+						{
+							"key": "dayOfWeek",
+							"value": "MON"
+						},
+						{
+							"key": "semesterId",
+							"value": "1"
+						},
+						{
+							"key": "classroomId",
+							"value": "1"
+						},
+						{
+							"key": "courseId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a parallel 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test createParallel endpoint\r",
+							"pm.test(\"Status code is 201 for createParallel\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Location header is present for createParallel\", function () {\r",
+							"    pm.response.to.have.header(\"Location\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/teacher/parallel/1?capacity=20&timeSlot=SLOT1&dayOfWeek=MON&semesterId=2&classroomId=1&courseId=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"parallel",
+						"1"
+					],
+					"query": [
+						{
+							"key": "capacity",
+							"value": "20"
+						},
+						{
+							"key": "timeSlot",
+							"value": "SLOT1"
+						},
+						{
+							"key": "dayOfWeek",
+							"value": "MON"
+						},
+						{
+							"key": "semesterId",
+							"value": "2"
+						},
+						{
+							"key": "classroomId",
+							"value": "1"
+						},
+						{
+							"key": "courseId",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "listParallelsForCourse",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test listParallelsForCourse endpoint\r",
+							"pm.test(\"Status code is 200 for listParallelsForCourse\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a JSON array for listParallelsForCourse\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"    pm.response.to.have.jsonBody([]);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/teacher/students/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"students",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TEACHER logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 200 (OK)\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if the response is a JSON object\r",
+							"pm.test(\"Response is a JSON object\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"\r",
+							"    // Additional check for object structure\r",
+							"    pm.response.to.satisfy(function (value) {\r",
+							"        return typeof value === \"object\" && !Array.isArray(value);\r",
+							"    }, \"Response should be a JSON object\");\r",
+							"});\r",
+							"\r",
+							"// Check if the response contains the expected logout data\r",
+							"pm.test(\"Response contains expected logout data\", function () {\r",
+							"    const expectedLogoutData = {\r",
+							"        \"loggedIn\": false,\r",
+							"        \"username\": null,\r",
+							"        \"errorMessage\": null,\r",
+							"        \"success\": true\r",
+							"    };\r",
+							"\r",
+							"    const responseBody = pm.response.json();\r",
+							"\r",
+							"    // Debug: Output the actual response to the console\r",
+							"    console.log(\"Actual Response:\", responseBody);\r",
+							"\r",
+							"    // Check if the actual response matches the expected logout data\r",
+							"    pm.expect(responseBody).to.deep.equal(expectedLogoutData);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password123",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"logout"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "STUDENT register",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 201 (Created)\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Student\",\r\n    \"lastName\": \"Student\",\r\n    \"email\": \"Student.Student@example.com\",\r\n    \"phoneNumber\": \"33341141124\",\r\n    \"birthDate\": \"1991-01-01\",\r\n    \"password\": \"student123\",\r\n    \"roleKeypass\": \"studentKeyPass\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/person",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"person"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login student",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check the status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Parse the response JSON\r",
+							"const expectedResponseBody = pm.response.json();\r",
+							"\r",
+							"// Check the response body\r",
+							"pm.test(\"Response body matches expected JSON\", function () {\r",
+							"    pm.expect(expectedResponseBody).to.deep.equal({\r",
+							"        \"loggedIn\": true,\r",
+							"        \"username\": \"1StudentStudent\",\r",
+							"        \"errorMessage\": null,\r",
+							"        \"success\": true\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "1StudentStudent",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "student123",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "enroll in parallel",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Successful Enrollment\r",
+							"pm.test(\"Status code is 204 No Content for successful enrollment\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is empty for successful enrollment\", function () {\r",
+							"    pm.expect(pm.response.text()).to.be.empty;\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/student/enroll/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"student",
+						"enroll",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "revertEnrollment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Successful Revert Enrollment\r",
+							"pm.test(\"Status code is 204 No Content for successful enrollment revert\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is empty for successful enrollment revert\", function () {\r",
+							"    pm.expect(pm.response.text()).to.be.empty;\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/student/enroll/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"student",
+						"enroll",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "enroll in the parallel again",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Successful Enrollment\r",
+							"pm.test(\"Status code is 204 No Content for successful enrollment\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response body is empty for successful enrollment\", function () {\r",
+							"    pm.expect(pm.response.text()).to.be.empty;\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/student/enroll/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"student",
+						"enroll",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getParallelsForCourse",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 OK for successful retrieval\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/student/parallel/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"student",
+						"parallel",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getCourses next semester",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 OK for successful retrieval\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/student/course",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"student",
+						"course"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getSchedule for FALL2024",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 OK\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Content type is JSON\", function () {\r",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/student/schedule/FALL2024",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"student",
+						"schedule",
+						"FALL2024"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getReport",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 OK\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Content type is JSON\", function () {\r",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/student/report",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"student",
+						"report"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getParallels for a course next semester with a specific language",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test 1: Successful Request\r",
+							"pm.test(\"Status code is 200 OK\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Content type is JSON\", function () {\r",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/student/parallel/1/en",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"student",
+						"parallel",
+						"1",
+						"en"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "STUDENT lolgout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 200 (OK)\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if the response is a JSON object\r",
+							"pm.test(\"Response is a JSON object\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"\r",
+							"    // Additional check for object structure\r",
+							"    pm.response.to.satisfy(function (value) {\r",
+							"        return typeof value === \"object\" && !Array.isArray(value);\r",
+							"    }, \"Response should be a JSON object\");\r",
+							"});\r",
+							"\r",
+							"// Check if the response contains the expected logout data\r",
+							"pm.test(\"Response contains expected logout data\", function () {\r",
+							"    const expectedLogoutData = {\r",
+							"        \"loggedIn\": false,\r",
+							"        \"username\": null,\r",
+							"        \"errorMessage\": null,\r",
+							"        \"success\": true\r",
+							"    };\r",
+							"\r",
+							"    const responseBody = pm.response.json();\r",
+							"\r",
+							"    // Debug: Output the actual response to the console\r",
+							"    console.log(\"Actual Response:\", responseBody);\r",
+							"\r",
+							"    // Check if the actual response matches the expected logout data\r",
+							"    pm.expect(responseBody).to.deep.equal(expectedLogoutData);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password123",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"logout"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TEACHER logs in Again",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check the status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Parse the response JSON\r",
+							"const expectedResponseBody = pm.response.json();\r",
+							"\r",
+							"// Check the response body\r",
+							"pm.test(\"Response body matches expected JSON\", function () {\r",
+							"    pm.expect(expectedResponseBody).to.deep.equal({\r",
+							"        \"loggedIn\": true,\r",
+							"        \"username\": \"1TeacherTeacher\",\r",
+							"        \"errorMessage\": null,\r",
+							"        \"success\": true\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "1TeacherTeacher",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "teacher123",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "listStudentsForParallel",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test listStudentsForParallel endpoint\r",
+							"pm.test(\"Status code is 200 for listStudentsForParallel\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Response is a JSON array for listStudentsForParallel\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"    pm.response.to.have.jsonBody([]);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/teacher/students/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"students",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "gradeStudent",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Test gradeStudent endpoint\r",
+							"pm.test(\"Status code is 204 for gradeStudent\", function () {\r",
+							"    pm.response.to.have.status(204);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "text/plain",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "A",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/teacher/grade/1/3",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"teacher",
+						"grade",
+						"1",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TEACHER logout Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 200 (OK)\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if the response is a JSON object\r",
+							"pm.test(\"Response is a JSON object\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"\r",
+							"    // Additional check for object structure\r",
+							"    pm.response.to.satisfy(function (value) {\r",
+							"        return typeof value === \"object\" && !Array.isArray(value);\r",
+							"    }, \"Response should be a JSON object\");\r",
+							"});\r",
+							"\r",
+							"// Check if the response contains the expected logout data\r",
+							"pm.test(\"Response contains expected logout data\", function () {\r",
+							"    const expectedLogoutData = {\r",
+							"        \"loggedIn\": false,\r",
+							"        \"username\": null,\r",
+							"        \"errorMessage\": null,\r",
+							"        \"success\": true\r",
+							"    };\r",
+							"\r",
+							"    const responseBody = pm.response.json();\r",
+							"\r",
+							"    // Debug: Output the actual response to the console\r",
+							"    console.log(\"Actual Response:\", responseBody);\r",
+							"\r",
+							"    // Check if the actual response matches the expected logout data\r",
+							"    pm.expect(responseBody).to.deep.equal(expectedLogoutData);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password123",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"logout"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login student Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check the status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Parse the response JSON\r",
+							"const expectedResponseBody = pm.response.json();\r",
+							"\r",
+							"// Check the response body\r",
+							"pm.test(\"Response body matches expected JSON\", function () {\r",
+							"    pm.expect(expectedResponseBody).to.deep.equal({\r",
+							"        \"loggedIn\": true,\r",
+							"        \"username\": \"1StudentStudent\",\r",
+							"        \"errorMessage\": null,\r",
+							"        \"success\": true\r",
+							"    });\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "1StudentStudent",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "student123",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getReport Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 200 OK\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Content type is JSON\", function () {\r",
+							"    pm.response.to.have.header(\"Content-Type\", \"application/json\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/student/report",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"student",
+						"report"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "STUDENT lolgout Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 200 (OK)\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if the response is a JSON object\r",
+							"pm.test(\"Response is a JSON object\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"\r",
+							"    // Additional check for object structure\r",
+							"    pm.response.to.satisfy(function (value) {\r",
+							"        return typeof value === \"object\" && !Array.isArray(value);\r",
+							"    }, \"Response should be a JSON object\");\r",
+							"});\r",
+							"\r",
+							"// Check if the response contains the expected logout data\r",
+							"pm.test(\"Response contains expected logout data\", function () {\r",
+							"    const expectedLogoutData = {\r",
+							"        \"loggedIn\": false,\r",
+							"        \"username\": null,\r",
+							"        \"errorMessage\": null,\r",
+							"        \"success\": true\r",
+							"    };\r",
+							"\r",
+							"    const responseBody = pm.response.json();\r",
+							"\r",
+							"    // Debug: Output the actual response to the console\r",
+							"    console.log(\"Actual Response:\", responseBody);\r",
+							"\r",
+							"    // Check if the actual response matches the expected logout data\r",
+							"    pm.expect(responseBody).to.deep.equal(expectedLogoutData);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password123",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"logout"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

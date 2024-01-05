@@ -1,0 +1,250 @@
+{
+	"info": {
+		"_postman_id": "0529951b-732a-4988-bdb7-6a0d7f4410bb",
+		"name": "postmanHttpQuerries2",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32113749"
+	},
+	"item": [
+		{
+			"name": "registrace admin cesky",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 201 (Created)\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstName\": \"Adam\",\r\n    \"lastName\": \"Štrobl\",\r\n    \"email\": \"teacher.gmail@example.com\",\r\n    \"phoneNumber\": \"1231133494\",\r\n    \"birthDate\": \"1990-01-01\",\r\n    \"password\": \"teacher123\",\r\n    \"roleKeypass\": \"teacherKeyPass\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/rest/person",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"rest",
+						"person"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login admin Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check the status code\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Parse the response JSON\r",
+							"const expectedResponseBody = {\r",
+							"    \"loggedIn\": true,\r",
+							"    \"username\": \"1AdamŠtrobl\",\r",
+							"    \"errorMessage\": null,\r",
+							"    \"success\": true\r",
+							"};\r",
+							"\r",
+							"// Check the response body\r",
+							"pm.test(\"Response body matches expected JSON\", function () {\r",
+							"    pm.expect(pm.response.json()).to.deep.equal(expectedResponseBody);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password123",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "username",
+							"value": "1AdamŠtrobl",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "teacher123",
+							"type": "text"
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8080/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "logout",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if the response status code is 200 (OK)\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Check if the response is a JSON object\r",
+							"pm.test(\"Response is a JSON object\", function () {\r",
+							"    pm.response.to.be.json;\r",
+							"\r",
+							"    // Additional check for object structure\r",
+							"    pm.response.to.satisfy(function (value) {\r",
+							"        return typeof value === \"object\" && !Array.isArray(value);\r",
+							"    }, \"Response should be a JSON object\");\r",
+							"});\r",
+							"\r",
+							"// Check if the response contains the expected logout data\r",
+							"pm.test(\"Response contains expected logout data\", function () {\r",
+							"    const expectedLogoutData = {\r",
+							"        \"loggedIn\": false,\r",
+							"        \"username\": null,\r",
+							"        \"errorMessage\": null,\r",
+							"        \"success\": true\r",
+							"    };\r",
+							"\r",
+							"    const responseBody = pm.response.json();\r",
+							"\r",
+							"    // Debug: Output the actual response to the console\r",
+							"    console.log(\"Actual Response:\", responseBody);\r",
+							"\r",
+							"    // Check if the actual response matches the expected logout data\r",
+							"    pm.expect(responseBody).to.deep.equal(expectedLogoutData);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "password123",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/logout",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"logout"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "1JohnDoe",
+							"disabled": true
+						},
+						{
+							"key": "password",
+							"value": "password123",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
