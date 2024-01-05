@@ -1,9 +1,6 @@
 package cz.cvut.fel.ear.sis.service;
 
-import cz.cvut.fel.ear.sis.model.Admin;
-import cz.cvut.fel.ear.sis.model.Person;
-import cz.cvut.fel.ear.sis.model.Student;
-import cz.cvut.fel.ear.sis.model.Teacher;
+import cz.cvut.fel.ear.sis.model.*;
 import cz.cvut.fel.ear.sis.repository.AdminRepository;
 import cz.cvut.fel.ear.sis.repository.PersonRepository;
 import cz.cvut.fel.ear.sis.repository.StudentRepository;
@@ -30,16 +27,18 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final StudentRepository studentRepository;
     private final TeacherRepository teacherRepository;
+    private final AdminService adminService;
 
     @Autowired
     public PersonService(AdminRepository adminRepository,
                          PersonRepository personRepository,
                          StudentRepository studentRepository,
-                         TeacherRepository teacherRepository) {
+                         TeacherRepository teacherRepository, AdminService adminService) {
         this.adminRepository = adminRepository;
         this.personRepository = personRepository;
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
+        this.adminService = adminService;
     }
 
     BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
@@ -201,6 +200,7 @@ public class PersonService {
                                          String phoneNumber, LocalDate birthDate, String password) throws PersonException {
         checkThatNameIsValid(firstName, lastName);
         checkThatContactDetailsAreValid(email, phoneNumber);
+
         if (Period.between(birthDate, LocalDate.now()).getYears() < 18)
             throw new PersonException("Only users 18 years old and older can sign up.");
         if (doesNotConformRegex(password, "^[A-Za-z0-9]{8,20}$"))

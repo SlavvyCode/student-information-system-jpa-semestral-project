@@ -1,9 +1,6 @@
 package cz.cvut.fel.ear.sis.services;
 
-import cz.cvut.fel.ear.sis.model.Admin;
-import cz.cvut.fel.ear.sis.model.Person;
-import cz.cvut.fel.ear.sis.model.Student;
-import cz.cvut.fel.ear.sis.model.Teacher;
+import cz.cvut.fel.ear.sis.model.*;
 import cz.cvut.fel.ear.sis.repository.AdminRepository;
 import cz.cvut.fel.ear.sis.repository.PersonRepository;
 import cz.cvut.fel.ear.sis.repository.StudentRepository;
@@ -11,8 +8,11 @@ import cz.cvut.fel.ear.sis.repository.TeacherRepository;
 import cz.cvut.fel.ear.sis.service.AdminService;
 import cz.cvut.fel.ear.sis.service.PersonService;
 import cz.cvut.fel.ear.sis.utils.enums.Role;
+import cz.cvut.fel.ear.sis.utils.enums.SemesterType;
 import cz.cvut.fel.ear.sis.utils.exception.PersonException;
+import cz.cvut.fel.ear.sis.utils.exception.SemesterException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -36,13 +36,14 @@ public class QueryTest {
     @Autowired
     private EnrollmentRepository enrollmentRepository;
 
+    private LocalDate ageOver18 = LocalDate.of(2000, 2, 2);
 
 
     // not relevant for grading
     @Test
     public void testGettingTotalECTSCreditsForStudentThisSemester() {
 
-        Student student = new Student("Jan", "Novak", "jn@fel.cz", "123456789", LocalDate.now(), "jnovak", "123456");
+        Student student = new Student("Jan", "Novak", "jn@fel.cz", "123456789", ageOver18, "jnovak", "123456");
         Course course = new Course(null, "Matematika", "MAT", 5, Locale.ENGLISH);
         Classroom classroom = new Classroom("U1", 50);
         Semester semester = new Semester(2022, SemesterType.FALL);

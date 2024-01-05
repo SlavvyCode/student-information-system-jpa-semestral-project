@@ -1,11 +1,11 @@
 package cz.cvut.fel.ear.sis.rest;
 
-import cz.cvut.fel.ear.sis.model.Course;
-import cz.cvut.fel.ear.sis.model.Enrollment;
-import cz.cvut.fel.ear.sis.model.Parallel;
-import cz.cvut.fel.ear.sis.model.Student;
+import cz.cvut.fel.ear.sis.model.*;
+import cz.cvut.fel.ear.sis.repository.PersonRepository;
+import cz.cvut.fel.ear.sis.repository.StudentRepository;
 import cz.cvut.fel.ear.sis.rest.handler.utils.RestUtils;
 import cz.cvut.fel.ear.sis.security.model.CustomUserDetails;
+import cz.cvut.fel.ear.sis.service.StudentService;
 import cz.cvut.fel.ear.sis.service.TeacherService;
 import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
 import cz.cvut.fel.ear.sis.utils.enums.Grade;
@@ -28,6 +28,7 @@ import org.springframework.http.HttpStatus;
 import java.util.IllformedLocaleException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +39,10 @@ import org.slf4j.LoggerFactory;
 public class TeacherController {
 
     private TeacherService teacherService;
+
+    @Autowired
+    private PersonRepository personRepository;
+
 
     private static final Logger LOG = LoggerFactory.getLogger(TeacherController.class);
 
@@ -110,7 +115,7 @@ public class TeacherController {
             throw new IllegalArgumentException("Invalid grade format", e);
         }
         Enrollment enrollment =  teacherService.getEnrollmentByParallelIdAndStudentId(parallelId, studentId);
-
+        Optional<Person> student = personRepository.findById(studentId);
         if(enrollment == null){
             throw new EnrollmentException("Enrollment not found");
         }

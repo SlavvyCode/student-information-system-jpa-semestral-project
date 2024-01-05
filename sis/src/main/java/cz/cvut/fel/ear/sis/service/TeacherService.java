@@ -243,24 +243,20 @@ public class TeacherService {
      * @throws EnrollmentException If the enrollment is not found or already graded.
      */
     @Transactional
-    public void gradeStudent(long studentId, long enrollmentId, Grade grade) throws StudentException, EnrollmentException {
+    public void gradeStudent(long studentId, long enrollmentId, Grade grade) throws StudentException, EnrollmentException, SemesterException {
 
 
         Student student = studentRepository.findById(studentId).orElseThrow(()-> new StudentException("Student not found"));
 
         Enrollment enrollment = enrollmentRepository.findById(enrollmentId).orElseThrow(()-> new EnrollmentException("Enrollment not found"));
 
+        Semester activeSemester = adminService.getActiveSemester().orElseThrow(()-> new SemesterException("Active semester not found"));
+
         if(!enrollment.getStudent().equals(student))
             throw new StudentException("Student is not enrolled in this parallel");
 
         if(enrollment.getStatus().equals(Status.PASSED) || enrollment.getStatus().equals(Status.FAILED))
             throw new EnrollmentException("Student has already been graded");
-
-        if(enrollment.getParallel().getSemester().getStartDate().isAfter(LocalDate.now()))
-            throw new EnrollmentException("Student can't be graded before the semester begins");
-
-        if(enrollment.getParallel().getSemester().getEndDate().isBefore(LocalDate.now()))
-            throw new EnrollmentException("Student can't be graded after the semester ends");
 
 
 

@@ -13,6 +13,7 @@ import cz.cvut.fel.ear.sis.utils.exception.*;
 import jakarta.persistence.EntityManager;
 import org.h2.server.Service;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -71,14 +73,17 @@ public class StudentTest {
 
     private LocalDate ageOver18 = LocalDate.of(2000, 2, 2);
 
+
+
     @Test
     @Transactional
     public void studentTestLong() throws PersonException {
 
         Person student1 = personService.createANewPerson("Jan", "Novak", "jn1@fel.cz",
-                "1254456789", LocalDate.of(2000,3,3), "Abc12345",
+                "1254456789", ageOver18, "Abc12345",
                 "studentKeyPass");
 
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
         personService.getAllStudents();
         Assertions.assertEquals(1, personService.getAllStudents().size());
@@ -97,14 +102,13 @@ public class StudentTest {
         Assertions.assertEquals("Novak", student1.getLastName());
         Assertions.assertEquals("jn1@fel.cz", student1.getEmail());
         Assertions.assertEquals("1254456789", student1.getPhoneNumber());
-        Assertions.assertEquals(LocalDate.of(2000,3,3), student1.getBirthDate());
+        Assertions.assertEquals(ageOver18, student1.getBirthDate());
         Assertions.assertEquals("1JanNovak", student1.getUserName());
-        Assertions.assertEquals("Abc12345", student1.getPassword());
-
+        Assertions.assertTrue(passwordEncoder.matches("Abc12345", student1.getPassword()));
 
         //try to insert the same person again and expect a throw
         Assertions.assertThrows(PersonException.class, () -> {
-            personService.createANewPerson("Jan", "Novak", "jn1@fel.cz", "1254456789", LocalDate.now(), "jnovak", "studentKeyPass");
+            personService.createANewPerson("Jan", "Novak", "jn1@fel.cz", "1254456789", ageOver18, "jnovak", "studentKeyPass");
         });
 
 
@@ -146,9 +150,12 @@ public class StudentTest {
         Locale language = Locale.ENGLISH;
         Course course = teacherService.
                 createCourse(teacher.getId(), courseName, courseCode, ECTS, language);
-        SemesterType semesterType = SemesterType.SPRING;
-        int year = 2024;
-        Semester semester = new Semester(year, semesterType);
+
+
+        adminService.setActiveSemester(adminService.createSemester(2023, SemesterType.FALL));
+
+
+        Semester semester = new Semester(2024, SemesterType.SPRING);
 
         semesterRepository.save(semester);
 

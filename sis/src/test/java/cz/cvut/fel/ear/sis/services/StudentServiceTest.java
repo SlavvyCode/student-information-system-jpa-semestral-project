@@ -11,7 +11,9 @@ import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
 import cz.cvut.fel.ear.sis.utils.enums.SemesterType;
 import cz.cvut.fel.ear.sis.utils.enums.Status;
 import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
+import cz.cvut.fel.ear.sis.utils.exception.SemesterException;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureTestEntityManager;
@@ -56,7 +58,11 @@ public class StudentServiceTest {
     StudentService studentService;
     private LocalDate ageOver18 = LocalDate.of(2000, 2, 2);
 
-
+    @BeforeEach
+    public void setup() throws SemesterException {
+        Semester activeSemester =adminService.createSemester(2021, SemesterType.FALL);
+        adminService.setActiveSemester(activeSemester);
+    }
 
 
     @Test

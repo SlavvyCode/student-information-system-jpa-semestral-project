@@ -1,5 +1,6 @@
 package cz.cvut.fel.ear.sis.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
@@ -15,6 +16,7 @@ public class Student extends Person {
     ///CASCADE REMOVE
     @OneToMany( cascade = CascadeType.REMOVE, orphanRemoval = true)    @JoinColumn(name = "student_id")
     @JsonManagedReference("student_enrollments")
+    @JsonIgnore
     private List<Enrollment> myEnrollments = new ArrayList<>();
 
     public Student() {
