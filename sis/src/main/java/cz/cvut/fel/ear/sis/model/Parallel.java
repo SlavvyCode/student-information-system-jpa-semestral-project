@@ -1,6 +1,8 @@
 package cz.cvut.fel.ear.sis.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import cz.cvut.fel.ear.sis.utils.enums.DayOfWeek;
 import cz.cvut.fel.ear.sis.utils.enums.TimeSlot;
@@ -26,6 +28,8 @@ public class Parallel {
     private DayOfWeek dayOfWeek;
     @ManyToOne(fetch = FetchType.LAZY)
     private Semester semester;
+
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     @ManyToOne(fetch = FetchType.LAZY)
     private Classroom classroom;
 

@@ -166,25 +166,13 @@ public class ExtraFeaturesTest {
 
         //put one course into one semester other in other semester
 
-        SemesterType nextSemesterType;
-        int nextSemesterYear;
-        //if it's between spring start and end date, set semester to FALL
-        if (LocalDate.now().isAfter(LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getStartDate().getMonth(), SemesterType.SPRING.getStartDate().getDayOfMonth()))
-                && LocalDate.now().isBefore(LocalDate.of(LocalDate.now().getYear(), SemesterType.SPRING.getEndDate().getMonth(), SemesterType.SPRING.getEndDate().getDayOfMonth()))) {
-            nextSemesterType = SemesterType.FALL;
-            nextSemesterYear = LocalDate.now().getYear();
-        }
-        else
-        {
-            nextSemesterType = SemesterType.SPRING;
-            nextSemesterYear = LocalDate.now().getYear() + 1;
-        }
-
-        //account for year change - if we're in the fall semester, set next semester to spring of next year
 
 
+        Semester activeSemester = adminService.createSemester(2024, SemesterType.FALL);
 
-        Semester nextSemester = adminService.createSemester(nextSemesterYear, nextSemesterType);
+        adminService.setActiveSemester(activeSemester);
+
+        Semester nextSemester = adminService.createSemester(2025, SemesterType.SPRING);
 
 
 
@@ -201,12 +189,6 @@ public class ExtraFeaturesTest {
         assertEquals(foundParallels.get(0).getId(), parallelNextSemester.getId());
 
 
-
-    }
-
-    @Test
-    @Transactional
-    public void CascadeTest(){
 
     }
 

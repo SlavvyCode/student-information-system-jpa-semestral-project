@@ -36,7 +36,7 @@ public class StudentService {
     private final TeacherRepository teacherRepository;
     private final ParallelRepository parallelRepository;
     private final EnrollmentRepository enrollmentRepository;
-
+    private final AdminService adminService;
     @PersistenceContext
     EntityManager em;
 
@@ -45,12 +45,13 @@ public class StudentService {
     @Autowired
     public StudentService(PersonRepository personRepository,
                           StudentRepository studentRepository,
-                          TeacherRepository teacherRepository, ParallelRepository parallelRepository, EnrollmentRepository enrollmentRepository, SemesterRepository semesterRepository) {
+                          TeacherRepository teacherRepository, ParallelRepository parallelRepository, EnrollmentRepository enrollmentRepository, AdminService adminService, SemesterRepository semesterRepository) {
         this.personRepository = personRepository;
         this.studentRepository = studentRepository;
         this.teacherRepository = teacherRepository;
         this.parallelRepository = parallelRepository;
         this.enrollmentRepository = enrollmentRepository;
+        this.adminService = adminService;
         this.semesterRepository = semesterRepository;
     }
 
@@ -193,11 +194,7 @@ public class StudentService {
      * @throws ParallelException If parallels are not found for the next semester.
      */
     public List<Parallel> getAllParallelsForNextSemester() throws ParallelException, SemesterException {
-        Semester activeSemester =  semesterRepository.findSemesterByIsActiveIsTrue().orElseThrow(()-> new SemesterException("Active semester not found"));
-        Semester nextSemester = semesterRepository.findByStartDate(activeSemester.getStartDate().plusYears(1));
-        LocalDate nextSemesterStartDate = nextSemester.getStartDate();
-
-
+        LocalDate nextSemesterStartDate = findNextSemester().getStartDate();
         return parallelRepository.findAllBySemester_StartDate(nextSemesterStartDate);
     }
 
@@ -222,10 +219,7 @@ public class StudentService {
      * @return List of Parallel objects for the course in the next semester.
      */
     public List<Parallel> getParallelsForCourseNextSemester(Long courseId) throws SemesterException {
-        Semester activeSemester =  semesterRepository.findSemesterByIsActiveIsTrue().orElseThrow(()-> new SemesterException("Active semester not found"));
-        Semester nextSemester = semesterRepository.findByStartDate(activeSemester.getStartDate().plusYears(1));
-        LocalDate nextSemesterStartDate = nextSemester.getStartDate();
-
+        LocalDate nextSemesterStartDate = findNextSemester().getStartDate();
         return parallelRepository.findAllByCourse_IdAndSemester_StartDate(courseId, nextSemesterStartDate);
     }
 
@@ -255,13 +249,10 @@ public class StudentService {
         CriteriaQuery<Parallel> criteriaQuery = criteriaBuilder.createQuery(Parallel.class);
         Root<Parallel> from = criteriaQuery.from(Parallel.class);
 
-        Semester activeSemester =  semesterRepository.findSemesterByIsActiveIsTrue().orElseThrow(()-> new SemesterException("Active semester not found"));
-        Semester nextSemester = semesterRepository.findByStartDate(activeSemester.getStartDate().plusYears(1));
-
 
         criteriaQuery.select(from);
 
-        LocalDate nextSemesterStartDate = nextSemester.getStartDate();
+        LocalDate nextSemesterStartDate = findNextSemester().getStartDate();
 
         criteriaQuery.where(
                 criteriaBuilder.equal(from.get("course").get("id"), courseId),
@@ -365,6 +356,23 @@ public class StudentService {
 
     }
 
+
+    /**
+     * Finds the next semester.
+     * @return The next semester.
+     * @throws SemesterException If the next semester is not found.
+     */
+    private Semester findNextSemester() throws SemesterException {
+        Semester activeSemester = semesterRepository.findSemesterByIsActiveIsTrue().orElseThrow(()-> new SemesterException("Active semester not found"));
+        Semester nextSemester;
+
+        if(activeSemester.getSemesterType().equals(SemesterType.SPRING))
+            nextSemester = semesterRepository.findSemesterByCode("FALL"+activeSemester.getStartDate().getYear()).orElseThrow(()-> new SemesterException("Next semester not found, tried to find FALL"+activeSemester.getStartDate().getYear()));
+        else
+            nextSemester = semesterRepository.findSemesterByCode("SPRING"+(activeSemester.getStartDate().getYear()+1)).orElseThrow(()-> new SemesterException("Next semester not found, tried to find SPRING"+activeSemester.getStartDate().getYear()+1));
+
+        return nextSemester;
+    }
 
 
 }
